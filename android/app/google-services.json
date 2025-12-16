@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "166907472943",
+    "firebase_url": "https://xturbo-3515b.firebaseio.com",
+    "project_id": "xturbo-3515b",
+    "storage_bucket": "xturbo-3515b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166907472943:android:5bd5f11daba0de1709eada",
+        "android_client_info": {
+          "package_name": "com.xturbox.xturbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166907472943-81ucl3bmt63cndsspt7950mnjruloj30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhLk2YbE-0EnNbpwAQ-eSmLbXDc0dWQx4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166907472943-81ucl3bmt63cndsspt7950mnjruloj30.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

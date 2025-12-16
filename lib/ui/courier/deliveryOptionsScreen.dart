@@ -1,0 +1,148 @@
+import 'package:flutter/material.dart';
+import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:xturbox/data_providers/models/savedData.dart';
+import 'package:xturbox/ui/courier/captainMyReserves.dart';
+
+import 'captainMyPickup.dart';
+import '../custom widgets/CaptainAppBar.dart';
+import '../custom widgets/drawerCaptain.dart';
+import 'package:easy_localization/easy_localization.dart';
+class DeliveryOptionsScreen extends StatefulWidget {
+
+  ResourcesData? resourcesData;
+
+  DeliveryOptionsScreen({this.resourcesData});
+
+  @override
+  _DeliveryOptionsScreenState createState() => _DeliveryOptionsScreenState();
+}
+
+class _DeliveryOptionsScreenState extends State<DeliveryOptionsScreen> {
+  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  Color blueColor = Color(0xFF2f3a92);
+  Color greyColor = Color(0xFFf4f4f4);
+  Color redColor = Color(0xFFBE2C33);
+  @override
+  Widget build(BuildContext context) {
+    var mySize = MediaQuery.of(context).size;
+    return Scaffold(
+      key: _drawerKey,
+      drawer: CaptainDrawer(
+        resourcesData: widget.resourcesData,
+      ),
+      body: SafeArea(
+        child: Stack(
+          
+          children: [
+            Positioned.fill(child: Align(
+              alignment: Alignment.topCenter,
+                child: CaptainAppBar(drawerKey: _drawerKey,screenName: 'Delivery'.tr()))),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: mySize.height / 100 * 4,),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MyPickup(resourcesData: SavedData.resourcesData))
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(38)),
+                          color: Color(0xFFf4f4f4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: Offset(
+                                  0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 15, top: 40, bottom: 40),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(38)),
+                                  color: Color(0xFFf4f4f4),
+                                ),
+                                width: mySize.width / 100 * 20,
+                                margin: EdgeInsets.all(10),
+                                child: Image.asset('assets/images/deliver.png',height: mySize.width / 100 * 15,),
+                              ),
+                              Expanded(
+                                child: Text('Dispatched Shipments'.tr(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                              )
+                            ],
+                          ),
+                        ),),
+                    ),
+                    SizedBox(height: 30,),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MyReserves(
+                                      resourcesData: SavedData.resourcesData,
+                                    )));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(38)),
+                          color: Color(0xFFf4f4f4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: Offset(
+                                  0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15.0, right: 15, top: 40, bottom: 40),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(38)),
+                                  color: Color(0xFFf4f4f4),
+                                ),
+                                width: mySize.width / 100 * 20,
+                                margin: EdgeInsets.all(10),
+                                child: Image.asset('assets/images/warehouse.png', height: mySize.width / 100 * 15,),
+                              ),
+                              Expanded(
+                                child: Text('Return to Warehouse'.tr(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                              ),
+                            ],
+                          ),
+                        ),),
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
