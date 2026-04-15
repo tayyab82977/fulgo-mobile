@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:xturbox/data_providers/models/notificationDataModel.dart';
-import 'package:xturbox/ui/custom%20widgets/notification_widget.dart';
+import 'package:Fulgox/data_providers/models/notificationDataModel.dart';
+import 'package:Fulgox/ui/custom%20widgets/notification_widget.dart';
 
 class NotificationView extends StatefulWidget {
   RemoteMessage? message ;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
 import '../courier/bulkPickupScreen.dart';
 import '../courier/captainOrdersList.dart';
 

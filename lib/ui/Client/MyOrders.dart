@@ -6,33 +6,29 @@ import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/getOrders_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
+import 'package:get/get.dart';
+import 'package:Fulgox/controllers/get_orders_controller.dart';
+import 'package:Fulgox/data_providers/models/shipments_lists_model.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/Client/addOrderB2c.dart';
-import 'package:xturbox/ui/courier/captainDashboard.dart';
-import 'package:xturbox/blocs/events/gerOrders_events.dart';
-import 'package:xturbox/blocs/states/getOrders_states.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/main.dart';
-import 'package:xturbox/ui/Client/addOrder.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
-import 'package:xturbox/ui/custom%20widgets/ErrorView.dart';
-import 'package:xturbox/ui/custom%20widgets/OrdersCard.dart';
-import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/ui/custom%20widgets/my_container.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/downloader.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/Client/addOrderB2c.dart';
+import 'package:Fulgox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/main.dart';
+import 'package:Fulgox/ui/Client/addOrder.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/custom%20widgets/ErrorView.dart';
+import 'package:Fulgox/ui/custom%20widgets/OrdersCard.dart';
+import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/custom%20widgets/my_container.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/downloader.dart';
 
 import '../custom widgets/NetworkErrorView.dart';
 import '../custom widgets/custom_loading.dart';
@@ -48,12 +44,11 @@ class MyOrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context)=>GetOrdersBloc(),
-        child: MyOrders(
+    Get.put(GetOrdersController());
+    return MyOrders(
           resourcesData: resourcesData,
           dashboardDataModel: dashboardDataModel,
-        ));
+        );
   }
 }
 
@@ -72,7 +67,6 @@ class MyOrders extends StatefulWidget {
 
 class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
 
-  AuthenticationBloc authenticationBloc = AuthenticationBloc() ;
   GlobalKey<AnimatedListState> animatedListController =
   GlobalKey<AnimatedListState>();
   GlobalKey<RefreshIndicatorState>? refreshKeyHome;
@@ -102,14 +96,13 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
 
 
 
-  GetOrdersBloc getOrdersBloc = GetOrdersBloc();
+  final GetOrdersController _getOrdersController = Get.find<GetOrdersController>();
   TabController? _tabController;
   double? screenWidth , screenHeight ;
   bool _slowAnimations = false;
 
   @override
   void dispose() {
-    getOrdersBloc.close();
     _tabController?.dispose();
     _unbindBackgroundIsolate();
     super.dispose();
@@ -169,23 +162,24 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
 
   @override
   void initState() {
-   refreshKeyHome = GlobalKey<RefreshIndicatorState>();
-   _focus.addListener(_onFocusChange);
-   getOrdersBloc.add(GetOrders());
-   _tabController = new TabController(vsync: this ,length: 4);
-   _tabController!.addListener(_handleTabSelection);
-   _bindBackgroundIsolate();
-   FlutterDownloader.registerCallback(Downloader.downloadCallback);
+    refreshKeyHome = GlobalKey<RefreshIndicatorState>();
+    _focus.addListener(_onFocusChange);
+    // Listen for errors from controller if needed, via `ever` or just rely on Obx in build
+    _getOrdersController.getOrders();
 
-   super.initState();
+    _tabController = new TabController(vsync: this ,length: 4);
+    // No need to call setState here, Obx handles rebuilds. But tab selection might need it for tab styling if not using controller state for tabs.
+    _tabController!.addListener(_handleTabSelection);
+    _bindBackgroundIsolate();
+    FlutterDownloader.registerCallback(Downloader.downloadCallback);
+
+    super.initState();
   }
 
   void _handleTabSelection() {setState(() {});}
 
   Future<Null>? onRefreshAll(){
-
-
-    getOrdersBloc.add(GetOrders());
+    _getOrdersController.getOrders();
     return null ;
   }
   @override
@@ -215,67 +209,27 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                         children: [
                           Expanded(
                             flex: 6,
-                            child: BlocConsumer<GetOrdersBloc ,GetOrdersStates>(
-                                bloc: getOrdersBloc,
-                                builder: (context , state){
-                                  if(state is GetOrdersInitial){
-                                    return CreatMyOrdersScreen(
-                                      getOrdersLoaded: null,
-                                      loading: true
-                                    );
-                                  }
-
-                                  else if (state is GetOrdersLoaded){
-                                    return CreatMyOrdersScreen(
-                                      loading: false,
-                                      getOrdersLoaded: state
-                                    );
-                                  }
-                                  else if (state is GetOrdersLoading){
-
-                                    return CreatMyOrdersScreen(
-                                        getOrdersLoaded: null,
-                                        loading: true
-                                    );
-                                  }
-                                  else if(state is GetOrdersErrors){
-                                    return ErrorView(
-                                      retryAction: (){
-                                        getOrdersBloc.add(GetOrders());
-                                      },
-                                      errorMessage: '',
-                                    );
-                                  }
-                                  return Container();
-                                },
-                                listener: (context , state){
-                                  if(state is GetOrdersErrors ){
-                                    if (state.error == 'TIMEOUT'){
-                                      GeneralHandler.handleNetworkError(context);
-
-                                    }
-                                    else if(state.error == "invalidToken"){
-                                      GeneralHandler.handleInvalidToken(context);
-                                    }
-                                    else if (state.error == 'needUpdate'){
-                                      GeneralHandler.handleNeedUpdateState(context);
-
-                                    }
-                                    else if (state.error == "general"){
-                                      GeneralHandler.handleGeneralError(context);
-                                    }
-                                  }
-                                  if(state is GetOrdersLoaded){
-
-                                    List<OrdersDataModelMix> allOrdersList = []..addAll(newOrdersList)..addAll(inDeliveryOrdersList)..addAll(deliveredOrdersList)..addAll(canceledOrdersList);
-
-
-                                    allOrdersList1 = allOrdersList.map((element)=>element).toList();
-                                    allOrdersList2 = allOrdersList.map((element)=>element).toList();
-
-
-                                  }
-                                }),
+                            child: Obx(() {
+                              if (_getOrdersController.isLoading.value) {
+                                return CreatMyOrdersScreen(
+                                  getOrdersController: _getOrdersController,
+                                  loading: true,
+                                );
+                              } else if (_getOrdersController.errorMessage.value != '') {
+                                return ErrorView(
+                                  retryAction: () {
+                                    _getOrdersController.getOrders();
+                                  },
+                                  errorMessage: '',
+                                );
+                              } else {
+                                // Loaded or empty (if null)
+                                return CreatMyOrdersScreen(
+                                  loading: false,
+                                  getOrdersController: _getOrdersController,
+                                );
+                              }
+                            }),
                           ),
 
 
@@ -295,7 +249,7 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
       );
 
   }
-  Widget CreatMyOrdersScreen({GetOrdersLoaded? getOrdersLoaded , required bool loading }){
+  Widget CreatMyOrdersScreen({GetOrdersController? getOrdersController , required bool loading }){
 
     //for the search in all shipments according to id or receiver name
     // list 1 the list in the list view builder
@@ -314,27 +268,29 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
         setState(() {
           list1.clear();
           list1.addAll(dummyListData);
-
-
         });
         return;
       } else {
         setState(() {
           list1.clear();
           list1.addAll(list2);
-
         });
       }
     }
 
-    // List<OrdersDataModelMix> allOrdersList = [];
+    ShipmentsListsModel? shipmentsModel = getOrdersController?.shipmentsListsModel.value;
 
-
-    newOrdersList = getOrdersLoaded?.shipmentsListsModel?.newShipments?.map((element)=>element).toList() ?? [];
-    inDeliveryOrdersList = getOrdersLoaded?.shipmentsListsModel?.inDeliveryShipments?.map((element)=>element).toList() ?? [];
-    deliveredOrdersList = getOrdersLoaded?.shipmentsListsModel?.deliveredShipments?.map((element)=>element).toList() ?? [];
-    canceledOrdersList = getOrdersLoaded?.shipmentsListsModel?.cancelShipments?.map((element)=>element).toList() ?? [];
+    newOrdersList = shipmentsModel?.newShipments?.map((element)=>element).toList() ?? [];
+    inDeliveryOrdersList = shipmentsModel?.inDeliveryShipments?.map((element)=>element).toList() ?? [];
+    deliveredOrdersList = shipmentsModel?.deliveredShipments?.map((element)=>element).toList() ?? [];
+    canceledOrdersList = shipmentsModel?.cancelShipments?.map((element)=>element).toList() ?? [];
     List<OrdersDataModelMix> allOrdersList = []..addAll(newOrdersList)..addAll(inDeliveryOrdersList)..addAll(deliveredOrdersList)..addAll(canceledOrdersList);
+
+    // Update search lists if not searching (or first load)
+    if (!showSearch) {
+        allOrdersList1 = allOrdersList.map((element)=>element).toList();
+        allOrdersList2 = allOrdersList.map((element)=>element).toList();
+    }
 
     return Column(
       children: [
@@ -372,7 +328,7 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        getOrdersLoaded != null ?
+                        getOrdersController?.shipmentsListsModel.value != null ?
                         Text(allOrdersList.length.toString(),
                           style:TextStyle(
                               fontSize: 15,
@@ -409,12 +365,8 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: FlatButton(
-                height: 30,
-                color:Constants.blueColor ,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                padding: EdgeInsets.all(0),
-                highlightColor: Colors.black,
+              child: ElevatedButton(
+              
                 onPressed: (){
                   if(SavedData.profileDataModel.permission == "1"){
                     Navigator.push(
@@ -425,7 +377,7 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                               dashboardDataModelNew:
                               widget.dashboardDataModel,
                               packagingType: "noPackaging",
-                              getOrdersBloc: getOrdersBloc,
+                              getOrdersController: getOrdersController,
                             )));
                   }else {
                     Navigator.push(
@@ -436,7 +388,7 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                               dashboardDataModelNew:
                               widget.dashboardDataModel,
                               packagingType: "noPackaging",
-                              getOrdersBloc: getOrdersBloc,
+                              getOrdersController: getOrdersController,
                             )));
                   }
                 },
@@ -593,9 +545,9 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                 resourcesData: widget.resourcesData,
                 ordersDataModel: allOrdersList1[i],
                 hasAction: true,
-                getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
+                getOrdersController: getOrdersController,
                 showStatus: true,
-                mixedShipmentsModel: getOrdersLoaded?.shipmentsListsModel,
+                mixedShipmentsModel: shipmentsModel,
               );
 
             },
@@ -618,14 +570,13 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)) ,
-                              primary: Constants.blueColor, // background
-                              onPrimary: Colors.white, // foreground
+                              foregroundColor: Colors.white, // foreground
                             ),
                             onPressed: () {
                               if (Platform.isAndroid) {
-                                Downloader.downloadPDFAndroid2( taskId , "https://portal.xturbox.com/print_membervise/${SavedData.profileDataModel.id}" ,SavedData.profileDataModel.name ?? "" );
+                                Downloader.downloadPDFAndroid2( taskId , "https://portal.Fulgox.com/print_membervise/${SavedData.profileDataModel.id}" ,SavedData.profileDataModel.name ?? "" );
                               } else {
-                                Downloader.downloadPDFIOS2(taskId , "https://portal.xturbox.com/print_membervise/${SavedData.profileDataModel.id}" , SavedData.profileDataModel.name ?? "");
+                                Downloader.downloadPDFIOS2(taskId , "https://portal.Fulgox.com/print_membervise/${SavedData.profileDataModel.id}" , SavedData.profileDataModel.name ?? "");
                               }
                             },
                             child: Text('Print All'.tr()),
@@ -648,8 +599,8 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                                 resourcesData: widget.resourcesData,
                                 ordersDataModel: newOrdersList[i],
                                 hasAction: true,
-                                mixedShipmentsModel: getOrdersLoaded?.shipmentsListsModel,
-                                getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
+                                mixedShipmentsModel: shipmentsModel,
+                                getOrdersController: getOrdersController,
                               );
 
                             },
@@ -687,8 +638,8 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                           resourcesData: widget.resourcesData,
                           ordersDataModel: inDeliveryOrdersList[i],
                           hasAction: true,
-                          mixedShipmentsModel: getOrdersLoaded?.shipmentsListsModel,
-                          getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
+                          mixedShipmentsModel: shipmentsModel,
+                          getOrdersController: getOrdersController,
                         );
                       },
                     ),
@@ -722,8 +673,8 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                           resourcesData: widget.resourcesData,
                           ordersDataModel: deliveredOrdersList[i],
                           hasAction: false,
-                          mixedShipmentsModel: getOrdersLoaded?.shipmentsListsModel,
-                          getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
+                          mixedShipmentsModel: shipmentsModel,
+                          getOrdersController: getOrdersController,
 
                         );
                       },
@@ -757,8 +708,8 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
                           resourcesData: widget.resourcesData,
                           ordersDataModel: canceledOrdersList[i],
                           hasAction: false,
-                          mixedShipmentsModel: getOrdersLoaded?.shipmentsListsModel,
-                          getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
+                          mixedShipmentsModel: shipmentsModel,
+                          getOrdersController: getOrdersController,
 
                         );
                       },
@@ -802,39 +753,7 @@ class _MyOrdersState extends State<MyOrders> with TickerProviderStateMixin {
 }
 
 
-// AnimatedList(
-// primary: true,
-// scrollDirection: Axis.vertical,
-// key: animatedListController,
-// reverse: true,
-// shrinkWrap: true,
-// // physics: NeverScrollableScrollPhysics(),
-// initialItemCount:getOrdersLoaded.activeOrdersList.length,
-// itemBuilder: (context, i, animation) {
-// return RefreshIndicator(
-//
-// child: AnimationConfiguration.staggeredGrid(
-// columnCount: getOrdersLoaded.activeOrdersList.length ,
-// child: FlipAnimation(
-// flipAxis: FlipAxis.x,
-// delay: Duration(seconds: 2),
-// duration: Duration(seconds: 1),
-// child: OrdersCard(
-// resourcesData: widget.resourcesData,
-// ordersDataModel: getOrdersLoaded.activeOrdersList[i],
-// id: getOrdersLoaded.activeOrdersList[i].id,
-// receiverName: getOrdersLoaded.activeOrdersList[i].receiverName,
-// packageNo: getOrdersLoaded.activeOrdersList[i].length
-//     .toString(),
-// status: getOrdersLoaded.activeOrdersList[i].status,
-// hasAction: true,
-// getOrdersBloc: BlocProvider.of<GetOrdersBloc>(context),
-// )
-// ),
-//
-// ),
-// );
-// }
+
 //
 //
 // ),

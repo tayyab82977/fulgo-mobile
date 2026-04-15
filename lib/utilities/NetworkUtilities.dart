@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:xturbox/data_providers/models/ErrorViewModel.dart';
-import 'package:xturbox/data_providers/models/ResponseViewModel.dart';
+import 'package:Fulgox/data_providers/models/ErrorViewModel.dart';
+import 'package:Fulgox/data_providers/models/ResponseViewModel.dart';
 
 import 'Constants.dart';
 import 'LocalKeys.dart';

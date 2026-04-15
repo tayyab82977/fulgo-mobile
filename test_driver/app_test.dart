@@ -1,11 +1,11 @@
 // import 'dart:io';
 // import 'package:flutter_driver/flutter_driver.dart';
-// import 'package:xturbox/utilities/isolates_workaround.dart';
+// import 'package:Fulgox/utilities/isolates_workaround.dart';
 // import 'package:test/test.dart';
 // import 'package:faker/faker.dart';
 //
 // void main() {
-//   group('Xturbo App', () {
+//   group('Fulgo App', () {
 //     // First, define the Finders and use them to locate widgets from the
 //     // test suite. Note: the Strings provided to the `byValueKey` method must
 //     // be the same as the Strings we used for the Keys in step 1.

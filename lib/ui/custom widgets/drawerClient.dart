@@ -1,40 +1,67 @@
 import 'dart:convert';
 import 'package:version/version.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/Client/invoicesScreen.dart';
-import 'package:xturbox/ui/Client/tickets_add.dart';
-import 'package:xturbox/ui/Client/tickets_screen.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/push_nofitications.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/invoicesScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/tickets_add.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/tickets_screen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/push_nofitications.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/drawerClient_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
-import 'package:xturbox/blocs/events/drawerClient_events.dart';
-import 'package:xturbox/blocs/states/drawerClient_states.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:Fulgox/controllers/drawer_client_controller.dart';
+import 'package:Fulgox/controllers/auth_controller.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/Client/addressScreen.dart';
-import 'package:xturbox/ui/Client/bankScreen.dart';
-import 'package:xturbox/ui/Client/clientPayments.dart';
-import 'package:xturbox/ui/Client/shipmentTracking.dart';
-import 'package:xturbox/ui/custom%20widgets/NetworkErrorView.dart';
-import 'package:xturbox/ui/Client/editProfile.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/addressScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/bankScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/clientPayments.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/shipmentTracking.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom%20widgets/NetworkErrorView.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/Client/editProfile.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import '../Client/MyOrders.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../common/dashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'custom_loading.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class ClientDrawerWidget extends StatefulWidget {
   double? width;
@@ -51,7 +78,8 @@ class ClientDrawerWidget extends StatefulWidget {
 
 class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
   UserRepository userRepository = UserRepository();
-  AuthenticationBloc authenticationBloc = AuthenticationBloc();
+  final AuthController _authController = Get.find<AuthController>();
+  final DrawerClientController _drawerClientController = Get.put(DrawerClientController());
   ProfileDataModel dashboardDataModel = ProfileDataModel();
   Version currentVersion = Version.parse(Constants.appVersion);
   late Version latestVersion;
@@ -74,7 +102,7 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
               ? true
               : false;
           showNoteAddress =
-          (dashboardDataModel.addresses?.length ?? 0) > 0 ? false : true;
+              (dashboardDataModel.addresses?.length ?? 0) > 0 ? false : true;
         } catch (e) {}
       });
     }
@@ -107,8 +135,6 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
     appVersion = Constants.appVersion;
     super.initState();
   }
-
-  DrawerClientBloc drawerClientBloc = DrawerClientBloc();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -473,11 +499,10 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                         controller: _reasonController,
                       ),
                       actions: [
-                        TextButton(
+                        CustomButton(
                           child: Text('Send'.tr()),
                           onPressed: () {
-                            drawerClientBloc
-                                .add(CallCS(reason: _reasonController.text));
+                            _drawerClientController.callCstSupport(_reasonController.text);
                             Navigator.pop(context);
                           },
                         ),
@@ -586,17 +611,56 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
           : Container()
     ];
 
-    return BlocProvider(
-      create: (context) => DrawerClientBloc(),
-      child: BlocConsumer<DrawerClientBloc, DrawerClientStates>(
-        bloc: drawerClientBloc,
-        builder: (context, state) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: Colors.white.withOpacity(0.8),
-            ),
-            child: Drawer(
-              child: Column(
+    return Obx(() {
+      if (_drawerClientController.success.value) {
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            _drawerClientController.success.value = false;
+            showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (context) {
+                  return StatefulBuilder(
+                    builder: (context, setState2) {
+                      return AlertDialog(
+                        title: Column(
+                          children: [
+                            Text(
+                              'Request sent successfully!'.tr(),
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          CustomButton(
+                            child: Text('OK'.tr()),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                });
+          });
+      }
+
+      if (_drawerClientController.errorMessage.value != '') {
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+              String error = _drawerClientController.errorMessage.value;
+              _drawerClientController.errorMessage.value = '';
+              ComFunctions.showToast(text: error.tr());
+          });
+      }
+
+      return Theme(
+        data: Theme.of(context).copyWith(
+          canvasColor: Colors.white.withOpacity(0.8),
+        ),
+        child: Drawer(
+          child: Stack(
+            children: [
+              Column(
                 children: [
                   Expanded(
                     child: Container(
@@ -637,7 +701,7 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                                   ),
                                   Flexible(
                                     child: AutoSizeText(
-                                      SavedData.profileDataModel.name ?? '',
+                                      SavedData.profileDataModel!.name ?? '',
                                       maxLines: 2,
                                       wrapWords: true,
                                       textAlign: TextAlign.center,
@@ -651,7 +715,7 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                               ),
                             ),
                           ),
-                          SavedData.profileDataModel.member_pin != null
+                          SavedData.profileDataModel!.member_pin != null
                               ? EasyLocalization.of(context)!.currentLocale ==
                                       Locale("en")
                                   ? Row(
@@ -666,7 +730,7 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                                                   Colors.grey.withOpacity(0.8)),
                                         ),
                                         Text(
-                                          "${SavedData.profileDataModel.member_pin}",
+                                          "${SavedData.profileDataModel!.member_pin}",
                                           style: TextStyle(
                                               fontSize: 13,
                                               color:
@@ -681,7 +745,7 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "${SavedData.profileDataModel.member_pin}",
+                                            "${SavedData.profileDataModel!.member_pin}",
                                             style: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.grey
@@ -699,44 +763,33 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                                     )
                               : Container(),
                           Center(
-                            child: FlatButton.icon(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () async {
-                                  print("logout");
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                print("logout");
 
-                                  try {
-                                    await PushNotificationManager
-                                        .firebaseMessaging
-                                        .setAutoInitEnabled(false);
-                                    await PushNotificationManager
-                                        .firebaseMessaging
-                                        .deleteToken();
-                                  } catch (e) {
-                                    print(e);
-                                  }
-                                  print("logout");
-                                  authenticationBloc.add(LoggedOut());
-                                  Future.delayed(
-                                      const Duration(milliseconds: 1), () {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            ChooseLanguageScreen(),
-                                      ),
-                                      (route) => false,
-                                    );
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.logout,
-                                  size: 18,
-                                  color: Colors.red,
-                                ),
-                                label: Text(
-                                  'Log Out'.tr(),
-                                  style: TextStyle(color: Colors.red),
-                                )),
+                                try {
+                                  await PushNotificationManager
+                                      .firebaseMessaging
+                                      .setAutoInitEnabled(false);
+                                  await PushNotificationManager
+                                      .firebaseMessaging
+                                      .deleteToken();
+                                } catch (e) {
+                                  print(e);
+                                }
+                                print("logout");
+                                _authController.logout();
+                              },
+                              icon: Icon(
+                                Icons.logout,
+                                size: 18,
+                                color: Colors.red,
+                              ),
+                              label: Text('Log Out'.tr(),
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  )),
+                            ),
                           ),
                           Expanded(
                             child: ListView.builder(
@@ -753,95 +806,18 @@ class _ClientDrawerWidgetState extends State<ClientDrawerWidget> {
                   ),
                 ],
               ),
-            ),
-          );
-        },
-        listener: (context, state) {
-          if (state is DrawerClientSuccess) {
-            Navigator.pop(context);
-            showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) {
-                  return StatefulBuilder(
-                    builder: (context, setState2) {
-                      return AlertDialog(
-                        title: Column(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/images/success.svg",
-                              height: 30,
-                            ),
-                          ],
-                        ),
-                        content: Text(
-                          'Your request has been sent successfully we will contact you as soon as possible'
-                              .tr(),
-                        ),
-                        actions: [
-                          TextButton(
-                            child: Text('ok'.tr()),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                });
-          }
-          if (state is DrawerClientLoading) {
-            showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) {
-                  return AlertDialog(
-                    content: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('Loading...'.tr()),
-                        Container(
-                            width: 20,
-                            height: 20,
-                            child: CustomLoading()),
-                      ],
+              if (_drawerClientController.isLoading.value)
+                 Positioned.fill(
+                    child: Container(
+                      color: Colors.black26,
+                      child: Center(child: CustomLoading()),
                     ),
-                  );
-                });
-          }
-          if (state is DrawerClientError) {
-            if (state.error == "TIMEOUT") {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return NetworkErrorView();
-                  });
-              Future.delayed(Duration(seconds: 2), () {
-                Navigator.pop(context);
-              });
-            } else if (state.error == "general") {
-              GeneralHandler.handleGeneralError(context);
-            } else {
-              Navigator.pop(context);
-              showDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (context) {
-                    return AlertDialog(
-                      content:
-                          Text('Something went wrong please try again'.tr()),
-                    );
-                  });
-              Future.delayed(Duration(seconds: 2), () {
-                Navigator.pop(context);
-              });
-            }
-          }
-        },
-      ),
-    );
+                 )
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
 

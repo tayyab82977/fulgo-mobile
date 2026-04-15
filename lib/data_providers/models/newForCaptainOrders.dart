@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
 
 class NewForCapOrders {
 

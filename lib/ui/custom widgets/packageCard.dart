@@ -2,12 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/custom%20widgets/dialog.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/ui/custom%20widgets/dialog.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 
 class PackageCard extends StatefulWidget {
 

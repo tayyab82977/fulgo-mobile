@@ -167,7 +167,7 @@
 //
 
 import 'package:equatable/equatable.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
 
 // @override
 // List<Object> get props => [id , barcode , stamp , member , memberName , senderName , senderPhone , pickupTime , pickupAddress ,

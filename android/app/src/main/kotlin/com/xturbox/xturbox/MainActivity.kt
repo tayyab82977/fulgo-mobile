@@ -1,4 +1,4 @@
-package com.xturbox.xturbox
+package com.bytes.fulgo
 
 import io.flutter.embedding.android.FlutterActivity
 

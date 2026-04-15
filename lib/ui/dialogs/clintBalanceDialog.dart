@@ -1,20 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 
 class ClientBalanceDialog {
   static showClientBalanceDialog(
       ClientBalanceModel? memberBalanceModel, BuildContext context) {
     String pricingOutside = '';
     String pricingInside = '';
-    String priceInside =
-        SavedData.resourcesData.priceInside ?? "";
-    String priceOutside =
-        SavedData.resourcesData.priceOutside ?? "";
+    String priceInside = SavedData.resourcesData.priceInside ?? "";
+    String priceOutside = SavedData.resourcesData.priceOutside ?? "";
     bool existInPricing = false;
     if ((memberBalanceModel?.pricing?.length ?? 0) > 1) {
       existInPricing = true;
@@ -27,7 +25,8 @@ class ClientBalanceDialog {
         barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
             content: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -42,20 +41,20 @@ class ClientBalanceDialog {
                       (memberBalanceModel?.balance ?? 0) > 0
                           ? Flexible(
                               child: Text(
-                              memberBalanceModel?.balance.toString() ?? "",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green),
-                            ))
+                                  memberBalanceModel?.balance.toString() ?? "",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green,
+                                  )))
                           : Flexible(
                               child: Text(
-                              memberBalanceModel?.balance.toString() ?? "",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red),
-                            )),
+                                  memberBalanceModel?.balance.toString() ?? "",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ))),
                       SizedBox(
                         width: 5,
                       ),
@@ -161,16 +160,18 @@ class ClientBalanceDialog {
                     width: MediaQuery.of(context).size.width,
                     // height: 60,
                     child: ListView.builder(
-                        itemCount: memberBalanceModel?.packageOffer?.length ?? 0,
+                        itemCount:
+                            memberBalanceModel?.packageOffer?.length ?? 0,
                         itemBuilder: (context, i) {
-                          return offerCard(memberBalanceModel?.packageOffer?[i]);
+                          return offerCard(
+                              memberBalanceModel?.packageOffer?[i]);
                         }),
                   ),
                 )
               ],
             ),
             actions: [
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -211,62 +212,16 @@ class ClientBalanceDialog {
                       ),
                     ),
                     child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                      child: Text(
-                        "Distance".tr(),
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      ),
-                    )),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
+                          padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
                           child: Text(
-                                offer?.distance.toString() ?? "",
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              )
-
-                        ),
-                      ),
+                            "Distance".tr(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          )),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 8.0, top: 4.0, left: 8.0, bottom: 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    decoration: ShapeDecoration(
-                      color: Constants.capDarkPurple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                    child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                      child: Text(
-                        "Packaging".tr(),
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      ),
-                    )),
                   ),
                   SizedBox(
                     width: 8,
@@ -282,10 +237,12 @@ class ClientBalanceDialog {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
-                            child: Text(
-                              offer?.package ?? "",
-                              style: TextStyle(fontSize: 15, color: Colors.black),
-                            )),
+                          child: Text(offer?.distance.toString() ?? "",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              )),
+                        ),
                       ),
                     ),
                   ),
@@ -306,13 +263,67 @@ class ClientBalanceDialog {
                       ),
                     ),
                     child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                      child: Text(
-                        "Weight".tr(),
-                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+                          child: Text(
+                            "Packaging".tr(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          )),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: ShapeDecoration(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
-                    )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(offer?.package ?? "",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              )),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  right: 8.0, top: 4.0, left: 8.0, bottom: 4),
+              child: Row(
+                children: [
+                  Container(
+                    width: 100,
+                    decoration: ShapeDecoration(
+                      color: Constants.capDarkPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: Center(
+                      child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+                          child: Text(
+                            "Weight".tr(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          )),
+                    ),
                   ),
                   SizedBox(
                     width: 8,
@@ -328,13 +339,15 @@ class ClientBalanceDialog {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
-                            child: Text(
-                              offer?.weight ?? "",
-                              style: TextStyle(fontSize: 15, color: Colors.black),
-                            )),
+                          child: Text(offer?.weight ?? "",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              )),
+                        ),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -352,13 +365,16 @@ class ClientBalanceDialog {
                       ),
                     ),
                     child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                      child: Text(
-                        "Count".tr(),
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      ),
-                    )),
+                      child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+                          child: Text(
+                            "Count".tr(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          )),
+                    ),
                   ),
                   SizedBox(
                     width: 8,
@@ -374,13 +390,15 @@ class ClientBalanceDialog {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
-                            child: Text(
-                              offer?.count.toString() ?? "",
-                              style: TextStyle(fontSize: 15, color: Colors.black),
-                            )),
+                          child: Text(offer?.count.toString() ?? "",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              )),
+                        ),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             )

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
 
 class ResourcesData {
 

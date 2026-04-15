@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
 class CaptainAppBar extends StatefulWidget {
   GlobalKey<ScaffoldState> drawerKey ;
   String screenName;
@@ -69,7 +69,7 @@ class _CaptainAppBarState extends State<CaptainAppBar> {
                       // ),
 
                       // height: mySize.height / 100 * 4,
-                      child: Image.asset('assets/images/xturbo_white_icon.png', height: mySize.height / 100 * 3,)
+                      child: Image.asset('assets/images/Fulgo_white_icon.png', height: mySize.height / 100 * 3,)
                       // child: ClipRRect(
                       //   borderRadius: BorderRadius.all(Radius.circular(20)),//add border radius here
                       //   child: Icon(

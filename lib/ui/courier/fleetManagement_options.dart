@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/courier/fuelManagement.dart';
-import 'package:xturbox/ui/courier/captainMyReserves.dart';
-import 'package:xturbox/ui/courier/car_services.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerDriver.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/courier/fuelManagement.dart';
+import 'package:Fulgox/ui/courier/car_services.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerDriver.dart';
 
-import 'captainMyPickup.dart';
 import '../custom widgets/CaptainAppBar.dart';
 import '../custom widgets/drawerCaptain.dart';
 import 'package:easy_localization/easy_localization.dart';

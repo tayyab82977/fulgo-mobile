@@ -1,16 +1,27 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/services.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/ui/custom%20widgets/counterWidget.dart';
-// import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom%20widgets/counterWidget.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+// import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import 'captainOrdersList.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/CaptainAppBar.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/drawerCaptain.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class CaptianEditShipment extends StatefulWidget {
   ResourcesData? resourcesData;
@@ -49,7 +60,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
   double total = 0;
   int noOfCartons = 0;
   int noOfPieces = 1;
-  ErCity? receiverCityClass ;
+  ErCity? receiverCityClass;
 
   setPackageData() {
     senderCities.addAll(widget.resourcesData!.city!
@@ -68,15 +79,14 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
     if (widget.ordersDataModel!.noOfCartoons == null) {
       noOfCartons = 0;
     } else {
-      var cartons = int.tryParse( widget.ordersDataModel!.noOfCartoons!);
-     noOfCartons = cartons ?? 0 ;
+      var cartons = int.tryParse(widget.ordersDataModel!.noOfCartoons!);
+      noOfCartons = cartons ?? 0;
     }
     if (widget.ordersDataModel!.quantity == null) {
-      noOfPieces = 1 ;
+      noOfPieces = 1;
     } else {
-      var pieces = int.tryParse( widget.ordersDataModel!.quantity!);
-      noOfPieces = pieces ?? 0 ;
-
+      var pieces = int.tryParse(widget.ordersDataModel!.quantity!);
+      noOfPieces = pieces ?? 0;
     }
     if (widget.ordersDataModel!.fragile == '1') {
       checkedValue = true;
@@ -92,13 +102,13 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
     }
 
     for (int i = 0; i < widget.resourcesData!.city!.length; i++) {
-      if (widget.ordersDataModel?.deliverCityId == widget.resourcesData!.city![i].id) {
-        receiverCityClass = widget.resourcesData!.city![i] ;
-
+      if (widget.ordersDataModel?.deliverCityId ==
+          widget.resourcesData!.city![i].id) {
+        receiverCityClass = widget.resourcesData!.city![i];
       }
     }
-    if(_currentSelectedPackaging?.name == null){
-      _currentSelectedPackaging = widget.resourcesData!.packaging?.first ;
+    if (_currentSelectedPackaging?.name == null) {
+      _currentSelectedPackaging = widget.resourcesData!.packaging?.first;
     }
     for (int i = 0; i < senderCities.length; i++) {
       for (int x = 0;
@@ -115,7 +125,8 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
       for (int x = 0;
           x < receiverCities.elementAt(i).neighborhoods!.length;
           x++) {
-        if (widget.ordersDataModel!.deliverNeighborhood == receiverCities.elementAt(i).neighborhoods!.elementAt(x).id) {
+        if (widget.ordersDataModel!.deliverNeighborhood ==
+            receiverCities.elementAt(i).neighborhoods!.elementAt(x).id) {
           receiverCity = receiverCities.elementAt(i).id;
         }
       }
@@ -153,7 +164,8 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
           child: Column(
             children: [
               CaptainAppBar(
-                drawerKey: _drawerKey, screenName: 'Edit shipment'.tr(),
+                drawerKey: _drawerKey,
+                screenName: 'Edit shipment'.tr(),
               ),
               SizedBox(
                 height: 25,
@@ -181,7 +193,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                             ? ButtonTheme(
                                 minWidth: 78,
                                 height: 40,
-                                child: FlatButton(
+                                child: CustomButton(
                                   padding: EdgeInsets.all(0),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
@@ -223,7 +235,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                             : ButtonTheme(
                                 minWidth: 78,
                                 height: 40,
-                                child: FlatButton(
+                                child: CustomButton(
                                   padding: EdgeInsets.all(0),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
@@ -296,10 +308,11 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                       width: screenWidth,
                       // height: 200,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(25),
-                              topLeft: Radius.circular(25)),
-                          color: Constants.greyColor),
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25)),
+                        color: Constants.greyColor,
+                      ),
                     ),
                     Positioned.fill(
                       child: Align(
@@ -465,23 +478,31 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 10,),
+                            SizedBox(
+                              height: 10,
+                            ),
 
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Flexible(child: Text("Number of Pieces".tr(),style: TextStyle(fontSize: 16,color: Colors.blue),)),
-                                  // SizedBox(width: 40,),
+                                  Flexible(
+                                    child: Text("Number of Pieces".tr(),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.blue,
+                                        )),
+                                  ), // SizedBox(width: 40,),
                                   CounterWidget(
-                                    counter: (e){
-                                      noOfPieces = e ;
+                                    counter: (e) {
+                                      noOfPieces = e;
                                     },
-                                    backgroundColor: Colors.grey.withOpacity(0.1),
+                                    backgroundColor:
+                                        Colors.grey.withOpacity(0.1),
                                     initialValue: noOfPieces,
-
-
                                   ),
                                 ],
                               ),
@@ -500,8 +521,8 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                // border: Border.all(color: Colors.grey.withOpacity(0.4))
-                              ),
+                                  // border: Border.all(color: Colors.grey.withOpacity(0.4))
+                                  ),
                               child: Column(
                                 children: [
                                   Padding(
@@ -512,17 +533,21 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                         decoration: BoxDecoration(
                                             color: Colors.white,
                                             border: Border.all(
-                                                color: Colors.grey.withOpacity(0.2)),
-                                            borderRadius: BorderRadius.circular(12)),
+                                                color: Colors.grey
+                                                    .withOpacity(0.2)),
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 5, horizontal: 10),
                                           child: DropdownButtonHideUnderline(
                                             child: DropdownButton<Packaging>(
-                                              items: widget.resourcesData!.packaging!
-                                                  .map(
-                                                      (Packaging dropDownStringItem) {
-                                                return DropdownMenuItem<Packaging>(
+                                              items: widget
+                                                  .resourcesData!.packaging!
+                                                  .map((Packaging
+                                                      dropDownStringItem) {
+                                                return DropdownMenuItem<
+                                                    Packaging>(
                                                   value: dropDownStringItem,
                                                   child: Text(
                                                     dropDownStringItem.name!,
@@ -549,20 +574,28 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                   Column(
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 0),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Flexible(child: Text("Number of Cartoons".tr(),style: TextStyle(fontSize: 16,color: Color(0xffCE5C5C)),)),
+                                            Flexible(
+                                                child: Text(
+                                              "Number of Cartoons".tr(),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Color(0xffCE5C5C)),
+                                            )),
                                             // SizedBox(width: 40,),
                                             CounterWidget(
-                                              counter: (e){
-                                                noOfCartons = e ;
+                                              counter: (e) {
+                                                noOfCartons = e;
                                               },
-                                              backgroundColor: Color(0xffCE5C5C).withOpacity(0.3),
+                                              backgroundColor: Color(0xffCE5C5C)
+                                                  .withOpacity(0.3),
                                               initialValue: noOfCartons,
                                               acceptZero: true,
-
                                             ),
                                           ],
                                         ),
@@ -575,10 +608,6 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                 ],
                               ),
                             ),
-
-
-
-
 
                             Padding(
                                 padding: EdgeInsets.symmetric(
@@ -627,7 +656,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                             //     height: 40,
                             //     decoration: BoxDecoration(
                             //         color: Colors.white,
-                            //       border: Border.all(color: Colors.grey),
+                            //       border: Border.all(color: Colors.grey,
                             //       borderRadius: BorderRadius.all(Radius.circular(12))
                             //     ),
                             //     child: Row(
@@ -658,13 +687,13 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                             ),
 
                             ButtonTheme(
-                              child: FlatButton(
+                              child: CustomButton(
                                 padding: EdgeInsets.all(0),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12)),
-                                highlightColor: Constants.capPurple,
                                 onPressed: () {
-                                  if(receiverCityClass?.cod == "0" && _currentSelectedPackaging?.id == "4"){
+                                  if (receiverCityClass?.cod == "0" &&
+                                      _currentSelectedPackaging?.id == "4") {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -676,7 +705,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                                 style: TextStyle(fontSize: 15),
                                               ),
                                               actions: [
-                                                TextButton(
+                                                CustomButton(
                                                   child: Text('ok'.tr()),
                                                   onPressed: () {
                                                     Navigator.pop(context);
@@ -684,8 +713,7 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                                 ),
                                               ]);
                                         });
-
-                                  }else{
+                                  } else {
                                     setState(() {
                                       widget.ordersDataModel!.packaging =
                                           _currentSelectedPackaging!.id;
@@ -703,8 +731,10 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                       widget.ordersDataModel!.length =
                                           _packageLengthController.text;
                                       widget.ordersDataModel!.accepted = true;
-                                      widget.ordersDataModel!.noOfCartoons = noOfCartons.toString();
-                                      widget.ordersDataModel!.quantity = noOfPieces.toString();
+                                      widget.ordersDataModel!.noOfCartoons =
+                                          noOfCartons.toString();
+                                      widget.ordersDataModel!.quantity =
+                                          noOfPieces.toString();
 
                                       if (checkedValue!) {
                                         widget.ordersDataModel!.fragile = '1';
@@ -718,24 +748,17 @@ class _CaptianEditShipmentState extends State<CaptianEditShipment> {
                                               builder: (context) =>
                                                   CaptainOrdersListScreen(
                                                       resourcesData:
-                                                      widget.resourcesData,
+                                                          widget.resourcesData,
                                                       orderList:
-                                                      widget.ordersList,
+                                                          widget.ordersList,
                                                       reserved: true,
                                                       index: 1)));
                                     });
-
-
-
-
-
                                   }
-
-
-
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   child: Container(
                                     width: screenWidth,
                                     height: 40,

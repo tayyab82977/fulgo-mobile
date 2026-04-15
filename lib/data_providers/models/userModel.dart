@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
 
 class UserModel extends Equatable {
   String phone ;

@@ -5,41 +5,37 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+// MIGRATION: import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/getOrders_bloc.dart';
-import 'package:xturbox/blocs/bloc/postOrders_bloc.dart';
-import 'package:xturbox/blocs/events/gerOrders_events.dart';
-import 'package:xturbox/blocs/events/postOrder_events.dart';
-import 'package:xturbox/blocs/states/postOrders_states.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
-import 'package:xturbox/data_providers/models/postOrderData.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/Client/AddingNewOrderSuccess.dart';
-import 'package:xturbox/ui/Client/paymentMethod_dialog.dart';
-import 'package:xturbox/ui/custom%20widgets/dialog.dart';
-import 'package:xturbox/ui/custom%20widgets/home_button.dart';
-import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/ui/custom%20widgets/customCheckBox.dart';
-import 'package:xturbox/ui/custom%20widgets/packageCard.dart';
-import 'package:xturbox/ui/common/dashboard.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/controllers/post_order_controller.dart';
+import 'package:Fulgox/controllers/get_orders_controller.dart';
+import 'package:get/get.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/postOrderData.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/Client/AddingNewOrderSuccess.dart';
+import 'package:Fulgox/ui/Client/paymentMethod_dialog.dart';
+import 'package:Fulgox/ui/custom%20widgets/dialog.dart';
+import 'package:Fulgox/ui/custom%20widgets/home_button.dart';
+import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/custom%20widgets/customCheckBox.dart';
+import 'package:Fulgox/ui/custom%20widgets/packageCard.dart';
+import 'package:Fulgox/ui/common/dashboard.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
 import 'MyOrders.dart';
 import 'dart:ui' as ui;
 import '../custom widgets/NetworkErrorView.dart';
@@ -56,14 +52,14 @@ class AddOrder extends StatefulWidget {
   ResourcesData? resourcesData;
   ProfileDataModel? dashboardDataModelNew;
   String packagingType;
-  GetOrdersBloc? getOrdersBloc ;
+  GetOrdersController? getOrdersController ;
   OrdersDataModelMix? ordersDataModel ;
   bool fromHomeScreen = false ;
   AddOrder(
       {this.resourcesData,
       this.dashboardDataModelNew,
       this.ordersDataModel,
-      this.getOrdersBloc,
+      this.getOrdersController,
       this.fromHomeScreen = false,
       this.packagingType = "noPackaging"});
   @override
@@ -112,23 +108,23 @@ class _AddOrderState extends State<AddOrder> {
   double? width, height;
   double? screenWidth, screenHeight;
   List<Packages> packagesList = [];
-  PostOrderBloc postOrderBloc = PostOrderBloc();
+  final PostOrderController postOrderController = Get.put(PostOrderController());
   double totalPrice = 0;
   PostOrderDataModel _postOrderDataModel = PostOrderDataModel();
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   List<double> sumPrice = [];
   // LocationResult _pickedLocation;
-  PickResult? _pickedLocation;
+  // MIGRATION: PickResult? _pickedLocation;
   bool locationSelected = false;
   bool locationSelectedReceiver = false;
   // LocationResult _delivePickedLocation;
-  PickResult? _deliverPickedLocation;
+  // MIGRATION: PickResult? _deliverPickedLocation;
   bool checkedValue2 = false;
   String? pickuplMaplLink;
   String? deliverMapLink;
   String? mapUrlSender;
   String? mapUrlReceiver;
-  AuthenticationBloc authenticationBloc = AuthenticationBloc();
+  
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   UserRepository userRepository = UserRepository();
   ProfileDataModel dashboardDataModel = ProfileDataModel();
@@ -287,7 +283,7 @@ class _AddOrderState extends State<AddOrder> {
                     style: TextStyle(fontSize: 15),
                   ),
                   actions: [
-                    TextButton(
+                    ElevatedButton(
                       child: Text('ok'.tr()),
                       onPressed: () {
                         Navigator.pop(context);
@@ -301,15 +297,14 @@ class _AddOrderState extends State<AddOrder> {
         if (locationSelected == false ||
             mapUrlSender == '' ||
             mapUrlSender == null) {
-          _drawerKey.currentState!.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 'Please Select Your Pick Location'.tr(),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white,
               ),
-              backgroundColor: Colors.red,
             ),
-          );
+          ));
         } else {
           if (packagesList.length == 0) {
             showDialog(
@@ -318,7 +313,7 @@ class _AddOrderState extends State<AddOrder> {
                   return AlertDialog(
                       title: Text('Pleas Add your packages'.tr()),
                       actions: [
-                        TextButton(
+                        ElevatedButton(
                           child: Text('ok'.tr()),
                           onPressed: () {
                             Navigator.pop(context);
@@ -356,7 +351,7 @@ class _AddOrderState extends State<AddOrder> {
                           style: TextStyle(fontSize: 15),
                         ),
                         actions: [
-                          TextButton(
+                          ElevatedButton(
                             child: Text('ok'.tr()),
                             onPressed: () {
                               // _currentReceiverCitySelected = newValue;
@@ -403,7 +398,7 @@ class _AddOrderState extends State<AddOrder> {
               _postOrderDataModel.deductFromCod = deductFromCod ? "1" : "0";
 
               if(widget.ordersDataModel == null){
-                postOrderBloc.add(PostNewOrder(postOrderDataModel: _postOrderDataModel));
+                postOrderController.postNewOrder(postOrder: _postOrderDataModel);
               }else {
                 editedOrderModel.width = '0';
                 editedOrderModel.height = '0';
@@ -431,7 +426,7 @@ class _AddOrderState extends State<AddOrder> {
                 editedOrderModel.cod = packagesList.first.cod ;
                 editedOrderModel.quantity = packagesList.first.quantity ;
                 editedOrderModel.comment = packagesList.first.comment ;
-                postOrderBloc.add(EditOrder(ordersDataModelMix: editedOrderModel));
+                postOrderController.editOrder(ordersDataModelMix: editedOrderModel);
               }
 
             }
@@ -444,7 +439,7 @@ class _AddOrderState extends State<AddOrder> {
             //         content: Text('please select the sender location on google map'.tr() , style: TextStyle(
             //             color: Colors.white
             //         ),),
-            //         backgroundColor: Colors.red,
+            //         color: Colors.red,
             //       ),
             //     );
             //   });
@@ -460,7 +455,7 @@ class _AddOrderState extends State<AddOrder> {
       }
     } else {
       _onWidgetDidBuild(context, () {
-        _drawerKey.currentState!.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Container(
               width: screenWidth,
@@ -730,6 +725,94 @@ class _AddOrderState extends State<AddOrder> {
     } catch (e) {
       // postOrderBloc.add(PostOrdersEventGenerateError());
     }
+
+    ever(postOrderController.success, (bool success) {
+      if (success) {
+        final progress = ProgressHUD.of(context);
+        progress?.dismiss();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  SuccessOrderScreen(
+                    dashboardDataModel: widget.dashboardDataModelNew,
+                    resourcesData: widget.resourcesData,
+                    fromHomeScreen: widget.fromHomeScreen,
+                    getOrdersController: widget.getOrdersController,
+                  )),
+        );
+      }
+    });
+
+    ever(postOrderController.editSuccess, (bool success) {
+      if (success) {
+        final progress = ProgressHUD.of(context);
+        progress?.dismiss();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    MyOrdersScreen(
+                      dashboardDataModel:
+                          widget.dashboardDataModelNew,
+                      resourcesData: widget.resourcesData,
+                    )),
+            (route) => false);
+      }
+    });
+
+    ever(postOrderController.isLoading, (bool loading) {
+      final progress = ProgressHUD.of(context);
+      if (loading) {
+        progress?.show();
+      } else {
+        progress?.dismiss();
+      }
+    });
+
+    ever(postOrderController.errorMessage, (String error) {
+      if (error.isNotEmpty && !postOrderController.isLoading.value) {
+        // isLoading check to avoid dismissing too early or conflict
+        if (error == "TIMEOUT") {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return NetworkErrorView();
+              });
+          Future.delayed(Duration(seconds: 2), () {
+            Navigator.pop(context);
+          });
+        } else if (error == "invalidToken") {
+          GeneralHandler.handleInvalidToken(context);
+        } else if (error == 'needUpdate') {
+          GeneralHandler.handleNeedUpdateState(context);
+        } else if (error == "general") {
+          GeneralHandler.handleGeneralError(context);
+        } else {
+           if(postOrderController.errorList.isNotEmpty) {
+               _onWidgetDidBuild(context, () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Container(
+                      width: screenWidth,
+                      height: screenHeight! * 0.1,
+                      child: ListView.builder(
+                        itemCount: postOrderController.errorList.length,
+                        itemBuilder: (context, i) {
+                          return Text(postOrderController.errorList[i].toString());
+                        },
+                      ),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              });
+           }
+        }
+      }
+    });
+
     super.initState();
   }
 
@@ -749,7 +832,7 @@ class _AddOrderState extends State<AddOrder> {
     receiverFlatFocus.dispose();
     zoneFocus.dispose();
     zoneFocusReceiver.dispose();
-    postOrderBloc.close();
+    // postOrderBloc.close();
     super.dispose();
   }
 
@@ -772,9 +855,7 @@ class _AddOrderState extends State<AddOrder> {
     return ProgressHUD(
       barrierEnabled: false,
         backgroundColor: Constants.blueColor,
-      child: BlocProvider(
-        create: (context) => PostOrderBloc(),
-        child: Scaffold(
+      child: Scaffold(
           backgroundColor: Colors.white,
           key: _drawerKey,
           body: Container(
@@ -923,12 +1004,8 @@ class _AddOrderState extends State<AddOrder> {
                                    ButtonTheme(
                                      minWidth: 0,
                                      height: 0,
-                                     child: FlatButton(
-                                       padding: EdgeInsets.all(1),
-                                       minWidth: 0,
-                                       height: 0,
-                                       materialTapTargetSize:
-                                       MaterialTapTargetSize.shrinkWrap,
+                                     child: ElevatedButton(
+                                     
                                        onPressed: () {
                                          Navigator.pop(context);
                                        },
@@ -961,98 +1038,7 @@ class _AddOrderState extends State<AddOrder> {
                                 SizedBox(
                                   height: screenHeight! * 0.04,
                                 ),
-                                BlocConsumer<PostOrderBloc, PostOrdersStates>(
-                                  bloc: postOrderBloc,
-                                  builder: (context, state) {
-                                    if (state is PostOrderInitial) {
-                                      return _buildAddOrderScreen(context);
-                                    } else if (state is PostOrderLoading) {
-                                      return _buildAddOrderScreen(context);
-                                    } else if (state is PostOrderError) {
-                                      return _buildAddOrderScreen(context);
-                                    } else if (state is PostOrderSuccess) {
-                                      return _buildAddOrderScreen(context);
-                                    }
-                                    return Container();
-                                  },
-                                  listener: (context, state) {
-                                    if (state is PostOrderSuccess) {
-                                      final progress = ProgressHUD.of(context);
-                                      progress?.dismiss();
-
-
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                SuccessOrderScreen(
-                                                  dashboardDataModel: widget.dashboardDataModelNew,
-                                                  resourcesData: widget.resourcesData,
-                                                  fromHomeScreen: widget.fromHomeScreen,
-                                                  getOrdersBloc: widget.getOrdersBloc,
-                                                )),
-                                      );
-                                    }
-                                    if (state is EditOrderSuccess) {
-                                      final progress = ProgressHUD.of(context);
-                                      progress?.dismiss();
-                                      Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  MyOrdersScreen(
-                                                    dashboardDataModel:
-                                                        widget.dashboardDataModelNew,
-                                                    resourcesData: widget.resourcesData,
-                                                  )),
-                                          (route) => false);
-                                    }
-                                    if (state is PostOrderError) {
-                                      final progress = ProgressHUD.of(context);
-                                      progress?.dismiss();
-                                      if (state.error == "TIMEOUT") {
-                                        showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (context) {
-                                              return NetworkErrorView();
-                                            });
-                                        Future.delayed(Duration(seconds: 2), () {
-                                          Navigator.pop(context);
-                                        });
-                                      } else if (state.error == "invalidToken") {
-                                        GeneralHandler.handleInvalidToken(context);
-                                      } else if (state.error == 'needUpdate') {
-                                        GeneralHandler.handleNeedUpdateState(context);
-                                      } else if (state.error == "general") {
-                                        GeneralHandler.handleGeneralError(context);
-                                      } else {
-                                        final progress = ProgressHUD.of(context);
-                                        progress?.dismiss();
-                                        _onWidgetDidBuild(context, () {
-                                          Scaffold.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Container(
-                                                width: screenWidth,
-                                                height: screenHeight! * 0.1,
-                                                child: ListView.builder(
-                                                  itemCount: state.errors!.length,
-                                                  itemBuilder: (context, i) {
-                                                    return Text(state.errors![i]!);
-                                                  },
-                                                ),
-                                              ),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        });
-                                      }
-                                    }
-                                    if (state is PostOrderLoading) {
-                                      final progress = ProgressHUD.of(context);
-                                      progress?.show();                                    }
-                                  },
-                                ),
+                                _buildAddOrderScreen(context),
                               ],
                             ),
                           ),
@@ -1067,7 +1053,6 @@ class _AddOrderState extends State<AddOrder> {
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -1268,8 +1253,8 @@ class _AddOrderState extends State<AddOrder> {
              ),
              mode: DateTimeFieldPickerMode.dateAndTime,
              dateFormat:DateFormat('yyyy-MM-dd hh:mm aaa') ,
-             onDateSelected: (DateTime value) {
-               pickupTime = value ;
+             onChanged: (DateTime? value) {
+               pickupTime = value! ;
              },
               onSaved: (value) {
                 pickupTime = value ?? DateTime.now() ;
@@ -1335,126 +1320,127 @@ class _AddOrderState extends State<AddOrder> {
                   SizedBox(
                     width: 5,
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: TypeAheadFormField(
-                      getImmediateSuggestions: false ,
-                      hideOnEmpty: true,
-                      hideOnError: true,
-                      suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                          color: Constants.blueColor,
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      textFieldConfiguration: TextFieldConfiguration(
-                          autofocus: false,
-                          decoration: kTextFieldDecoration2.copyWith(
-                              contentPadding: EdgeInsets.all(15),
-                              hintText: '5xx-xxx-xxx',
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(9),
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          controller: _receiverPhoneController
-                      ),
-                      validator: (String? value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your mobile'.tr();
-                        }
-                        if (!phoneValidation(value)) {
-                          return 'please enter a valid mobile number'
-                              .tr();
-                        }
-                        return null;
-                      },
-                      suggestionsCallback: (pattern) async {
-                        if(pattern.length > 3){
-                          return await EventsAPIs.getSuggestedAddress(pattern: pattern);
+                  // Expanded(
+                  //   flex: 3,
+                  //   child: TypeAheadFormField(
+                  //     getImmediateSuggestions: false ,
+                  //     hideOnEmpty: true,
+                  //     hideOnError: true,
+                  //     suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                  //         color: Constants.blueColor,
+                  //         borderRadius: BorderRadius.circular(12)
+                  //     ),
+                  //     textFieldConfiguration: TextFieldConfiguration(
+                  //         autofocus: false,
+                  //         decoration: kTextFieldDecoration2.copyWith(
+                  //             contentPadding: EdgeInsets.all(15),
+                  //             hintText: '5xx-xxx-xxx',
+                  //         ),
+                  //         keyboardType: TextInputType.number,
+                  //         inputFormatters: [
+                  //           LengthLimitingTextInputFormatter(9),
+                  //           FilteringTextInputFormatter.digitsOnly
+                  //         ],
+                  //         controller: _receiverPhoneController
+                  //     ),
+                  //     validator: (String? value) {
+                  //       if (value!.isEmpty) {
+                  //         return 'Please enter your mobile'.tr();
+                  //       }
+                  //       if (!phoneValidation(value)) {
+                  //         return 'please enter a valid mobile number'
+                  //             .tr();
+                  //       }
+                  //       return null;
+                  //     },
+                  //     suggestionsCallback: (pattern) async {
+                  //       if(pattern.length > 3){
+                  //         return await EventsAPIs.getSuggestedAddress(pattern: pattern);
 
-                        }
-                        return [];
-                      },
-                      noItemsFoundBuilder:(BuildContext context){
-                        return SizedBox();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return Column(
-                          children: [
-                            ListTile(
-                                title: Text(((suggestion as Map)['receiverName'] ?? ""),style: TextStyle(color: Colors.white), ),
-                                subtitle: Text(suggestion['receiverPhone'] ?? "",style: TextStyle(color: Colors.white))
-                            ),
-                            Divider(color: Colors.white, thickness: 2,)
-                          ],
-                        );
-                      },
-                      onSuggestionSelected: (suggestion) {
-                        _receiverNameController.text = (suggestion as Map)['receiverName'] ;
-                        _receiverPhoneController.text = suggestion['receiverPhone'] ;
-                        for(int i = 0 ; i < receiverCities.length ; i ++){
-                          if(suggestion['deliverCity'] == receiverCities[i].id){
-                            _currentReceiverCitySelected = receiverCities[i] ;
-                          }
-                        }
-                        for(int i = 0 ; i < (_currentReceiverCitySelected?.neighborhoods?.length ?? 0) ; i ++){
-                          if(suggestion['deliverNeighborhood'] == _currentReceiverCitySelected?.neighborhoods?[i].id){
-                            _currentZoneReceiver = _currentReceiverCitySelected?.neighborhoods?[i] ;
-                          }
-                        }
-                        mapUrlReceiver = suggestion['deliverMap'] ;
-                        if(mapUrlReceiver != null && mapUrlReceiver != "" ){
-                          locationSelectedReceiver = true ;
-                        }else {
-                          locationSelectedReceiver = false ;
-                        }
-                        setState(() {});
-                      },
+                  //       }
+                  //       return [];
+                  //     },
+                  //     noItemsFoundBuilder:(BuildContext context){
+                  //       return SizedBox();
+                  //     },
+                  //     itemBuilder: (context, suggestion) {
+                  //       return Column(
+                  //         children: [
+                  //           ListTile(
+                  //               title: Text(((suggestion as Map)['receiverName'] ?? ""),style: TextStyle(color: Colors.white, ),
+                  //               subtitle: Text(suggestion['receiverPhone'] ?? "",style: TextStyle(color: Colors.white))
+                  //           ),
+                  //           Divider(color: Colors.white, thickness: 2,)
+                  //         ],
+                  //       );
+                  //     },
+                  //     onSuggestionSelected: (suggestion) {
+                  //       _receiverNameController.text = (suggestion as Map)['receiverName'] ;
+                  //       _receiverPhoneController.text = suggestion['receiverPhone'] ;
+                  //       for(int i = 0 ; i < receiverCities.length ; i ++){
+                  //         if(suggestion['deliverCity'] == receiverCities[i].id){
+                  //           _currentReceiverCitySelected = receiverCities[i] ;
+                  //         }
+                  //       }
+                  //       for(int i = 0 ; i < (_currentReceiverCitySelected?.neighborhoods?.length ?? 0) ; i ++){
+                  //         if(suggestion['deliverNeighborhood'] == _currentReceiverCitySelected?.neighborhoods?[i].id){
+                  //           _currentZoneReceiver = _currentReceiverCitySelected?.neighborhoods?[i] ;
+                  //         }
+                  //       }
+                  //       mapUrlReceiver = suggestion['deliverMap'] ;
+                  //       if(mapUrlReceiver != null && mapUrlReceiver != "" ){
+                  //         locationSelectedReceiver = true ;
+                  //       }else {
+                  //         locationSelectedReceiver = false ;
+                  //       }
+                  //       setState(() {});
+                  //     },
 
-                    ),
-                    // child: TextFormField(
-                    //   key: const ValueKey('receiverPhone'),
-                    //   focusNode: receiverPhoneFocus,
-                    //   keyboardType: TextInputType.number,
-                    //   onChanged: (e) {
-                    //     if (startValidation) {
-                    //       _formKey.currentState!.validate();
-                    //     }
-                    //   },
-                    //   validator: (String? value) {
-                    //     if (value!.isEmpty) {
-                    //       return 'Please enter your mobile'.tr();
-                    //     }
-                    //     if (!phoneValidation(value)) {
-                    //       return 'please enter a valid mobile number'
-                    //           .tr();
-                    //     }
-                    //     return null;
-                    //   },
-                    //   inputFormatters: [
-                    //     LengthLimitingTextInputFormatter(9),
-                    //     FilteringTextInputFormatter.digitsOnly
-                    //   ],
-                    //   decoration: kTextFieldDecoration2.copyWith(
-                    //     labelText: 'phone number'.tr(),
-                    //     hintText: '5xx-xxx-xxx',
-                    //     border: null,
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderSide: BorderSide(
-                    //           color: Colors.transparent, width: 0.5),
-                    //       borderRadius:
-                    //           BorderRadius.all(Radius.circular(12.0)),
-                    //     ),
-                    //     focusedBorder: OutlineInputBorder(
-                    //       borderSide:
-                    //           BorderSide(color: Colors.blue, width: 0.5),
-                    //       borderRadius:
-                    //           BorderRadius.all(Radius.circular(12.0)),
-                    //     ),
-                    //   ),
-                    //   controller: _receiverPhoneController,
-                    // ),
-                  ),
+                  //   ),
+                  //   // child: TextFormField(
+                  //   //   key: const ValueKey('receiverPhone'),
+                  //   //   focusNode: receiverPhoneFocus,
+                  //   //   keyboardType: TextInputType.number,
+                  //   //   onChanged: (e) {
+                  //   //     if (startValidation) {
+                  //   //       _formKey.currentState!.validate();
+                  //   //     }
+                  //   //   },
+                  //   //   validator: (String? value) {
+                  //   //     if (value!.isEmpty) {
+                  //   //       return 'Please enter your mobile'.tr();
+                  //   //     }
+                  //   //     if (!phoneValidation(value)) {
+                  //   //       return 'please enter a valid mobile number'
+                  //   //           .tr();
+                  //   //     }
+                  //   //     return null;
+                  //   //   },
+                  //   //   inputFormatters: [
+                  //   //     LengthLimitingTextInputFormatter(9),
+                  //   //     FilteringTextInputFormatter.digitsOnly
+                  //   //   ],
+                  //   //   decoration: kTextFieldDecoration2.copyWith(
+                  //   //     labelText: 'phone number'.tr(),
+                  //   //     hintText: '5xx-xxx-xxx',
+                  //   //     border: null,
+                  //   //     enabledBorder: OutlineInputBorder(
+                  //   //       borderSide: BorderSide(
+                  //   //           color: Colors.transparent, width: 0.5),
+                  //   //       borderRadius:
+                  //   //           BorderRadius.all(Radius.circular(12.0)),
+                  //   //     ),
+                  //   //     focusedBorder: OutlineInputBorder(
+                  //   //       borderSide:
+                  //   //           BorderSide(color: Colors.blue, width: 0.5),
+                  //   //       borderRadius:
+                  //   //           BorderRadius.all(Radius.circular(12.0)),
+                  //   //     ),
+                  //   //   ),
+                  //   //   controller: _receiverPhoneController,
+                  //   // ),
+                  // ),
+             
                 ],
               ),
             )
@@ -1462,125 +1448,126 @@ class _AddOrderState extends State<AddOrder> {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: TypeAheadFormField(
-                      getImmediateSuggestions: false ,
-                      hideOnEmpty: true,
-                      hideOnError: true,
-                      suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                        color: Constants.blueColor,
-                        borderRadius: BorderRadius.circular(12)
-                      ),
-                      textFieldConfiguration: TextFieldConfiguration(
-                          autofocus: false,
-                          decoration: kTextFieldDecoration2.copyWith(
-                              contentPadding: EdgeInsets.all(15),
-                            hintText: '5xx-xxx-xxx',),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(9),
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          controller: _receiverPhoneController
-                      ),
-                      validator: (String? value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your mobile'.tr();
-                        }
-                        if (!phoneValidation(value)) {
-                          return 'please enter a valid mobile number'
-                              .tr();
-                        }
-                        return null;
-                      },
-                      suggestionsCallback: (pattern) async {
-                        if(pattern.length > 3){
-                          return await EventsAPIs.getSuggestedAddress(pattern: pattern);
+                  // Expanded(
+                  //   flex: 3,
+                  //   child: TypeAheadFormField(
+                  //     getImmediateSuggestions: false ,
+                  //     hideOnEmpty: true,
+                  //     hideOnError: true,
+                  //     suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                  //       color: Constants.blueColor,
+                  //       borderRadius: BorderRadius.circular(12)
+                  //     ),
+                  //     textFieldConfiguration: TextFieldConfiguration(
+                  //         autofocus: false,
+                  //         decoration: kTextFieldDecoration2.copyWith(
+                  //             contentPadding: EdgeInsets.all(15),
+                  //           hintText: '5xx-xxx-xxx',),
+                  //         keyboardType: TextInputType.number,
+                  //         inputFormatters: [
+                  //           LengthLimitingTextInputFormatter(9),
+                  //           FilteringTextInputFormatter.digitsOnly
+                  //         ],
+                  //         controller: _receiverPhoneController
+                  //     ),
+                  //     validator: (String? value) {
+                  //       if (value!.isEmpty) {
+                  //         return 'Please enter your mobile'.tr();
+                  //       }
+                  //       if (!phoneValidation(value)) {
+                  //         return 'please enter a valid mobile number'
+                  //             .tr();
+                  //       }
+                  //       return null;
+                  //     },
+                  //     suggestionsCallback: (pattern) async {
+                  //       if(pattern.length > 3){
+                  //         return await EventsAPIs.getSuggestedAddress(pattern: pattern);
 
-                        }
-                        return [];
-                      },
-                      noItemsFoundBuilder:(BuildContext context){
-                        return SizedBox();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return Column(
-                          children: [
-                            ListTile(
-                                title: Text(((suggestion as Map)['receiverName'] ?? ""),style: TextStyle(color: Colors.white), ),
-                                subtitle: Text(suggestion['receiverPhone'] ?? "",style: TextStyle(color: Colors.white))
-                            ),
-                            Divider(color: Colors.white, thickness: 2,)
-                          ],
-                        );
-                      },
-                      onSuggestionSelected: (suggestion) {
-                        _receiverNameController.text = (suggestion as Map)['receiverName'] ;
-                        _receiverPhoneController.text = suggestion['receiverPhone'] ;
-                        for(int i = 0 ; i < receiverCities.length ; i ++){
-                          if(suggestion['deliverCity'] == receiverCities[i].id){
-                            _currentReceiverCitySelected = receiverCities[i] ;
-                          }
-                        }
-                        for(int i = 0 ; i < (_currentReceiverCitySelected?.neighborhoods?.length ?? 0) ; i ++){
-                          if(suggestion['deliverNeighborhood'] == _currentReceiverCitySelected?.neighborhoods?[i].id){
-                            _currentZoneReceiver = _currentReceiverCitySelected?.neighborhoods?[i] ;
-                          }
-                        }
-                        mapUrlReceiver = suggestion['deliverMap'] ;
-                        if(mapUrlReceiver != null && mapUrlReceiver != "" ){
-                          locationSelectedReceiver = true ;
-                        }else {
-                          locationSelectedReceiver = false ;
-                        }
-                        setState(() {});
-                      },
+                  //       }
+                  //       return [];
+                  //     },
+                  //     noItemsFoundBuilder:(BuildContext context){
+                  //       return SizedBox();
+                  //     },
+                  //     itemBuilder: (context, suggestion) {
+                  //       return Column(
+                  //         children: [
+                  //           ListTile(
+                  //               title: Text(((suggestion as Map)['receiverName'] ?? ""),style: TextStyle(color: Colors.white, ),
+                  //               subtitle: Text(suggestion['receiverPhone'] ?? "",style: TextStyle(color: Colors.white))
+                  //           ),
+                  //           Divider(color: Colors.white, thickness: 2,)
+                  //         ],
+                  //       );
+                  //     },
+                  //     onSuggestionSelected: (suggestion) {
+                  //       _receiverNameController.text = (suggestion as Map)['receiverName'] ;
+                  //       _receiverPhoneController.text = suggestion['receiverPhone'] ;
+                  //       for(int i = 0 ; i < receiverCities.length ; i ++){
+                  //         if(suggestion['deliverCity'] == receiverCities[i].id){
+                  //           _currentReceiverCitySelected = receiverCities[i] ;
+                  //         }
+                  //       }
+                  //       for(int i = 0 ; i < (_currentReceiverCitySelected?.neighborhoods?.length ?? 0) ; i ++){
+                  //         if(suggestion['deliverNeighborhood'] == _currentReceiverCitySelected?.neighborhoods?[i].id){
+                  //           _currentZoneReceiver = _currentReceiverCitySelected?.neighborhoods?[i] ;
+                  //         }
+                  //       }
+                  //       mapUrlReceiver = suggestion['deliverMap'] ;
+                  //       if(mapUrlReceiver != null && mapUrlReceiver != "" ){
+                  //         locationSelectedReceiver = true ;
+                  //       }else {
+                  //         locationSelectedReceiver = false ;
+                  //       }
+                  //       setState(() {});
+                  //     },
 
-                    ),
-                    // child: TextFormField(
-                    //   key: const ValueKey('receiverPhone'),
-                    //   focusNode: receiverPhoneFocus,
-                    //   keyboardType: TextInputType.number,
-                    //   onChanged: (e) {
-                    //     if (startValidation) {
-                    //       _formKey.currentState!.validate();
-                    //     }
-                    //   },
-                    //   validator: (String? value) {
-                    //     if (value!.isEmpty) {
-                    //       return 'Please enter your mobile'.tr();
-                    //     }
-                    //     if (!phoneValidation(value)) {
-                    //       return 'please enter a valid mobile number'
-                    //           .tr();
-                    //     }
-                    //     return null;
-                    //   },
-                    //   inputFormatters: [
-                    //     LengthLimitingTextInputFormatter(9),
-                    //     FilteringTextInputFormatter.digitsOnly
-                    //   ],
-                    //   decoration: kTextFieldDecoration2.copyWith(
-                    //     labelText: 'phone number'.tr(),
-                    //     hintText: '5xx-xxx-xxx',
-                    //     border: null,
-                    //     enabledBorder: OutlineInputBorder(
-                    //       borderSide: BorderSide(
-                    //           color: Colors.transparent, width: 0.5),
-                    //       borderRadius:
-                    //           BorderRadius.all(Radius.circular(12.0)),
-                    //     ),
-                    //     focusedBorder: OutlineInputBorder(
-                    //       borderSide:
-                    //           BorderSide(color: Colors.blue, width: 0.5),
-                    //       borderRadius:
-                    //           BorderRadius.all(Radius.circular(12.0)),
-                    //     ),
-                    //   ),
-                    //   controller: _receiverPhoneController,
-                    // ),
-                  ),
+                  //   ),
+                  //   // child: TextFormField(
+                  //   //   key: const ValueKey('receiverPhone'),
+                  //   //   focusNode: receiverPhoneFocus,
+                  //   //   keyboardType: TextInputType.number,
+                  //   //   onChanged: (e) {
+                  //   //     if (startValidation) {
+                  //   //       _formKey.currentState!.validate();
+                  //   //     }
+                  //   //   },
+                  //   //   validator: (String? value) {
+                  //   //     if (value!.isEmpty) {
+                  //   //       return 'Please enter your mobile'.tr();
+                  //   //     }
+                  //   //     if (!phoneValidation(value)) {
+                  //   //       return 'please enter a valid mobile number'
+                  //   //           .tr();
+                  //   //     }
+                  //   //     return null;
+                  //   //   },
+                  //   //   inputFormatters: [
+                  //   //     LengthLimitingTextInputFormatter(9),
+                  //   //     FilteringTextInputFormatter.digitsOnly
+                  //   //   ],
+                  //   //   decoration: kTextFieldDecoration2.copyWith(
+                  //   //     labelText: 'phone number'.tr(),
+                  //   //     hintText: '5xx-xxx-xxx',
+                  //   //     border: null,
+                  //   //     enabledBorder: OutlineInputBorder(
+                  //   //       borderSide: BorderSide(
+                  //   //           color: Colors.transparent, width: 0.5),
+                  //   //       borderRadius:
+                  //   //           BorderRadius.all(Radius.circular(12.0)),
+                  //   //     ),
+                  //   //     focusedBorder: OutlineInputBorder(
+                  //   //       borderSide:
+                  //   //           BorderSide(color: Colors.blue, width: 0.5),
+                  //   //       borderRadius:
+                  //   //           BorderRadius.all(Radius.circular(12.0)),
+                  //   //     ),
+                  //   //   ),
+                  //   //   controller: _receiverPhoneController,
+                  //   // ),
+                  // ),
+                
                   SizedBox(
                     width: 5,
                   ),
@@ -1658,44 +1645,44 @@ class _AddOrderState extends State<AddOrder> {
                             style: TextStyle(
                                 fontSize: 14, color: Colors.black87),
                           )),
-                      receiverCities.length > 0
-                          ?     Expanded(
-                        child: DropdownSearch<ErCity?>(
-                          key: const ValueKey('receiverCity'),
+                      // receiverCities.length > 0
+                      //     ?     Expanded(
+                      //   child: DropdownSearch<ErCity?>(
+                      //     key: const ValueKey('receiverCity'),
 
-                          dropdownSearchDecoration: kTextFieldDecoration2.copyWith(
-                              hintText: ""
-                          ),
-                          searchBoxDecoration: kTextFieldDecoration.copyWith(
-                              hintText: "City name ..".tr(),
-                              suffixIcon: Icon(Icons.search)
-                          ),
-                          label: "",
-                          items: receiverCities,
-                          searchBoxController: searchBoxCityRController,
-                          maxHeight: screenHeight!*0.8,
-                          showSearchBox: true,
-                          selectedItem: _currentReceiverCitySelected ,
-                          itemAsString: (ErCity? u) => u!.name ?? "",
-                          emptyBuilder: (context , string){
-                            return Center(child: Text('No results'.tr()));
-                          },
-                          mode:Mode.BOTTOM_SHEET ,
-                          enabled: true,
-                          onChanged: (value){
+                      //     // dropdownSearchDecoration: // FIXME: API changed to dropdownDecoratorProps kTextFieldDecoration2.copyWith(
+                      //         hintText: ""
+                      //     ),
+                      //     searchBoxDecoration: kTextFieldDecoration.copyWith(
+                      //         hintText: "City name ..".tr(),
+                      //         suffixIcon: Icon(Icons.search)
+                      //     ),
+                      //     label: "",
+                      //     items: receiverCities,
+                      //     searchBoxController: searchBoxCityRController,
+                      //     maxHeight: screenHeight!*0.8,
+                      //     showSearchBox: true,
+                      //     selectedItem: _currentReceiverCitySelected ,
+                      //     itemAsString: (ErCity? u) => u!.name ?? "",
+                      //     emptyBuilder: (context , string){
+                      //       return Center(child: Text('No results'.tr()));
+                      //     },
+                      //     // mode: Mode.bottomSheet // FIXME: API changed ,
+                      //     enabled: true,
+                      //     onChanged: (value){
 
-                            setState(() {
-                              _currentReceiverCitySelected = value;
-                              _currentZoneReceiver = Neighborhoods();
-                              searchBoxCityRController.clear();
+                      //       setState(() {
+                      //         _currentReceiverCitySelected = value;
+                      //         _currentZoneReceiver = Neighborhoods();
+                      //         searchBoxCityRController.clear();
 
-                            });
+                      //       });
 
-                          },
-                          clearButton: Icon(Icons.close),
-                        ),
-                      )
-                          : Container(),
+                      //     },
+                      //     clearButton: Icon(Icons.close),
+                      //   ),
+                      // )
+                      //     : Container(),
                     ],
                   ),
                 ),
@@ -1718,38 +1705,38 @@ class _AddOrderState extends State<AddOrder> {
                               fontSize: 14, color: Colors.black87),
                         ),
                       ),
-                      senderCities.length > 0
-                          ?     Expanded(
-                        child: DropdownSearch<Neighborhoods?>(
-                          dropdownSearchDecoration: kTextFieldDecoration2.copyWith(
-                              hintText: ""
-                          ),
-                          searchBoxDecoration: kTextFieldDecoration.copyWith(
-                              hintText: "Neighborhood name..".tr(),
-                              suffixIcon: Icon(Icons.search)
-                          ),
-                          label: "",
-                          maxHeight: screenHeight!*0.8,
-                          items: _currentReceiverCitySelected!.neighborhoods,
-                          searchBoxController: searchBoxZoneRController,
-                          showSearchBox: true,
-                          selectedItem: _currentZoneReceiver,
-                          itemAsString: (Neighborhoods? u) => u!.name?? "",
-                          emptyBuilder: (context , string){
-                            return Center(child: Text('No results'.tr()));
-                          },
-                          mode:Mode.BOTTOM_SHEET ,
-                          enabled: true,
-                          onChanged: (value){
-                            setState(() {
-                              _currentZoneReceiver = value;
-                              searchBoxZoneRController.clear();
-                            });
-                          },
-                          clearButton: Icon(Icons.close),
-                        ),
-                      )
-                          : Container(),
+                      // senderCities.length > 0
+                      //     ?     Expanded(
+                      //   child: DropdownSearch<Neighborhoods?>(
+                      //     // dropdownSearchDecoration: // FIXME: API changed to dropdownDecoratorProps kTextFieldDecoration2.copyWith(
+                      //         hintText: ""
+                      //     ),
+                      //     searchBoxDecoration: kTextFieldDecoration.copyWith(
+                      //         hintText: "Neighborhood name..".tr(),
+                      //         suffixIcon: Icon(Icons.search)
+                      //     ),
+                      //     label: "",
+                      //     maxHeight: screenHeight!*0.8,
+                      //     items: _currentReceiverCitySelected!.neighborhoods,
+                      //     searchBoxController: searchBoxZoneRController,
+                      //     showSearchBox: true,
+                      //     selectedItem: _currentZoneReceiver,
+                      //     itemAsString: (Neighborhoods? u) => u!.name?? "",
+                      //     emptyBuilder: (context , string){
+                      //       return Center(child: Text('No results'.tr()));
+                      //     },
+                      //     // mode: Mode.bottomSheet // FIXME: API changed ,
+                      //     enabled: true,
+                      //     onChanged: (value){
+                      //       setState(() {
+                      //         _currentZoneReceiver = value;
+                      //         searchBoxZoneRController.clear();
+                      //       });
+                      //     },
+                      //     clearButton: Icon(Icons.close),
+                      //   ),
+                      // )
+                      //     : Container(),
                     ],
                   ),
                 ),
@@ -1849,96 +1836,97 @@ class _AddOrderState extends State<AddOrder> {
                 : GestureDetector(
                     onTap: () {
                       FocusScope.of(context).unfocus();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlacePicker(
-                            apiKey: Constants
-                                .googleMabiApiKey, // Put YOUR OWN KEY here.
-                            onPlacePicked: (result) {
-                              Navigator.of(context).pop();
-                            },
-                            // initialPosition: LatLng(Constants.latitude, Constants.longitude),
-                            initialPosition: LatLng(21.4858, 39.1925),
-                            strictbounds: true,
-                            onGeocodingSearchFailed: (e) {
-                              print('FAILED FAILED $e');
-                            },
-                            enableMapTypeButton: false,
-                            autocompleteRadius: 800000,
-                            selectInitialPosition: true,
-                            searchForInitialValue: false,
-                            useCurrentLocation: true,
-                            onAutoCompleteFailed: (e) {
-                              print("Auto complete failed $e");
-                            },
-                            autocompleteLanguage: "ar",
-                            selectedPlaceWidgetBuilder:
-                                (_, selectedPlace, state, isSearchBarFocused) {
-                              return isSearchBarFocused
-                                  ? Container()
-                                  : FloatingCard(
-                                      bottomPosition:
-                                          40.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-                                      leftPosition: 10.0,
-                                      rightPosition: 10.0,
-                                      width: 500,
-                                      elevation: 5,
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            top: 10, bottom: 10),
-                                        child: selectedPlace != null
-                                            ? Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            2.0),
-                                                    child: Text(
-                                                      selectedPlace
-                                                          .formattedAddress!,
-                                                      style: TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 10),
-                                                  TextButton(
-                                                    child: Text('Save'.tr()),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        _deliverPickedLocation =
-                                                            selectedPlace;
-                                                        _receiverAddressController
-                                                                .text =
-                                                            _deliverPickedLocation!
-                                                                .formattedAddress
-                                                                .toString();
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => PlacePicker(
+                      //       apiKey: Constants
+                      //           .googleMabiApiKey, // Put YOUR OWN KEY here.
+                      //       onPlacePicked: (result) {
+                      //         Navigator.of(context).pop();
+                      //       },
+                      //       // initialPosition: LatLng(Constants.latitude, Constants.longitude),
+                      //       initialPosition: LatLng(21.4858, 39.1925),
+                      //       strictbounds: true,
+                      //       onGeocodingSearchFailed: (e) {
+                      //         print('FAILED FAILED $e');
+                      //       },
+                      //       enableMapTypeButton: false,
+                      //       autocompleteRadius: 800000,
+                      //       selectInitialPosition: true,
+                      //       searchForInitialValue: false,
+                      //       useCurrentLocation: true,
+                      //       onAutoCompleteFailed: (e) {
+                      //         print("Auto complete failed $e");
+                      //       },
+                      //       autocompleteLanguage: "ar",
+                      //       selectedPlaceWidgetBuilder:
+                      //           (_, selectedPlace, state, isSearchBarFocused) {
+                      //         return isSearchBarFocused
+                      //             ? Container()
+                      //             : FloatingCard(
+                      //                 bottomPosition:
+                      //                     40.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
+                      //                 leftPosition: 10.0,
+                      //                 rightPosition: 10.0,
+                      //                 width: 500,
+                      //                 elevation: 5,
+                      //                 borderRadius: BorderRadius.circular(12.0),
+                      //                 child: Padding(
+                      //                   padding: EdgeInsets.only(
+                      //                       top: 10, bottom: 10),
+                      //                   child: selectedPlace != null
+                      //                       ? Column(
+                      //                           mainAxisAlignment:
+                      //                               MainAxisAlignment.center,
+                      //                           children: [
+                      //                             Padding(
+                      //                               padding:
+                      //                                   const EdgeInsets.all(
+                      //                                       2.0),
+                      //                               child: Text(
+                      //                                 selectedPlace
+                      //                                     .formattedAddress!,
+                      //                                 style: TextStyle(
+                      //                                     fontSize: 18),
+                      //                               ),
+                      //                             ),
+                      //                             SizedBox(height: 10),
+                      //                             ElevatedButton(
+                      //                               child: Text('Save'.tr()),
+                      //                               onPressed: () {
+                      //                                 setState(() {
+                      //                                   _deliverPickedLocation =
+                      //                                       selectedPlace;
+                      //                                   _receiverAddressController
+                      //                                           .text =
+                      //                                       _deliverPickedLocation!
+                      //                                           .formattedAddress
+                      //                                           .toString();
 
-                                                        locationSelectedReceiver =
-                                                            true;
+                      //                                   locationSelectedReceiver =
+                      //                                       true;
 
-                                                        mapUrlReceiver =
-                                                            'https://www.google.com/maps/search/?api=1&query=${_deliverPickedLocation!.geometry!.location.lat},${_deliverPickedLocation!.geometry!.location.lng}';
-                                                      });
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              )
-                                            : Center(
-                                                child:
-                                                    CustomLoading()),
-                                      ),
-                                    );
-                            },
-                            centerForSearching: Constants.sauidArabia,
-                          ),
-                        ),
-                      );
+                      //                                   mapUrlReceiver =
+                      //                                       'https://www.google.com/maps/search/?api=1&query=${_deliverPickedLocation!.geometry!.location.lat},${_deliverPickedLocation!.geometry!.location.lng}';
+                      //                                 });
+                      //                                 Navigator.of(context)
+                      //                                     .pop();
+                      //                               },
+                      //                             ),
+                      //                           ],
+                      //                         )
+                      //                       : Center(
+                      //                           child:
+                      //                               CustomLoading()),
+                      //                 ),
+                      //               );
+                      //       },
+                      //       centerForSearching: Constants.sauidArabia,
+                      //     ),
+                      //   ),
+                      // );
+                  
                     },
                     child: Container(
                       width: screenWidth,
@@ -2317,7 +2305,7 @@ class _AddOrderState extends State<AddOrder> {
             //                                 child: CustomCheckBox(
             //                                   checkedColor: Color(0xFF4C8FF8),
             //                                   unCheckedColor: Colors.grey,
-            //                                   backgroundColor: Colors.white,
+            //                                   color: Colors.white,
             //                                   checked: receiverPayCheckedValue,
             //                                 )),
             //                           ),
@@ -2362,7 +2350,7 @@ class _AddOrderState extends State<AddOrder> {
             //                                       child: CustomCheckBox(
             //                                         checkedColor: Color(0xFF4C8FF8),
             //                                         unCheckedColor: Colors.grey,
-            //                                         backgroundColor: Colors.white,
+            //                                         color: Colors.white,
             //                                         checked: deductFromOfferCheckedValue,
             //                                       )),
             //                                 ),
@@ -2421,7 +2409,7 @@ class _AddOrderState extends State<AddOrder> {
             //                                         checkedColor:
             //                                             Color(0xFF4C8FF8),
             //                                         unCheckedColor: Colors.grey,
-            //                                         backgroundColor: Colors.white,
+            //                                         color: Colors.white,
             //                                         checked: deductFromCod,
             //                                       )),
             //                                 ),
@@ -2495,17 +2483,11 @@ class _AddOrderState extends State<AddOrder> {
               child: ButtonTheme(
                 minWidth: screenWidth!,
                 height: 50,
-                child: FlatButton(
-                    padding: EdgeInsets.all(0),
-                    key: const ValueKey('postOrder'),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    color: Constants.blueColor,
+                child: ElevatedButton(
+                
                     // widget.packagingType == "liquid"
                     //     ? addPackageDarkColor
                     //     : Colors.blue,
-                    textColor: Colors.white,
                     child: Text(
                       'Add Order'.tr(),
                       style: TextStyle(
@@ -2522,16 +2504,8 @@ class _AddOrderState extends State<AddOrder> {
             child: ButtonTheme(
               minWidth: screenWidth!,
               height: 50,
-              child: FlatButton(
-                  padding: EdgeInsets.all(0),
-                  key: const ValueKey('postOrder'),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  color: widget.packagingType == "liquid"
-                      ? addPackageDarkColor
-                      : Constants.blueColor,
-                  textColor: Colors.white,
+              child: ElevatedButton(
+                
                   child: Text(
                     'Edit Order'.tr(),
                     style: TextStyle(
@@ -3078,39 +3052,39 @@ class _AddOrderState extends State<AddOrder> {
                         style: TextStyle(
                             fontSize: 14, color: Colors.black87),
                       )),
-                  senderCities.length > 0
-                      ?      Expanded(
-                    child: DropdownSearch<ErCity?>(
-                      dropdownSearchDecoration: kTextFieldDecoration2.copyWith(
-                          hintText: ""
-                      ),
-                      searchBoxDecoration: kTextFieldDecoration.copyWith(
-                          hintText: "City name ..".tr(),
-                          suffixIcon: Icon(Icons.search)
-                      ),
-                      label: "",
-                      items: senderCities,
-                      maxHeight: screenHeight!*0.8,
-                      searchBoxController: searchBoxCityController,
+                  // senderCities.length > 0
+                  //     ?      Expanded(
+                  //   child: DropdownSearch<ErCity?>(
+                  //     // dropdownSearchDecoration: // FIXME: API changed to dropdownDecoratorProps kTextFieldDecoration2.copyWith(
+                  //         hintText: ""
+                  //     ),
+                  //     searchBoxDecoration: kTextFieldDecoration.copyWith(
+                  //         hintText: "City name ..".tr(),
+                  //         suffixIcon: Icon(Icons.search)
+                  //     ),
+                  //     label: "",
+                  //     items: senderCities,
+                  //     maxHeight: screenHeight!*0.8,
+                  //     searchBoxController: searchBoxCityController,
 
-                      showSearchBox: true,
-                      selectedItem: _currentCitySelected,
-                      itemAsString: (ErCity? u) => u!.name ?? "",
-                      emptyBuilder: (context , string){
-                        return Center(child: Text('No results'.tr()));
-                      },
-                      mode:Mode.BOTTOM_SHEET ,
-                      enabled: true,
-                      onChanged: (value){
-                        setState(() {
-                          _currentCitySelected = value;
-                         _currentZone = Neighborhoods();
-                        });
-                      },
-                      clearButton: Icon(Icons.close),
-                    ),
-                  )
-                      : Container(),
+                  //     showSearchBox: true,
+                  //     selectedItem: _currentCitySelected,
+                  //     itemAsString: (ErCity? u) => u!.name ?? "",
+                  //     emptyBuilder: (context , string){
+                  //       return Center(child: Text('No results'.tr()));
+                  //     },
+                  //     // mode: Mode.bottomSheet // FIXME: API changed ,
+                  //     enabled: true,
+                  //     onChanged: (value){
+                  //       setState(() {
+                  //         _currentCitySelected = value;
+                  //        _currentZone = Neighborhoods();
+                  //       });
+                  //     },
+                  //     clearButton: Icon(Icons.close),
+                  //   ),
+                  // )
+                  //     : Container(),
                 ],
               ),
             ),
@@ -3133,42 +3107,42 @@ class _AddOrderState extends State<AddOrder> {
                           fontSize: 14, color: Colors.black87),
                     ),
                   ),
-                  senderCities.length > 0
-                      ?
-                  Expanded(
-                    child: DropdownSearch<Neighborhoods?>(
-                      dropdownSearchDecoration: kTextFieldDecoration2.copyWith(
-                          hintText: ""
-                      ),
-                      searchBoxDecoration: kTextFieldDecoration.copyWith(
-                          hintText: "Neighborhood name..".tr(),
-                          suffixIcon: Icon(Icons.search)
-                      ),
-                      label: "",
-                      maxHeight: screenHeight!*0.8,
-                      items: _currentCitySelected!.neighborhoods ?? [],
-                      searchBoxController: searchBoxZoneController,
-                      showSearchBox: true,
-                      selectedItem: _currentZone,
-                      itemAsString: (Neighborhoods? u) => u!.name ?? "",
-                      emptyBuilder: (context , string){
-                        return Center(child: Text('No results'.tr()));
-                      },
-                      mode:Mode.BOTTOM_SHEET ,
-                      enabled: true,
-                      onChanged: (value){;
-                      setState(() {
-                        _currentZone = value;
-                        searchBoxZoneController.clear();
-                      });
-                      },
-                      clearButton: Icon(Icons.close),
-                    ),
-                  )
+                  // senderCities.length > 0
+                  //     ?
+                  // Expanded(
+                  //   child: DropdownSearch<Neighborhoods?>(
+                  //     // dropdownSearchDecoration: // FIXME: API changed to dropdownDecoratorProps kTextFieldDecoration2.copyWith(
+                  //         hintText: ""
+                  //     ),
+                  //     searchBoxDecoration: kTextFieldDecoration.copyWith(
+                  //         hintText: "Neighborhood name..".tr(),
+                  //         suffixIcon: Icon(Icons.search)
+                  //     ),
+                  //     label: "",
+                  //     maxHeight: screenHeight!*0.8,
+                  //     items: _currentCitySelected!.neighborhoods ?? [],
+                  //     searchBoxController: searchBoxZoneController,
+                  //     showSearchBox: true,
+                  //     selectedItem: _currentZone,
+                  //     itemAsString: (Neighborhoods? u) => u!.name ?? "",
+                  //     emptyBuilder: (context , string){
+                  //       return Center(child: Text('No results'.tr()));
+                  //     },
+                  //     // mode: Mode.bottomSheet // FIXME: API changed ,
+                  //     enabled: true,
+                  //     onChanged: (value){;
+                  //     setState(() {
+                  //       _currentZone = value;
+                  //       searchBoxZoneController.clear();
+                  //     });
+                  //     },
+                  //     clearButton: Icon(Icons.close),
+                  //   ),
+                  // )
 
                   // Expanded(
                   //   child: DropdownSearch<Neighborhoods?>(
-                  //     dropdownSearchDecoration:
+                  //     // dropdownSearchDecoration: // FIXME: API changed to dropdownDecoratorProps
                   //     kTextFieldDecoration2.copyWith(
                   //         hintText: ""),
                   //     searchBoxDecoration:
@@ -3193,7 +3167,7 @@ class _AddOrderState extends State<AddOrder> {
                   //       return Center(
                   //           child: Text('No results'.tr()));
                   //     },
-                  //     mode: Mode.BOTTOM_SHEET,
+                  //     mode: Mode.bottomSheet,
                   //     enabled: true,
                   //     onChanged: (value) {
                   //       ;
@@ -3205,7 +3179,7 @@ class _AddOrderState extends State<AddOrder> {
                   //     clearButton: Icon(Icons.close),
                   //   ),
                   // )
-                      : Container(),
+                   //   : Container(),
                   // Expanded(
                   //   child: DropdownButtonHideUnderline(
                   //
@@ -3302,112 +3276,113 @@ class _AddOrderState extends State<AddOrder> {
                 : GestureDetector(
               onTap: () {
                 FocusScope.of(context).unfocus();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PlacePicker(
-                      apiKey: Constants
-                          .googleMabiApiKey, // Put YOUR OWN KEY here.
-                      onPlacePicked: (result) {
-                        Navigator.of(context).pop();
-                      },
-                      // initialPosition: LatLng(Constants.latitude, Constants.longitude),
-                      initialPosition:
-                      LatLng(21.4858, 39.1925),
-                      strictbounds: true,
-                      onGeocodingSearchFailed: (e) {
-                        print('FAILED FAILED $e');
-                      },
-                      enableMapTypeButton: false,
-                      autocompleteRadius: 800000,
-                      selectInitialPosition: true,
-                      searchForInitialValue: false,
-                      useCurrentLocation: true,
-                      onAutoCompleteFailed: (e) {
-                        print("Auto complete failed $e");
-                      },
-                      autocompleteLanguage: "ar",
-                      selectedPlaceWidgetBuilder: (_,
-                          selectedPlace,
-                          state,
-                          isSearchBarFocused) {
-                        return isSearchBarFocused
-                            ? Container()
-                            : FloatingCard(
-                          bottomPosition:
-                          40.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-                          leftPosition: 10.0,
-                          rightPosition: 10.0,
-                          width: 500,
-                          elevation: 5,
-                          borderRadius:
-                          BorderRadius.circular(
-                              12.0),
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                top: 10, bottom: 10),
-                            child: selectedPlace !=
-                                null
-                                ? Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment
-                                  .center,
-                              children: [
-                                Padding(
-                                  padding:
-                                  const EdgeInsets
-                                      .all(
-                                      2.0),
-                                  child: Text(
-                                    selectedPlace
-                                        .formattedAddress!,
-                                    style: TextStyle(
-                                        fontSize:
-                                        18),
-                                  ),
-                                ),
-                                SizedBox(
-                                    height: 10),
-                                TextButton(
-                                  child: Text(
-                                      'Save'
-                                          .tr()),
-                                  onPressed:
-                                      () {
-                                    setState(
-                                            () {
-                                          _pickedLocation =
-                                              selectedPlace;
-                                          _senderAddressController
-                                              .text =
-                                              _pickedLocation!
-                                                  .formattedAddress
-                                                  .toString();
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => PlacePicker(
+                //       apiKey: Constants
+                //           .googleMabiApiKey, // Put YOUR OWN KEY here.
+                //       onPlacePicked: (result) {
+                //         Navigator.of(context).pop();
+                //       },
+                //       // initialPosition: LatLng(Constants.latitude, Constants.longitude),
+                //       initialPosition:
+                //       LatLng(21.4858, 39.1925),
+                //       strictbounds: true,
+                //       onGeocodingSearchFailed: (e) {
+                //         print('FAILED FAILED $e');
+                //       },
+                //       enableMapTypeButton: false,
+                //       autocompleteRadius: 800000,
+                //       selectInitialPosition: true,
+                //       searchForInitialValue: false,
+                //       useCurrentLocation: true,
+                //       onAutoCompleteFailed: (e) {
+                //         print("Auto complete failed $e");
+                //       },
+                //       autocompleteLanguage: "ar",
+                //       selectedPlaceWidgetBuilder: (_,
+                //           selectedPlace,
+                //           state,
+                //           isSearchBarFocused) {
+                //         return isSearchBarFocused
+                //             ? Container()
+                //             : FloatingCard(
+                //           bottomPosition:
+                //           40.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
+                //           leftPosition: 10.0,
+                //           rightPosition: 10.0,
+                //           width: 500,
+                //           elevation: 5,
+                //           borderRadius:
+                //           BorderRadius.circular(
+                //               12.0),
+                //           child: Padding(
+                //             padding: EdgeInsets.only(
+                //                 top: 10, bottom: 10),
+                //             child: selectedPlace !=
+                //                 null
+                //                 ? Column(
+                //               mainAxisAlignment:
+                //               MainAxisAlignment
+                //                   .center,
+                //               children: [
+                //                 Padding(
+                //                   padding:
+                //                   const EdgeInsets
+                //                       .all(
+                //                       2.0),
+                //                   child: Text(
+                //                     selectedPlace
+                //                         .formattedAddress!,
+                //                     style: TextStyle(
+                //                         fontSize:
+                //                         18),
+                //                   ),
+                //                 ),
+                //                 SizedBox(
+                //                     height: 10),
+                //                 ElevatedButton(
+                //                   child: Text(
+                //                       'Save'
+                //                           .tr()),
+                //                   onPressed:
+                //                       () {
+                //                     setState(
+                //                             () {
+                //                           _pickedLocation =
+                //                               selectedPlace;
+                //                           _senderAddressController
+                //                               .text =
+                //                               _pickedLocation!
+                //                                   .formattedAddress
+                //                                   .toString();
 
-                                          locationSelected =
-                                          true;
+                //                           locationSelected =
+                //                           true;
 
-                                          mapUrlSender =
-                                          'https://www.google.com/maps/search/?api=1&query=${_pickedLocation!.geometry!.location.lat},${_pickedLocation!.geometry!.location.lng}';
-                                        });
-                                    Navigator.of(
-                                        context)
-                                        .pop();
-                                  },
-                                ),
-                              ],
-                            )
-                                : Center(
-                                child:
-                                CustomLoading()),
-                          ),
-                        );
-                      },
-                      centerForSearching:
-                      Constants.sauidArabia,
-                    ),
-                  ),
-                );
+                //                           mapUrlSender =
+                //                           'https://www.google.com/maps/search/?api=1&query=${_pickedLocation!.geometry!.location.lat},${_pickedLocation!.geometry!.location.lng}';
+                //                         });
+                //                     Navigator.of(
+                //                         context)
+                //                         .pop();
+                //                   },
+                //                 ),
+                //               ],
+                //             )
+                //                 : Center(
+                //                 child:
+                //                 CustomLoading()),
+                //           ),
+                //         );
+                //       },
+                //       centerForSearching:
+                //       Constants.sauidArabia,
+                //     ),
+                //   ),
+                // );
+            
               },
               child: Container(
                 width: screenWidth,

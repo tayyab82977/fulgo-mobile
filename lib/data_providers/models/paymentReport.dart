@@ -1,5 +1,5 @@
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/paymentCalculations.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/paymentCalculations.dart';
 
 import 'ProfileDataModel.dart';
 

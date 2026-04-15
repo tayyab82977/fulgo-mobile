@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import '../courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'custom_loading.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 
 
@@ -48,9 +55,8 @@ class EmptyListView extends StatelessWidget {
         ),
         SizedBox(height: 50,),
         ButtonTheme(
-          child: FlatButton(
+          child: CustomButton(
             shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(12)),
-            highlightColor: Constants.capPurple,
             padding: EdgeInsets.all(3),
             onPressed: (){
               Navigator.push(

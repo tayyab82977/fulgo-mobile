@@ -3,41 +3,42 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/MyResponseModel.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/clientPaymentsDataModel.dart';
-import 'package:xturbox/data_providers/models/geoCodingDataModel.dart';
-import 'package:xturbox/data_providers/models/invoices_lists_model.dart';
-import 'package:xturbox/data_providers/models/invoices_model.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
-import 'package:xturbox/data_providers/models/postOrderData.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/data_providers/models/shipments_lists_model.dart';
-import 'package:xturbox/data_providers/models/tickets_model.dart';
-import 'package:xturbox/data_providers/models/trackingDataModel.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/MyResponseModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/clientPaymentsDataModel.dart';
+import 'package:Fulgox/data_providers/models/geoCodingDataModel.dart';
+import 'package:Fulgox/data_providers/models/invoices_lists_model.dart';
+import 'package:Fulgox/data_providers/models/invoices_model.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/postOrderData.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/shipments_lists_model.dart';
+import 'package:Fulgox/data_providers/models/tickets_model.dart';
+import 'package:Fulgox/data_providers/models/trackingDataModel.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/utilities/URLs.dart';
-import 'package:xturbox/utilities/endPoints.dart';
+import 'package:Fulgox/utilities/URLs.dart';
+import 'package:Fulgox/utilities/endPoints.dart';
 
 import '../models/NationalAddreesModel.dart';
+import 'package:Fulgox/data_providers/models/AddressModel.dart';
 
 class EventsAPIs {
-
   // static const String url = URL.LIVE_SERVER;
-  static const String url = URL.Anas_SERVER;
+  static const String url = URL.SERVICE_BASE_URL;
   // static  String url ;
 
   static const compatibility = "2";
 
   UserRepository userRepository = UserRepository();
 
-  static Future<MyResponseModel<ResourcesData>> getResourcesData({String? token}) async {
+  static Future<MyResponseModel<ResourcesData>> getResourcesData(
+      {String? token}) async {
     ResourcesData resourcesData = ResourcesData();
     MyResponseModel myResponseModel = MyResponseModel<ResourcesData>();
     UserRepository userRepository = UserRepository();
@@ -54,9 +55,9 @@ class EventsAPIs {
     print('Resources ${response.statusCode}');
     print('Resources ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 505) {
       try {
-        myResponseModel.statusCode = response.statusCode;
+        myResponseModel.statusCode = 200; // Force 200 to ignore update
         final decodedData = jsonDecode(response.body);
         resourcesData = ResourcesData.fromJson(decodedData);
       } catch (e) {
@@ -79,8 +80,8 @@ class EventsAPIs {
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<bool>> EditProfile({
-      String? name,
+  static Future<MyResponseModel<bool>> EditProfile(
+      {String? name,
       String? id,
       String? password,
       String? email,
@@ -93,16 +94,12 @@ class EventsAPIs {
       String? cer,
       bool onlyNational = false,
       bool? changeUserName}) async {
-
     Map data = {};
-    if(onlyNational){
-
+    if (onlyNational) {
       data = {
-        "national_id":national_id,
+        "national_id": national_id,
       };
-
-    }else {
-
+    } else {
       data = {
         "name": name,
         "password": password,
@@ -111,14 +108,13 @@ class EventsAPIs {
         "phone2": phone2,
         "first_name": firstName,
         "second_name": lastName,
-        "national_id":national_id,
-        "company":companyName,
-        "vat":vatNumber,
-        "cr":cer,
+        "national_id": national_id,
+        "company": companyName,
+        "vat": vatNumber,
+        "cr": cer,
         "idType": 1,
         "idNumber": "ise90sl"
       };
-
     }
 
     if (!(changeUserName ?? true)) {
@@ -134,7 +130,7 @@ class EventsAPIs {
     MyResponseModel myResponseModel = MyResponseModel<bool>();
 
     http.Response response =
-        await http.put(Uri.parse(EventsAPIs.url + EndPoints.profile+"/0"),
+        await http.put(Uri.parse(EventsAPIs.url + EndPoints.profile + "/0"),
             headers: {
               "Content-Type": "application/json",
               HttpHeaders.authorizationHeader: "$token",
@@ -151,9 +147,9 @@ class EventsAPIs {
     if (response.statusCode == 200) {
       var decodedData = jsonDecode(response.body);
       try {
-        SavedData.profileDataModel.national_id = decodedData['national_id'] ;
+        SavedData.profileDataModel.national_id = decodedData['national_id'];
         myResponseModel.responseData = true;
-        myResponseModel.statusCode = response.statusCode ;
+        myResponseModel.statusCode = response.statusCode;
         myResponseModel.errorsList = List<String>.empty(growable: false);
       } catch (e) {
         myResponseModel.statusCode = 400;
@@ -164,13 +160,10 @@ class EventsAPIs {
 
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     } else {
-      var decodedData ;
-      try{
+      var decodedData;
+      try {
         decodedData = jsonDecode(response.body);
-
-      }catch(e){
-
-      }
+      } catch (e) {}
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = false;
       myResponseModel.errorsList =
@@ -181,7 +174,8 @@ class EventsAPIs {
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<bool>> AddBankData({String? token, String? name, String? bankName, String? iban}) async {
+  static Future<MyResponseModel<bool>> AddBankData(
+      {String? token, String? name, String? bankName, String? iban}) async {
     Map data = {
       "bankHolder": name,
       "bank": bankName,
@@ -195,7 +189,7 @@ class EventsAPIs {
     String? fcm = await userRepository.getFcmToken();
 
     http.Response response =
-        await http.patch(Uri.parse(EventsAPIs.url + EndPoints.profile+"/0"),
+        await http.patch(Uri.parse(EventsAPIs.url + EndPoints.profile + "/0"),
             headers: {
               "Content-Type": "application/json",
               HttpHeaders.authorizationHeader: "$token",
@@ -232,8 +226,9 @@ class EventsAPIs {
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
   }
-  static Future<MyResponseModel<bool>> addNationalAddress({required NationalAddressModel nationalAddressModel}) async {
 
+  static Future<MyResponseModel<bool>> addNationalAddress(
+      {required NationalAddressModel nationalAddressModel}) async {
     var body = json.encode(nationalAddressModel.toJson());
     UserRepository userRepository = UserRepository();
 
@@ -241,17 +236,17 @@ class EventsAPIs {
     String? fcm = await userRepository.getFcmToken();
     String? token = await userRepository.getAuthToken();
 
-    http.Response response =
-        await http.post(Uri.parse(EventsAPIs.url + EndPoints.addNationalAddress),
-            headers: {
-              "Content-Type": "application/json",
-              HttpHeaders.authorizationHeader: "$token",
-              "compatibility": compatibility,
-              "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
-              "fbId": fcm.toString(),
-              "appVersion": Constants.appVersion
-            },
-            body: body);
+    http.Response response = await http.post(
+        Uri.parse(EventsAPIs.url + EndPoints.addNationalAddress),
+        headers: {
+          "Content-Type": "application/json",
+          HttpHeaders.authorizationHeader: "$token",
+          "compatibility": compatibility,
+          "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+          "fbId": fcm.toString(),
+          "appVersion": Constants.appVersion
+        },
+        body: body);
     print(response.request!.url);
     print('add national address ${response.statusCode}');
     print('add national address ${response.body}');
@@ -321,11 +316,12 @@ class EventsAPIs {
       myResponseModel.errorsList = List<String>.empty(growable: false);
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     } else {
-      var decodedData ;
+      var decodedData;
       decodedData = jsonDecode(response.body);
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = false;
-      myResponseModel.errorsList = GeneralHandler.handleErrorsFromApi(decodedData);
+      myResponseModel.errorsList =
+          GeneralHandler.handleErrorsFromApi(decodedData);
 
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
@@ -374,7 +370,10 @@ class EventsAPIs {
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<bool>> PostNewOrder({String? token, required PostOrderDataModel postOrder,}) async {
+  static Future<MyResponseModel<bool>> PostNewOrder({
+    String? token,
+    required PostOrderDataModel postOrder,
+  }) async {
     List encondeToJson(List<Packages> list) {
       List jsonList = [];
       list.map((item) => jsonList.add(item.toJson())).toList();
@@ -396,12 +395,12 @@ class EventsAPIs {
       "deliverMap": postOrder.deliverMap,
       "rc": postOrder.rc,
       "latePayment": postOrder.deductFromCod,
-      "pickupCity":postOrder.pickupCity,
-      "deliverCity":postOrder.deliverCity,
-      "payment_method":postOrder.payment_method,
+      "pickupCity": postOrder.pickupCity,
+      "deliverCity": postOrder.deliverCity,
+      "payment_method": postOrder.payment_method,
       "packages": encondeToJson(postOrder.packages!)
     };
-    print("from api time ${postOrder.pickupTime}" );
+    print("from api time ${postOrder.pickupTime}");
 
     var body = json.encode(data);
     UserRepository userRepository = UserRepository();
@@ -445,9 +444,13 @@ class EventsAPIs {
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
   }
-  static Future<MyResponseModel<bool>> postNewTicket({
-    String? token, required String shipment ,  required String subject , required String description , required String cat}) async {
 
+  static Future<MyResponseModel<bool>> postNewTicket(
+      {String? token,
+      required String shipment,
+      required String subject,
+      required String description,
+      required String cat}) async {
     Map data = {
       "member": SavedData.profileDataModel.id,
       "shipment": shipment,
@@ -478,7 +481,9 @@ class EventsAPIs {
 
     MyResponseModel myResponseModel = MyResponseModel<bool>();
 
-    if (response.statusCode == 201 || response.statusCode == 204 || response.statusCode == 200 ) {
+    if (response.statusCode == 201 ||
+        response.statusCode == 204 ||
+        response.statusCode == 200) {
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = true;
       myResponseModel.errorsList = List<String>.empty(growable: false);
@@ -497,7 +502,11 @@ class EventsAPIs {
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<bool>> ClientEditOrderCall({String? token, required OrdersDataModelMix postOrder, String? shipmentId,}) async {
+  static Future<MyResponseModel<bool>> ClientEditOrderCall({
+    String? token,
+    required OrdersDataModelMix postOrder,
+    String? shipmentId,
+  }) async {
     // OrdersDataModelMix.
     var body = json.encode(postOrder.toJson());
     UserRepository userRepository = UserRepository();
@@ -549,7 +558,12 @@ class EventsAPIs {
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
   }
-  static Future<MyResponseModel<bool>> reverseShipment({String? token, required OrdersDataModelMix postOrder, String? shipmentId,}) async {
+
+  static Future<MyResponseModel<bool>> reverseShipment({
+    String? token,
+    required OrdersDataModelMix postOrder,
+    String? shipmentId,
+  }) async {
     // OrdersDataModelMix.
     var body = json.encode(postOrder.toJson());
     UserRepository userRepository = UserRepository();
@@ -601,8 +615,6 @@ class EventsAPIs {
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
   }
-
-
 
   static Future<MyResponseModel<bool>> clientZeroCod(
       {String? token, String? id}) async {
@@ -680,16 +692,16 @@ class EventsAPIs {
     }
   }
 
-  static Future<int> askForSMS(
-      {String? phone,
-      String? name,
-      String? password,
-      String? firstName,
-      String? nationalId,
-      String? lastName,
-      String? companyName,
-      String? vatNumber,
-      }) async {
+  static Future<int> askForSMS({
+    String? phone,
+    String? name,
+    String? password,
+    String? firstName,
+    String? nationalId,
+    String? lastName,
+    String? companyName,
+    String? vatNumber,
+  }) async {
     print("form ask for sms $nationalId");
     Map data = {
       "name": name,
@@ -763,7 +775,8 @@ class EventsAPIs {
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<ProfileDataModel>> FetchDashBoardData({String? token}) async {
+  static Future<MyResponseModel<ProfileDataModel>> FetchDashBoardData(
+      {String? token}) async {
     UserRepository userRepository = UserRepository();
     MyResponseModel myResponseModel = MyResponseModel<ProfileDataModel>();
 
@@ -787,13 +800,14 @@ class EventsAPIs {
 
     myResponseModel.statusCode = responseViewModel.statusCode;
 
-    if (responseViewModel.statusCode == 200) {
+    if (responseViewModel.statusCode == 200 ||
+        responseViewModel.statusCode == 505) {
+      myResponseModel.statusCode = 200; // Force 200
       var decodedData = json.decode(responseViewModel.body);
       userRepository.persistUser(userData: decodedData);
 
       ProfileDataModel dashboardDataModel = ProfileDataModel();
       // dashboardDataModel   = DashboardDataModel.fromJson(decodedData);
-
       try {
         dashboardDataModel = ProfileDataModel.fromJson(decodedData);
         myResponseModel.responseData = dashboardDataModel;
@@ -812,7 +826,6 @@ class EventsAPIs {
     }
   }
 
-
   static Future<List<dynamic>> getSuggestedAddress({String? pattern}) async {
     UserRepository userRepository = UserRepository();
     MyResponseModel myResponseModel = MyResponseModel<List<InvoicesModel>>();
@@ -827,17 +840,18 @@ class EventsAPIs {
     var body = json.encode(data);
 
     http.Response response = await http.post(
-      Uri.parse(EventsAPIs.url + EndPoints.getPreviousAddresses+"/${SavedData.profileDataModel.id}"),
-      headers: {
-        "Content-Type": "application/json",
-        HttpHeaders.authorizationHeader: '$token',
-        "compatibility": compatibility,
-        "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
-        "fbId": fcm.toString(),
-        "appVersion": Constants.appVersion
-      },
-      body: body
-    );
+        Uri.parse(EventsAPIs.url +
+            EndPoints.getPreviousAddresses +
+            "/${SavedData.profileDataModel.id}"),
+        headers: {
+          "Content-Type": "application/json",
+          HttpHeaders.authorizationHeader: '$token',
+          "compatibility": compatibility,
+          "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+          "fbId": fcm.toString(),
+          "appVersion": Constants.appVersion
+        },
+        body: body);
     print('${response.request!.url}');
     print('get address suggestions ${response.statusCode}');
     print('get address suggestions ${response.body}');
@@ -846,29 +860,26 @@ class EventsAPIs {
 
     if (response.statusCode == 200) {
       print("Test");
-      var decodedData ;
+      var decodedData;
       // return decodedData as FutureOr<Map>;
 
       // try {
-        decodedData = json.decode(response.body);
-        return decodedData as List<dynamic>;
+      decodedData = json.decode(response.body);
+      return decodedData as List<dynamic>;
 
       // } catch (e) {
       //   return null as Future<Iterable<Map>>;
       //
       // }
     } else {
-
       myResponseModel.responseData = <InvoicesModel>[];
       myResponseModel.errorsList = List<String>.empty(growable: false);
     }
-    return [] ;
+    return [];
   }
 
-
-
-
-  static Future<MyResponseModel<InvoicesListsModel>> getInvoices({String? token}) async {
+  static Future<MyResponseModel<InvoicesListsModel>> getInvoices(
+      {String? token}) async {
     UserRepository userRepository = UserRepository();
     MyResponseModel myResponseModel = MyResponseModel<InvoicesListsModel>();
 
@@ -911,8 +922,6 @@ class EventsAPIs {
       myResponseModel.errorsList = List<String>.empty(growable: false);
     }
     return myResponseModel as FutureOr<MyResponseModel<InvoicesListsModel>>;
-
-
   }
 
   static Future<MyResponseModel<ClientBalanceModel>> getPaymentMethods() async {
@@ -924,7 +933,10 @@ class EventsAPIs {
     String? token = await userRepository.getAuthToken();
 
     http.Response response = await http.get(
-      Uri.parse(EventsAPIs.url + EndPoints.memberBalance+"/"+SavedData.profileDataModel.id.toString()),
+      Uri.parse(EventsAPIs.url +
+          EndPoints.memberBalance +
+          "/" +
+          SavedData.profileDataModel.id.toString()),
       headers: {
         "Content-Type": "application/json",
         HttpHeaders.authorizationHeader: '$token',
@@ -957,12 +969,10 @@ class EventsAPIs {
       myResponseModel.errorsList = List<String>.empty(growable: false);
     }
     return myResponseModel as FutureOr<MyResponseModel<ClientBalanceModel>>;
-
-
   }
 
-
-  static Future<MyResponseModel<List<TicketsModel>>> getTickets({String? token}) async {
+  static Future<MyResponseModel<List<TicketsModel>>> getTickets(
+      {String? token}) async {
     UserRepository userRepository = UserRepository();
     MyResponseModel myResponseModel = MyResponseModel<List<TicketsModel>>();
 
@@ -990,36 +1000,37 @@ class EventsAPIs {
       var decodedData = json.decode(response.body);
 
       try {
-        final welcomeFromJson = decodedData.map((data) => TicketsModel.fromJson(data)).toList();
+        final welcomeFromJson =
+            decodedData.map((data) => TicketsModel.fromJson(data)).toList();
         var invoicesList = welcomeFromJson.cast<TicketsModel>();
         myResponseModel.responseData = invoicesList;
         myResponseModel.errorsList = List<String>.empty(growable: false);
       } catch (e) {
         myResponseModel.statusCode = 400;
         myResponseModel.responseData = null;
-        myResponseModel.errorsList =GeneralHandler.handleErrorsFromApi(decodedData);
+        myResponseModel.errorsList =
+            GeneralHandler.handleErrorsFromApi(decodedData);
         print('invoices Error \n $e');
         return myResponseModel as FutureOr<MyResponseModel<List<TicketsModel>>>;
-
       }
     } else {
-
       myResponseModel.responseData = <TicketsModel>[];
       myResponseModel.errorsList = List<String>.empty(growable: false);
     }
     return myResponseModel as FutureOr<MyResponseModel<List<TicketsModel>>>;
-
-
   }
-  static Future<MyResponseModel<List<TicketsHistoryModel>>> getTicketsHistory({String? token ,required String ticketId}) async {
+
+  static Future<MyResponseModel<List<TicketsHistoryModel>>> getTicketsHistory(
+      {String? token, required String ticketId}) async {
     UserRepository userRepository = UserRepository();
-    MyResponseModel myResponseModel = MyResponseModel<List<TicketsHistoryModel>>();
+    MyResponseModel myResponseModel =
+        MyResponseModel<List<TicketsHistoryModel>>();
 
     String? locale = await userRepository.getLocale();
     String? fcm = await userRepository.getFcmToken();
 
     http.Response response = await http.get(
-      Uri.parse(EventsAPIs.url + EndPoints.tickets+"/$ticketId"),
+      Uri.parse(EventsAPIs.url + EndPoints.tickets + "/$ticketId"),
       headers: {
         "Content-Type": "application/json",
         HttpHeaders.authorizationHeader: '$token',
@@ -1039,30 +1050,32 @@ class EventsAPIs {
       var decodedData = json.decode(response.body);
 
       try {
-        final welcomeFromJson = decodedData.map((data) => TicketsHistoryModel.fromJson(data)).toList();
+        final welcomeFromJson = decodedData
+            .map((data) => TicketsHistoryModel.fromJson(data))
+            .toList();
         var invoicesList = welcomeFromJson.cast<TicketsHistoryModel>();
         myResponseModel.responseData = invoicesList;
         myResponseModel.errorsList = List<String>.empty(growable: false);
       } catch (e) {
         myResponseModel.statusCode = 400;
         myResponseModel.responseData = null;
-        myResponseModel.errorsList =GeneralHandler.handleErrorsFromApi(decodedData);
+        myResponseModel.errorsList =
+            GeneralHandler.handleErrorsFromApi(decodedData);
         print('invoices Error \n $e');
-        return myResponseModel as FutureOr<MyResponseModel<List<TicketsHistoryModel>>>;
-
+        return myResponseModel
+            as FutureOr<MyResponseModel<List<TicketsHistoryModel>>>;
       }
     } else {
-
       myResponseModel.responseData = <TicketsHistoryModel>[];
       myResponseModel.errorsList = List<String>.empty(growable: false);
     }
-    return myResponseModel as FutureOr<MyResponseModel<List<TicketsHistoryModel>>>;
-
-
+    return myResponseModel
+        as FutureOr<MyResponseModel<List<TicketsHistoryModel>>>;
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<ShipmentsListsModel>> GetMyOrders({String? token}) async {
+  static Future<MyResponseModel<ShipmentsListsModel>> GetMyOrders(
+      {String? token}) async {
     UserRepository userRepository = UserRepository();
 
     String? locale = await userRepository.getLocale();
@@ -1092,12 +1105,14 @@ class EventsAPIs {
         myResponseModel.statusCode = response.statusCode;
         myResponseModel.responseData = shipmentsListsModel;
         myResponseModel.errorsList = List<String>.empty(growable: false);
-        return myResponseModel as FutureOr<MyResponseModel<ShipmentsListsModel>>;
+        return myResponseModel
+            as FutureOr<MyResponseModel<ShipmentsListsModel>>;
       } catch (e) {
         myResponseModel.statusCode = 400;
         myResponseModel.responseData = shipmentsListsModel;
         myResponseModel.errorsList = List<String>.empty(growable: false);
-        return myResponseModel as FutureOr<MyResponseModel<ShipmentsListsModel>>;
+        return myResponseModel
+            as FutureOr<MyResponseModel<ShipmentsListsModel>>;
       }
     } else if (response.statusCode == 204) {
       myResponseModel.statusCode = response.statusCode;
@@ -1123,8 +1138,8 @@ class EventsAPIs {
     }
   }
 
-
-  static Future<MyResponseModel<List<OrdersDataModelMix>>> getOfdOrders({String? token}) async {
+  static Future<MyResponseModel<List<OrdersDataModelMix>>> getOfdOrders(
+      {String? token}) async {
     UserRepository userRepository = UserRepository();
 
     String? locale = await userRepository.getLocale();
@@ -1145,29 +1160,35 @@ class EventsAPIs {
     print('getOfdOrders call ${response.statusCode}');
     print('getOfdOrders call ${response.body}');
 
-    MyResponseModel myResponseModel = MyResponseModel<List<OrdersDataModelMix>>();
+    MyResponseModel myResponseModel =
+        MyResponseModel<List<OrdersDataModelMix>>();
     ShipmentsListsModel shipmentsListsModel = ShipmentsListsModel();
     if (response.statusCode == 200) {
       try {
         var decodedData = json.decode(response.body);
-        final welcomeFromJson = decodedData.map((data) => OrdersDataModelMix.fromJson(data)).toList();
+        final welcomeFromJson = decodedData
+            .map((data) => OrdersDataModelMix.fromJson(data))
+            .toList();
         var myOrdersList = welcomeFromJson.cast<OrdersDataModelMix>();
         myResponseModel.statusCode = response.statusCode;
         myResponseModel.responseData = myOrdersList;
         myResponseModel.errorsList = List<String>.empty(growable: false);
-        return myResponseModel as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
+        return myResponseModel
+            as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
       } catch (e) {
         myResponseModel.statusCode = 400;
         myResponseModel.responseData = <OrdersDataModelMix>[];
         myResponseModel.errorsList = List<String>.empty(growable: false);
-        return myResponseModel as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
+        return myResponseModel
+            as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
       }
     } else if (response.statusCode == 204) {
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = <OrdersDataModelMix>[];
       myResponseModel.errorsList = List<String>.empty(growable: false);
       // myResponseModel.responseData = fakeList;
-      return myResponseModel as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
+      return myResponseModel
+          as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
     } else {
       var errorList;
       try {
@@ -1182,7 +1203,8 @@ class EventsAPIs {
       myResponseModel.responseData = <OrdersDataModelMix>[];
       myResponseModel.errorsList = errorList;
 
-      return myResponseModel as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
+      return myResponseModel
+          as FutureOr<MyResponseModel<List<OrdersDataModelMix>>>;
     }
   }
 
@@ -1280,7 +1302,9 @@ class EventsAPIs {
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
       try {
-        final welcomeFromJson = decodedData.map((data) => ClientPaymentsDataModel.fromJson(data)).toList();
+        final welcomeFromJson = decodedData
+            .map((data) => ClientPaymentsDataModel.fromJson(data))
+            .toList();
         var myOrdersList = welcomeFromJson.cast<ClientPaymentsDataModel>();
         myResponseModel.statusCode = response.statusCode;
         myResponseModel.responseData = myOrdersList;
@@ -1338,16 +1362,16 @@ class EventsAPIs {
     String? locale = await userRepository.getLocale();
     String? fcm = await userRepository.getFcmToken();
 
-    http.Response response =
-        await http.get(Uri.parse(EventsAPIs.url + EndPoints.confirmations+"/$phone"),
-            headers: {
-              "Content-Type": "application/json",
-              "compatibility": compatibility,
-              "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
-              "fbId": fcm.toString(),
-              "appVersion": Constants.appVersion
-            },
-        );
+    http.Response response = await http.get(
+      Uri.parse(EventsAPIs.url + EndPoints.confirmations + "/$phone"),
+      headers: {
+        "Content-Type": "application/json",
+        "compatibility": compatibility,
+        "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+        "fbId": fcm.toString(),
+        "appVersion": Constants.appVersion
+      },
+    );
     print(response.request!.url);
     print('get phone code ${response.statusCode}');
     print('get phone code ${response.body}');
@@ -1397,16 +1421,16 @@ class EventsAPIs {
     String? locale = await userRepository.getLocale();
     String? fcm = await userRepository.getFcmToken();
 
-    http.Response response =
-        await http.put(Uri.parse(EventsAPIs.url + EndPoints.confirmations + "/$code"),
-            headers: {
-              "Content-Type": "application/json",
-              "compatibility": compatibility,
-              "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
-              "fbId": fcm.toString(),
-              "appVersion": Constants.appVersion
-            },
-            body: body);
+    http.Response response = await http.put(
+        Uri.parse(EventsAPIs.url + EndPoints.confirmations + "/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "compatibility": compatibility,
+          "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+          "fbId": fcm.toString(),
+          "appVersion": Constants.appVersion
+        },
+        body: body);
     print(response.request!.url);
     print('get phone code ${response.statusCode}');
     print('get phone code ${response.body}');
@@ -1601,8 +1625,7 @@ class EventsAPIs {
         myResponseModel.statusCode = 400;
         myResponseModel.responseData = null;
         myResponseModel.errorsList = List<String>.empty(growable: false);
-        return myResponseModel
-            as FutureOr<MyResponseModel<TrackingList>>;
+        return myResponseModel as FutureOr<MyResponseModel<TrackingList>>;
       }
     } else {
       var decodedData;
@@ -1612,17 +1635,18 @@ class EventsAPIs {
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.errorsList =
           GeneralHandler.handleErrorsFromApi(decodedData);
-      return myResponseModel
-          as FutureOr<MyResponseModel<TrackingList>>;
+      return myResponseModel as FutureOr<MyResponseModel<TrackingList>>;
     }
   }
 
-  static Future<MyResponseModel<bool>> addOrderB2c({required List<OrdersDataModelMix> pickupList}) async {
+  static Future<MyResponseModel<bool>> addOrderB2c(
+      {required List<OrdersDataModelMix> pickupList}) async {
     List encondeToJson(List<OrdersDataModelMix> list) {
       List jsonList = [];
       list.map((item) => jsonList.add(item.toJson())).toList();
       return jsonList;
     }
+
     print(pickupList.first.pickupTime);
     Map data = {
       "shipments": encondeToJson(pickupList),
@@ -1636,18 +1660,17 @@ class EventsAPIs {
     var body = json.encode(data);
     String? token = await userRepository.getAuthToken();
 
-
-    http.Response response = await http.post(
-        Uri.parse(EventsAPIs.url + EndPoints.addOrderB2c ),
-        headers: {
-          "Content-Type": "application/json",
-          "compatibility": EventsAPIs.compatibility,
-          HttpHeaders.authorizationHeader: '$token',
-          "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
-          "fbId": fcm.toString(),
-          "appVersion": Constants.appVersion
-        },
-        body: body);
+    http.Response response =
+        await http.post(Uri.parse(EventsAPIs.url + EndPoints.addOrderB2c),
+            headers: {
+              "Content-Type": "application/json",
+              "compatibility": EventsAPIs.compatibility,
+              HttpHeaders.authorizationHeader: '$token',
+              "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+              "fbId": fcm.toString(),
+              "appVersion": Constants.appVersion
+            },
+            body: body);
 
     print(response.request!.url);
     print('pickup response ${response.statusCode}');
@@ -1655,10 +1678,7 @@ class EventsAPIs {
 
     MyResponseModel myResponseModel = MyResponseModel<bool>();
 
-    if (response.statusCode == 201 ||
-        response.statusCode == 200) {
-
-
+    if (response.statusCode == 201 || response.statusCode == 200) {
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = true;
       myResponseModel.errorsList = GeneralHandler.handleErrorsFromApi(null);
@@ -1678,11 +1698,11 @@ class EventsAPIs {
       myResponseModel.errorsList = errorList;
     }
     return myResponseModel as FutureOr<MyResponseModel<bool>>;
-
   }
 
   // ignore: non_constant_identifier_names
-  static Future<MyResponseModel<GeoCodingDataModel>> getGeoCoding({String? lat, String? long, String? token, String? lang}) async {
+  static Future<MyResponseModel<GeoCodingDataModel>> getGeoCoding(
+      {String? lat, String? long, String? token, String? lang}) async {
     GeoCodingDataModel geoCondingDataModel = GeoCodingDataModel();
     MyResponseModel myResponseModel = MyResponseModel<GeoCodingDataModel>();
 
@@ -1722,10 +1742,10 @@ class EventsAPIs {
   static createDynamicLink(String id) async {
     Map data = {
       "dynamicLinkInfo": {
-        "domainUriPrefix": "https://xturbox.page.link",
-        "link": "https://xturbox.com/tracking/?tracking_number=$id",
-        "androidInfo": {"androidPackageName": "com.xturbox.xturbox"},
-        "iosInfo": {"iosBundleId": "com.xturbo.xturbox"}
+        "domainUriPrefix": "https://Fulgox.page.link",
+        "link": "https://Fulgox.com/tracking/?tracking_number=$id",
+        "androidInfo": {"androidPackageName": "com.bytes.fulgo"},
+        "iosInfo": {"iosBundleId": "com.bytes.fulgo"}
       }
     };
 
@@ -1743,28 +1763,31 @@ class EventsAPIs {
     print("create Dynamic link response ${response.body}");
   }
 
-  static Future<MyResponseModel<bool>> transferRequest({required String value}) async {
-
+  static Future<MyResponseModel<bool>> transferRequest(
+      {required String value}) async {
     Map data = {"amount": value};
     var body = json.encode(data);
 
     UserRepository userRepository = UserRepository();
     String? token = await userRepository.getAuthToken();
-    http.Response response = await http.post(Uri.parse(EventsAPIs.url + EndPoints.transferRequest),
-        headers: {
-          "Content-Type": "application/json",
-          HttpHeaders.authorizationHeader: token.toString(),
-          "ACCEPT-LANGUAGE": Constants.currentLocale,
-          "appVersion": Constants.appVersion
-        },
-        body: body);
+    http.Response response =
+        await http.post(Uri.parse(EventsAPIs.url + EndPoints.transferRequest),
+            headers: {
+              "Content-Type": "application/json",
+              HttpHeaders.authorizationHeader: token.toString(),
+              "ACCEPT-LANGUAGE": Constants.currentLocale,
+              "appVersion": Constants.appVersion
+            },
+            body: body);
     print(response.request!.url);
     print('transferToWallet ${response.statusCode}');
     print('transferToWallet  ${response.body}');
 
     MyResponseModel myResponseModel = MyResponseModel<bool>();
 
-    if (response.statusCode == 201 || response.statusCode == 204 || response.statusCode == 200 ) {
+    if (response.statusCode == 201 ||
+        response.statusCode == 204 ||
+        response.statusCode == 200) {
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = true;
       myResponseModel.errorsList = List<String>.empty(growable: false);
@@ -1776,49 +1799,51 @@ class EventsAPIs {
       } catch (e) {}
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = false;
-      myResponseModel.errorsList = GeneralHandler.handleErrorsFromApi(decodedData);
+      myResponseModel.errorsList =
+          GeneralHandler.handleErrorsFromApi(decodedData);
       return myResponseModel as FutureOr<MyResponseModel<bool>>;
     }
   }
-  static Future<MyResponseModel<List<dynamic>>> transferConfirm({required String value,required String code}) async {
 
+  static Future<MyResponseModel<List<dynamic>>> transferConfirm(
+      {required String value, required String code}) async {
     Map data = {"amount": value, "code": code};
     var body = json.encode(data);
     await Future.delayed(Duration(seconds: 4));
     UserRepository userRepository = UserRepository();
     String? token = await userRepository.getAuthToken();
-    http.Response response = await http.post(Uri.parse(EventsAPIs.url + EndPoints.transferConfirm),
-        headers: {
-          "Content-Type": "application/json",
-          HttpHeaders.authorizationHeader: token.toString(),
-          "ACCEPT-LANGUAGE": Constants.currentLocale,
-          "appVersion": Constants.appVersion
-        },
-        body: body);
+    http.Response response =
+        await http.post(Uri.parse(EventsAPIs.url + EndPoints.transferConfirm),
+            headers: {
+              "Content-Type": "application/json",
+              HttpHeaders.authorizationHeader: token.toString(),
+              "ACCEPT-LANGUAGE": Constants.currentLocale,
+              "appVersion": Constants.appVersion
+            },
+            body: body);
     print(response.request!.url);
     print('transferToWallet ${response.statusCode}');
     print('transferToWallet  ${response.body}');
 
     MyResponseModel myResponseModel = MyResponseModel<List<dynamic>>();
 
-    if (response.statusCode == 201 || response.statusCode == 204 || response.statusCode == 200 ) {
+    if (response.statusCode == 201 ||
+        response.statusCode == 204 ||
+        response.statusCode == 200) {
       myResponseModel.statusCode = response.statusCode;
-      List<double> list = [] ;
+      List<double> list = [];
       var decodedData = jsonDecode(response.body);
-      try{
-        var doubleBalance = double.parse(decodedData['balance'].toString()) ;
-        var doubleWallet = double.parse(decodedData['wallet'].toString()) ;
+      try {
+        var doubleBalance = double.parse(decodedData['balance'].toString());
+        var doubleWallet = double.parse(decodedData['wallet'].toString());
         list.insert(0, doubleBalance);
         list.insert(1, doubleWallet);
         myResponseModel.responseData = list;
-
-      }catch(e){
+      } catch (e) {
         print(e);
         myResponseModel.responseData = [];
         print("catch balance wallet");
       }
-
-
 
       myResponseModel.errorsList = List<String>.empty(growable: false);
       return myResponseModel as FutureOr<MyResponseModel<List<dynamic>>>;
@@ -1829,11 +1854,9 @@ class EventsAPIs {
       } catch (e) {}
       myResponseModel.statusCode = response.statusCode;
       myResponseModel.responseData = [];
-      myResponseModel.errorsList = GeneralHandler.handleErrorsFromApi(decodedData);
+      myResponseModel.errorsList =
+          GeneralHandler.handleErrorsFromApi(decodedData);
       return myResponseModel as FutureOr<MyResponseModel<List<dynamic>>>;
     }
   }
-
 }
-
-

@@ -2,47 +2,81 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart'as http;
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:version/version.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/checkIn_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
-import 'package:xturbox/blocs/events/checkIn_events.dart';
-import 'package:xturbox/blocs/states/checkIn_states.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/MyResponseModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:get/get.dart';
+import 'package:Fulgox/controllers/auth_controller.dart';
+import 'package:Fulgox/controllers/checkin_controller.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/MyResponseModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/main.dart';
-import 'package:xturbox/ui/common/mapTracking.dart';
-import 'package:xturbox/ui/courier/driverDashboard.dart';
-import 'package:xturbox/ui/courier/fuelManagement.dart';
-import 'package:xturbox/ui/courier/bulkPickupScreen.dart';
-import 'package:xturbox/ui/courier/captainMyPickup.dart';
-import 'package:xturbox/ui/courier/captainProfile.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
-import 'package:xturbox/ui/courier/deliveryOptionsScreen.dart';
-import 'package:xturbox/ui/courier/fleetManagement_options.dart';
-import 'package:xturbox/ui/courier/newCaptainDashboard.dart';
-import 'package:xturbox/ui/courier/odo_meter.dart';
-import 'package:xturbox/ui/courier/trips_management.dart';
-import 'package:xturbox/ui/courier/violations_screen.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/location.dart';
-import 'package:xturbox/utilities/push_nofitications.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/main.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/common/mapTracking.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/driverDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/fuelManagement.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/bulkPickupScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/captainMyPickup.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/captainProfile.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/deliveryOptionsScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/fleetManagement_options.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/newCaptainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/odo_meter.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/trips_management.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/violations_screen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/location.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/push_nofitications.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import '../courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../common/dashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../courier/captainMyReserves.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'custom_loading.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class DriverDrawer extends StatefulWidget {
   double? width;
@@ -60,7 +94,7 @@ class DriverDrawer extends StatefulWidget {
 
 class _DriverDrawerState extends State<DriverDrawer> {
   UserRepository userRepository = UserRepository();
-  AuthenticationBloc authenticationBloc = AuthenticationBloc();
+  AuthController authController = Get.put(AuthController());
   ProfileDataModel dashboardDataModel = ProfileDataModel();
   String? orders ;
   String? done ;
@@ -88,7 +122,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
     }
   }
 
-  CheckInBloc checkInBloc = CheckInBloc();
+  CheckInController checkInController = Get.put(CheckInController());
   Version currentVersion = Version.parse(Constants.appVersion);
   late Version latestVersion ;
 
@@ -115,10 +149,43 @@ class _DriverDrawerState extends State<DriverDrawer> {
       versionCheck();
     }
     catch(e){
-      checkInBloc.add(CheckInEventsGenerateError());
+      // checkInController.handleError();
     }
     getUserData();
-    checkInBloc.add(GetCaptainProfileForDrawer());
+    checkInController.fetchCaptainProfile();
+    
+    ever(checkInController.checkOutSuccess, (success) {
+      if (success) {
+        Future.delayed(const Duration(milliseconds: 50), () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => DashboardScreen(
+                resourcesData: widget.resourcesData,
+              ),
+            ),
+            (route) => false,
+          );
+        });
+      }
+    });
+
+    ever(checkInController.isLoading, (loading) {
+      if (loading) {
+        ComFunctions.ProgressDialog(context);
+      }
+    });
+
+    ever(checkInController.profileLoaded, (loaded) {
+      if (loaded) {
+        setState(() {
+          dashboardDataModel = SavedData.profileDataModel;
+          orders = dashboardDataModel.orders;
+          done = dashboardDataModel.done;
+        });
+      }
+    });
+
     super.initState();
   }
 
@@ -146,7 +213,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
                     ButtonTheme(
                       minWidth: 0,
                       height: 0,
-                      child: FlatButton(
+                      child: CustomButton(
                         padding: EdgeInsets.all(0) ,
                         shape:EasyLocalization.of(context)!.locale == Locale('en') ?
                         RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(15))):
@@ -231,12 +298,12 @@ class _DriverDrawerState extends State<DriverDrawer> {
                           alignment: EasyLocalization.of(context)!.locale == Locale('en') ? Alignment.centerRight :Alignment.centerLeft ,
                           child: Padding(
                             padding:  EdgeInsets.symmetric(horizontal: 15 , vertical: 1),
-                            child: MaterialButton(
+                            child: CustomButton(
                               padding: EdgeInsets.all(0),
                               minWidth: screenWidth*0.3,
                               height: 42,
                               onPressed: (){
-                                checkInBloc.add(IamNotActive());
+                                checkInController.setStatusInactive();
                               },
                               color: blueColor,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -372,7 +439,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
                   height: 40,
                 ),
                 navigation: ()async{
-                  authenticationBloc.add(LoggedOut());
+                  authController.logout();
                   await PushNotificationManager.firebaseMessaging.setAutoInitEnabled(false);
                   await PushNotificationManager.firebaseMessaging.deleteToken();
                   Future.delayed(const Duration(milliseconds: 200), () {

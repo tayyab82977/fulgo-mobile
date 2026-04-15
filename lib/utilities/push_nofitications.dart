@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:xturbox/ui/custom%20widgets/notificationView.dart';
+import 'package:Fulgox/ui/custom%20widgets/notificationView.dart';
 
 import 'Constants.dart';
 class PushNotificationManager {
@@ -30,12 +30,5 @@ if(Platform.isIOS){
   userRepository.persistNotificationToken(fcmToken: token!);
 
  }
-
-
-
-
-
-
-
 
 }

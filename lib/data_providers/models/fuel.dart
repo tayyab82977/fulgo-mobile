@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
 
 class FuelEntryModel {
   FuelEntryModel({

@@ -3,25 +3,24 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:Fulgox/data_providers/models/invoices_lists_model.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:xturbox/blocs/bloc/invoices_bloc.dart';
-import 'package:xturbox/blocs/events/invoices_events.dart';
-import 'package:xturbox/blocs/states/invoices_states.dart';
-import 'package:xturbox/data_providers/models/invoices_model.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/ui/custom%20widgets/ErrorView.dart';
-import 'package:xturbox/ui/custom%20widgets/NetworkErrorView.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerClient.dart';
-import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/downloader.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:get/get.dart';
+import 'package:Fulgox/controllers/invoices_controller.dart';
+import 'package:Fulgox/data_providers/models/invoices_model.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom%20widgets/ErrorView.dart';
+import 'package:Fulgox/ui/custom%20widgets/NetworkErrorView.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerClient.dart';
+import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/downloader.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 
 import '../../data_providers/models/savedData.dart';
 import '../custom widgets/custom_loading.dart';
@@ -104,14 +103,15 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
 
     });
   }
-  @override
-  void initState() {
     _tabController = new TabController(vsync: this ,length: 2);
     _tabController!.addListener(_handleTabSelection);
     _bindBackgroundIsolate();
     FlutterDownloader.registerCallback(Downloader.downloadCallback);
+    invoicesController.getInvoices();
     super.initState();
   }
+
+  final InvoicesController invoicesController = Get.put(InvoicesController());
 
   String taskId = "" ;
 
@@ -128,16 +128,13 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
     super.dispose();
   }
 
-  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     screenWidth = size.width;
     screenHeight = size.height;
     height = size.height ;
     width = size.width;
-    return BlocProvider(
-      create: (context)=> InvoicesBloc()..add(GetInvoices()),
-      child: Scaffold(
+    return Scaffold(
         key: _drawerKey,
         backgroundColor: Constants.clientBackgroundGrey,
         body: Column(
@@ -156,29 +153,15 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: BlocConsumer<InvoicesBloc , InvoicesStates>(
-                                builder:(context , state){
-
-
-                                  if(state is InvoicesLoading){
-                                    return CreateInvoicesScreen(loading: true , error: false);
-                                  }
-                                  else if(state is InvoicesError){
-
-                                    return CreateInvoicesScreen(loading: false , invoicesBloc: BlocProvider.of<InvoicesBloc>(context) , error: true);
-                                  }
-                                  else if(state is InvoicesLoaded){
-
-                                    return CreateInvoicesScreen(loading: false ,invoicesLoaded: state , invoicesBloc: BlocProvider.of<InvoicesBloc>(context),error: false );
-                                  }
-
-                                  return CreateInvoicesScreen(loading: true, invoicesBloc: BlocProvider.of<InvoicesBloc>(context),error: false
-                                  );
-                                } ,
-                                listener: (context , state){
-                                  if(state is InvoicesError){
-                                    if(state.error == "TIMEOUT"){
-
+                              child: Obx(() {
+                                if (invoicesController.isLoading.value) {
+                                  return CreateInvoicesScreen(loading: true, error: false);
+                                }
+                                
+                                if (invoicesController.errorMessage.value.isNotEmpty) {
+                                  String error = invoicesController.errorMessage.value;
+                                  if (error == "TIMEOUT") {
+                                    WidgetsBinding.instance?.addPostFrameCallback((_) {
                                       showDialog(
                                           context: context,
                                           barrierDismissible: false,
@@ -187,27 +170,37 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
                                           });
                                       Future.delayed(Duration(seconds: 2), () {
                                         Navigator.pop(context);
+                                        invoicesController.errorMessage.value = '';
                                       });
-                                    }
-                                    else if(state.error == "invalidToken"){
+                                    });
+                                  } else if (error == "invalidToken") {
+                                    WidgetsBinding.instance?.addPostFrameCallback((_) {
                                       GeneralHandler.handleInvalidToken(context);
-                                    }
-                                    else if (state.error == 'needUpdate'){
+                                    });
+                                  } else if (error == 'needUpdate') {
+                                    WidgetsBinding.instance?.addPostFrameCallback((_) {
                                       GeneralHandler.handleNeedUpdateState(context);
-                                    }
-                                    else if (state.error == "general"){
-                                      GeneralHandler.handleGeneralError(context);
-                                    }
-
+                                    });
+                                  } else if (error == "general") {
+                                      WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                        GeneralHandler.handleGeneralError(context);
+                                      });
                                   }
-                                  else if(state is InvoicesLoaded ){
-                                    // totalInvoice      = state.invoicesListsModel?.total.toString() ?? "" ;
-                                    // invoicesListType1 = state.invoicesListsModel!.invoices!.map((e) => e).toList();
-                                    // invoicesListType2 = state.invoicesListsModel!.refundInvoice!.map((e) => e).toList();
+                                  
+                                  if (!invoicesController.isLoading.value && invoicesController.invoicesList.value == null) {
+                                      return CreateInvoicesScreen(loading: false, error: true);
                                   }
-                                },
+                                }
 
-                              ),
+                                if (invoicesController.invoicesList.value != null) {
+                                  return CreateInvoicesScreen(
+                                      loading: false,
+                                      invoicesList: invoicesController.invoicesList.value,
+                                      error: false);
+                                }
+
+                                return CreateInvoicesScreen(loading: true, error: false);
+                              }),
                             ),
 
 
@@ -223,17 +216,16 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
 
           ],
         ),
-      ),
-    );
+      );
   }
-  Widget CreateInvoicesScreen({required bool loading , InvoicesLoaded? invoicesLoaded , InvoicesBloc? invoicesBloc , required bool error }){
+  Widget CreateInvoicesScreen({required bool loading , InvoicesListsModel? invoicesList , required bool error }){
 
 
-    if(invoicesLoaded != null){
+    if(invoicesList != null){
 
-    totalInvoice      = invoicesLoaded.invoicesListsModel?.total.toString() ?? "" ;
-    invoicesListType1 = invoicesLoaded.invoicesListsModel!.invoices!.map((e) => e).toList();
-    invoicesListType2 = invoicesLoaded.invoicesListsModel!.refundInvoice!.map((e) => e).toList();
+    totalInvoice      = invoicesList.total.toString() ;
+    invoicesListType1 = invoicesList.invoices!.map((e) => e).toList();
+    invoicesListType2 = invoicesList.refundInvoice!.map((e) => e).toList();
 
     }
     return Column(
@@ -372,21 +364,20 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     primary: Constants.blueColor, //
-                    //     onPrimary: Colors.white, // foreground
-                    //   ),
+                    //   //     color: Constants.blueColor, //
+                    //     foregroundColor: Colors.white, // foreground
+                    //   ,
                     //   onPressed: () {
                     //     taskId = getRandomString(10);
                     //     if (Platform.isAndroid) {
-                    //       Downloader.downloadPDFAndroid2( taskId , "https://portal.xturbox.com/print_membervise/${SavedData.profileDataModel.id}" ,SavedData.profileDataModel.name ?? "" );
+                    //       Downloader.downloadPDFAndroid2( taskId , "https://portal.Fulgox.com/print_membervise/${SavedData.profileDataModel.id}" ,SavedData.profileDataModel.name ?? "" );
                     //     } else {
-                    //       Downloader.downloadPDFIOS2(taskId , "https://portal.xturbox.com/print_membervise/${SavedData.profileDataModel.id}" , SavedData.profileDataModel.name ?? "");
+                    //       Downloader.downloadPDFIOS2(taskId , "https://portal.Fulgox.com/print_membervise/${SavedData.profileDataModel.id}" , SavedData.profileDataModel.name ?? "");
                     //     }
                     //     // if (Platform.isAndroid) {
-                    //     //   Downloader.downloadPDFAndroid2(localTaskId , "https://portal.xturbox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
+                    //     //   Downloader.downloadPDFAndroid2(localTaskId , "https://portal.Fulgox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
                     //     // } else {
-                    //     //   Downloader.downloadPDFIOS2(localTaskId , "https://portal.xturbox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
+                    //     //   Downloader.downloadPDFIOS2(localTaskId , "https://portal.Fulgox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
                     //     // }
                     //   },
                     //   child: Text('Print All'.tr()),
@@ -394,7 +385,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
                     Expanded(
                       child: RefreshIndicator(
                         onRefresh: ()async{
-                          invoicesBloc?.add(GetInvoices());
+                          invoicesController.getInvoices();
                         },
                         child: ListView.builder(
                           padding: EdgeInsets.zero,
@@ -409,7 +400,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
                 ),
                 RefreshIndicator(
                   onRefresh: ()async{
-                    invoicesBloc?.add(GetInvoices());
+                    invoicesController.getInvoices();
                   },
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
@@ -434,7 +425,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> with TickerProviderStat
           child: ErrorView(
             errorMessage: '',
             retryAction: (){
-              invoicesBloc?.add(GetInvoices());
+              invoicesController.getInvoices();
             },
           ),
         ): Container()
@@ -498,9 +489,9 @@ class _IncoivceCardState extends State<IncoivceCard> {
               CustomLoading() :
               IconButton(onPressed: (){
                 if (Platform.isAndroid) {
-                  Downloader.downloadPDFAndroid2("${widget.taskId}" , "https://portal.xturbox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
+                  Downloader.downloadPDFAndroid2("${widget.taskId}" , "https://portal.Fulgox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
                 } else {
-                  Downloader.downloadPDFIOS2("${widget.taskId}" , "https://portal.xturbox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
+                  Downloader.downloadPDFIOS2("${widget.taskId}" , "https://portal.Fulgox.com/cbjjsuy728fHnki/${widget.invoicesModel.id}" , "${widget.invoicesModel .name}");
                 }
               }, icon: Icon(Icons.print , color: Constants.blueColor,))
             ],

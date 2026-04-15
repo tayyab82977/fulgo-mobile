@@ -2,20 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/custom%20widgets/NetworkErrorView.dart';
-import 'package:xturbox/ui/common/dashboard.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom%20widgets/NetworkErrorView.dart';
+import 'package:Fulgox/ui/common/dashboard.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
 
 class GeneralHandler {
 
   static handleInvalidToken(BuildContext context){
     print('Hello from General Handler 403');
-    AuthenticationBloc authenticationBloc = AuthenticationBloc() ;
-    authenticationBloc.add(LoggedOut());
     Future.delayed(const Duration(milliseconds: 100), () {
       Navigator.pushAndRemoveUntil(
         context,
@@ -41,7 +37,7 @@ class GeneralHandler {
               ],
             ),
             actions: [
-              TextButton(
+              ElevatedButton(
                 child: Text('ok'.tr()),
                 onPressed: () {
                   ComFunctions.launchStore();
@@ -87,14 +83,14 @@ class GeneralHandler {
               ),
             ),
             actions: [
-              // TextButton(
+              // ElevatedButton(
               //   child: Text('contact with the customer service'.tr()),
               //   onPressed: () {
               //     ComFunctions.launcPhone("920022167");
               //
               //   },
               // ),
-              TextButton(
+              ElevatedButton(
                 child: Text('ok'.tr()),
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(

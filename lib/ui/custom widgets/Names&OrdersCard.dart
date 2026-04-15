@@ -5,40 +5,35 @@ import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:xturbox/UserRepo.dart';
+import 'package:Fulgox/UserRepo.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/captainOrders_bloc.dart';
-import 'package:xturbox/blocs/bloc/myReserve_bloc.dart';
-import 'package:xturbox/blocs/bloc/reserveClient_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
-import 'package:xturbox/blocs/events/captainOrders_events.dart';
-import 'package:xturbox/blocs/events/myReserve_events.dart';
-import 'package:xturbox/blocs/events/reserveClient_events.dart';
-import 'package:xturbox/blocs/states/reserveClient_states.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/apis/EventsApiCaptian.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/courier/bulkPickupScreen.dart';
-import 'package:xturbox/ui/courier/captainDashboard.dart';
-import 'package:xturbox/ui/courier/captainOrdersList.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
-import 'package:xturbox/ui/dialogs/pickup_dialog.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/downloader.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:Fulgox/controllers/captain_orders_controller.dart';
+import 'package:Fulgox/controllers/reserve_client_controller.dart';
+import 'package:Fulgox/controllers/auth_controller.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/data_providers/apis/EventsApiCaptian.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/courier/bulkPickupScreen.dart';
+import 'package:Fulgox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/ui/courier/captainOrdersList.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/dialogs/pickup_dialog.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/utilities/downloader.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 
 import '../common/dashboard.dart';
 import 'custom_loading.dart';
@@ -46,8 +41,7 @@ import 'custom_loading.dart';
 class NamesAndOrdersCard extends StatefulWidget {
   bool? print;
   ResourcesData? resourcesData;
-  CaptainOrdersBloc? captainOrdersBloc;
-  MyReservesBloc? myReservesBloc;
+  CaptainOrdersController? captainOrdersController;
   List<OrdersDataModelMix>? capOrdersList;
   bool? permEmpty;
   bool? hasAction;
@@ -59,16 +53,15 @@ class NamesAndOrdersCard extends StatefulWidget {
 
   NamesAndOrdersCard(
       {this.capOrdersList,
-        this.permEmpty,
-        this.myReservesBloc,
-        this.resourcesData,
-        this.reserved,
-        this.index,
-        this.captainOrdersBloc,
-        this.hasAction,
-        this.print,
-        this.dashboardDataModel,
-        this.ordersDataModel});
+      this.permEmpty,
+      this.resourcesData,
+      this.reserved,
+      this.index,
+      this.captainOrdersController,
+      this.hasAction,
+      this.print,
+      this.dashboardDataModel,
+      this.ordersDataModel});
 
   @override
   _NamesAndOrdersCardState createState() => _NamesAndOrdersCardState();
@@ -89,7 +82,7 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
   String? zoneName;
   String? AMPM;
 
-  ReserveClientBloc reserveClientBloc = ReserveClientBloc();
+  final ReserveClientController _reserveClientController = Get.put(ReserveClientController());
 
   gettingDate() {
     dateDays = widget.capOrdersList?.first.stamp.toString().substring(8, 10);
@@ -123,7 +116,6 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
 
   Cancellation? cancelIdSelected = Cancellation();
 
-
   void _unbindBackgroundIsolate() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
@@ -144,12 +136,10 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
       print('real id $id ');
       _handleTabSelection();
       if (status == DownloadTaskStatus.complete) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('File Downloaded'.tr()),
-              backgroundColor: Colors.green,
-            )
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('File Downloaded'.tr()),
+          backgroundColor: Colors.green,
+        ));
         Future.delayed(Duration(seconds: 1), () {
           FlutterDownloader.open(taskId: id!);
         });
@@ -163,9 +153,9 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
   }
 
   idToName() {
-    if( widget.capOrdersList?.first.pickupNeighborhood != null){
-      zoneName = IdToName.idToName('zone', widget.capOrdersList!.first.pickupNeighborhood!.toString());
-
+    if (widget.capOrdersList?.first.pickupNeighborhood != null) {
+      zoneName = IdToName.idToName(
+          'zone', widget.capOrdersList!.first.pickupNeighborhood!.toString());
     }
     cancelIdSelected = widget.resourcesData?.postpone?.first;
   }
@@ -174,7 +164,6 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
 
   @override
   void dispose() {
-    reserveClientBloc.close();
     _unbindBackgroundIsolate();
     super.dispose();
   }
@@ -186,7 +175,6 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
       FlutterDownloader.registerCallback(Downloader.downloadCallback);
       idToName();
     } catch (e) {
-      reserveClientBloc.add(ReserveClientEventsGenerateError());
     }
 
     _bindBackgroundIsolate();
@@ -199,116 +187,82 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
     Size size = MediaQuery.of(context).size;
     screenWidth = size.width;
     screenHeight = size.height;
-    return BlocProvider(
-        create: (context) => ReserveClientBloc(),
-        child: BlocConsumer<ReserveClientBloc, ReserveClientStates>(
-          builder: (context, state) {
-            if (state is ReserveClientInitial) {
-              return CreateNamesAndOrderCard(
-                  reserveClientBloc:
-                  BlocProvider.of<ReserveClientBloc>(context),
-                  loading: false);
-            } else if (state is ReserveClientLoading) {
+    return Obx(() {
+      if (_reserveClientController.reserveSuccess.value) {
+          _reserveClientController.reserveSuccess.value = false;
+          _onWidgetDidBuild(context, () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Successfully Reserved'.tr()),
+                backgroundColor: Colors.green,
+              ),
+            );
+            widget.captainOrdersController?.fetchCaptainOrders();
+          });
+      }
 
-              return CreateNamesAndOrderCard(
-                  reserveClientBloc:
-                  BlocProvider.of<ReserveClientBloc>(context),
-                  loading: true);
-            } else if (state is ReserveClientSuccess) {
+      if (_reserveClientController.cancelSuccess.value) {
+          _reserveClientController.cancelSuccess.value = false;
+          _onWidgetDidBuild(context, () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Canceled successfully'.tr()),
+                backgroundColor: Colors.green,
+              ),
+            );
+            widget.captainOrdersController?.fetchCaptainOrders();
+          });
+      }
 
-              widget.captainOrdersBloc!.add(GetCaptainOrders());
-              return Container();
-            } else if (state is CancelClientSuccess) {
-              widget.captainOrdersBloc!.add(GetCaptainOrders());
+      if (_reserveClientController.recordPickupIssueSuccess.value) {
+          _reserveClientController.recordPickupIssueSuccess.value = false;
+          _onWidgetDidBuild(context, () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Pickup issue recorded successfully'.tr()),
+                backgroundColor: Colors.green,
+              ),
+            );
+            widget.captainOrdersController?.fetchCaptainOrders();
+          });
+      }
 
-              return Container();
-            } else if (state is ReserveClientFailure) {
-              return CreateNamesAndOrderCard(
-                  reserveClientBloc:
-                  BlocProvider.of<ReserveClientBloc>(context),
-                  loading: false);
-            }
-            return CreateNamesAndOrderCard(
-                reserveClientBloc: BlocProvider.of<ReserveClientBloc>(context),
-                loading: false);
-          },
-          listener: (context, state) {
-            if (state is ReserveClientSuccess) {
-              _onWidgetDidBuild(context, () {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Successfully Reserved'.tr()),
-                    backgroundColor: Colors.green,
+      if (_reserveClientController.errorMessage.value != '') {
+          String error = _reserveClientController.errorMessage.value;
+          _reserveClientController.errorMessage.value = '';
+          
+          if (error == 'needUpdate') {
+            GeneralHandler.handleNeedUpdateState(context);
+          } else if (error == "invalidToken") {
+            GeneralHandler.handleInvalidToken(context);
+          } else if (error == "general") {
+            GeneralHandler.handleGeneralError(context);
+          } else if (error == "TIMEOUT") {
+             GeneralHandler.handleNetworkError(context);
+          }
+
+          _onWidgetDidBuild(context, () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Container(
+                  width: screenWidth,
+                  height: screenHeight! * 0.1,
+                  child: ListView.builder(
+                    itemCount: _reserveClientController.errorsList.length,
+                    itemBuilder: (context, i) {
+                      return Text(_reserveClientController.errorsList[i].toString());
+                    },
                   ),
-                );
-              });
-            } else if (state is ReserveClientFailure) {
-              if (state.error == 'needUpdate') {
-                GeneralHandler.handleNeedUpdateState(context);
-              } else if (state.error == "invalidToken") {
-                GeneralHandler.handleInvalidToken(context);
-              }
-              _onWidgetDidBuild(context, () {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Container(
-                      width: screenWidth,
-                      height: screenHeight! * 0.1,
-                      child: ListView.builder(
-                        itemCount: state.errorList!.length,
-                        itemBuilder: (context, i) {
-                          return Text(state.errorList![i]!);
-                        },
-                      ),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              });
-            } else if (state is CancelClientFailure) {
-              if (state.error == 'needUpdate') {
-                GeneralHandler.handleNeedUpdateState(context);
-              } else if (state.error == "general") {
-                GeneralHandler.handleGeneralError(context);
-              }
-              _onWidgetDidBuild(context, () {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Container(
-                      width: screenWidth,
-                      height: screenHeight! * 0.1,
-                      child: ListView.builder(
-                        itemCount: state.errorList?.length ?? 0,
-                        itemBuilder: (context, i) {
-                          return Text(state.errorList?[i] ?? "");
-                        },
-                      ),
-                    ),
-                    backgroundColor: Constants.redColor,
-                  ),
-                );
-              });
-            } else if (state is CancelClientSuccess) {
-              _onWidgetDidBuild(context, () {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Canceled successfully'.tr()),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              });
-            } else if (state is RecordedPickupIssueSuccess) {
-              _onWidgetDidBuild(context, () {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Pickup issue recorded successfully'.tr()),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              });
-            }
-          },
-        ));
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          });
+      }
+
+      return CreateNamesAndOrderCard(
+          loading: _reserveClientController.loadingId.value == widget.capOrdersList?.first.member);
+    });
   }
 
   void _onWidgetDidBuild(BuildContext context, Function callback) {
@@ -317,14 +271,18 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
     });
   }
 
-  Widget CreateNamesAndOrderCard({required bool loading, ReserveClientBloc? reserveClientBloc}) {
+  Widget CreateNamesAndOrderCard(
+      {required bool loading}) {
     return Container(
       child: Padding(
         padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
         child: GestureDetector(
           onTap: () {
-            if(widget.reserved!){
-              PickupDialog.showPickupDialog(context: context ,capOrderList: widget.capOrdersList ?? [],);
+            if (widget.reserved!) {
+              PickupDialog.showPickupDialog(
+                context: context,
+                capOrderList: widget.capOrdersList ?? [],
+              );
             }
           },
           child: Container(
@@ -382,8 +340,9 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
                                 child: IconButton(
                                   icon: Icon(Icons.call),
                                   color: Constants.blueColor,
-                                  onPressed: (){
-                                    ComFunctions.launcPhone(widget.capOrdersList?.first.senderPhone);
+                                  onPressed: () {
+                                    ComFunctions.launcPhone(widget
+                                        .capOrdersList?.first.senderPhone);
                                   },
                                 ),
                               ),
@@ -392,467 +351,515 @@ class _NamesAndOrdersCardState extends State<NamesAndOrdersCard> {
                                 child: IconButton(
                                   icon: Icon(MdiIcons.whatsapp),
                                   color: Colors.green,
-                                  onPressed: (){
-                                    ComFunctions
-                                        .launcWhatsapp(widget.capOrdersList?.first.senderPhone);
+                                  onPressed: () {
+                                    ComFunctions.launcWhatsapp(widget
+                                        .capOrdersList?.first.senderPhone);
                                   },
                                 ),
                               ),
-                              widget.capOrdersList?.first.pickupMap != null && widget.capOrdersList?.first.pickupMap != ""?
-                              Container(
-                                height: 30,
-                                child: IconButton(
-                                  icon: Icon(Icons.location_on),
-                                  color: Colors.red,
-                                  onPressed: (){
-
-                                    ComFunctions.launchURL(
-                                        widget.capOrdersList?.first.pickupMap??""
-                                    );
-                                  },
-                                ),
-                              ) :SizedBox(),
-
+                              widget.capOrdersList?.first.pickupMap != null &&
+                                      widget.capOrdersList?.first.pickupMap !=
+                                          ""
+                                  ? Container(
+                                      height: 30,
+                                      child: IconButton(
+                                        icon: Icon(Icons.location_on),
+                                        color: Colors.red,
+                                        onPressed: () {
+                                          ComFunctions.launchURL(widget
+                                                  .capOrdersList
+                                                  ?.first
+                                                  .pickupMap ??
+                                              "");
+                                        },
+                                      ),
+                                    )
+                                  : SizedBox(),
                             ],
                           )
                         ],
                       ),
                       loading
                           ? Container(
-                        width: 30,
-                        height: 30,
-                        child: Center(child: CustomLoading()),
-                      )
+                              width: 30,
+                              height: 30,
+                              child: Center(child: CustomLoading()),
+                            )
                           : Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                '$dateDays/$dateMonth/$dateYear',
-                                style: TextStyle(fontSize: 11),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text('$timeH:$timeM $AMPM',
-                                  style: TextStyle(fontSize: 11)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              widget.print!
-                                  ? isAsync
-                                  ? Container(
-                                width: 30,
-                                height: 30,
-                                child: Center(
-                                    child:
-                                    CustomLoading()),
-                              )
-                                  : Container(
-                                  height: 30,
-
-                                  padding: EdgeInsets.all(0),
-
-                                  child: GestureDetector(
-                                    onTap: (){
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(
-                                                      15)),
-                                              title: Column(
-                                                children: [
-                                                  Text(
-                                                    "Print".tr(),
-                                                    style: TextStyle(
-                                                        fontSize:
-                                                        14),
-                                                  ),
-                                                  FlatButton(
-                                                      height:
-                                                      40,
-                                                      padding:
-                                                      EdgeInsets.all(
-                                                          0),
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(
-                                                              10)),
-                                                      color: Constants
-                                                          .capPurple,
-                                                      child:
-                                                      Text(
-                                                        '4*4'.tr(),
-                                                        style: TextStyle(
-                                                            color:
-                                                            Colors.white,
-                                                            fontSize: 11),
-                                                      ),
-                                                      onPressed:
-                                                          () {
-                                                        Navigator.pop(context);
-
-                                                        if (Platform.isAndroid) {
-                                                          Downloader.downloadPDFAndroid2( widget.ordersDataModel?.taskId , "${EventsAPIs.url}files/${widget.capOrdersList?.first.member}/member" ,widget.capOrdersList?.first.senderName ?? "");
-                                                        } else {
-                                                          Downloader.downloadPDFIOS2(widget.ordersDataModel?.taskId , "${EventsAPIs.url}files/${widget.capOrdersList?.first.member}/member" , widget.capOrdersList?.first.senderName ?? "");
-                                                        }
-
-                                                      }),
-                                                  SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  FlatButton(
-                                                      height:
-                                                      40,
-                                                      padding:
-                                                      EdgeInsets.all(
-                                                          0),
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(
-                                                              10)),
-                                                      color: Constants
-                                                          .capDarkPink,
-                                                      child:
-                                                      Text(
-                                                        "4*6 / pcs"
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                            color:
-                                                            Colors.white,
-                                                            fontSize: 11),
-                                                      ),
-                                                      onPressed:
-                                                          () {
-                                                        Navigator.of(context);
-                                                        if (Platform.isAndroid) {
-                                                          Downloader.downloadPDFAndroid2( widget.ordersDataModel?.taskId , "https://portal.xturbox.com/print_membervise/${widget.capOrdersList?.first.member}" , widget.capOrdersList?.first.senderName ?? "" );
-                                                        } else {
-                                                          Downloader.downloadPDFIOS2(widget.ordersDataModel?.taskId , "https://portal.xturbox.com/print_membervise/${widget.capOrdersList?.first.member}" , widget.capOrdersList?.first.senderName ?? "");
-                                                        }
-
-                                                        // ComFunctions.launchURL("https://portal.xturbox.com/print_membervise/${widget.capOrdersList!.first.member}");
-                                                      }),
-                                                  SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  FlatButton(
-                                                      height:
-                                                      40,
-                                                      padding:
-                                                      EdgeInsets.all(
-                                                          0),
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(
-                                                              10)),
-                                                      color: Colors
-                                                          .blueAccent,
-                                                      child:
-                                                      Text(
-                                                        "4*6"
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                            color:
-                                                            Colors.white,
-                                                            fontSize: 11),
-                                                      ),
-                                                      onPressed:
-                                                          () {
-                                                        Navigator.of(
-                                                            context);
-                                                        if (Platform.isAndroid) {
-                                                          Downloader.downloadPDFAndroid2( widget.ordersDataModel?.taskId , "https://portal.xturbox.com/print_membervise2/${widget.capOrdersList?.first.member}" , widget.capOrdersList?.first.senderName ?? "" );
-                                                        } else {
-                                                          Downloader.downloadPDFIOS2(widget.ordersDataModel?.taskId , "https://portal.xturbox.com/print_membervise2/${widget.capOrdersList?.first.member}" , widget.capOrdersList?.first.senderName ?? "");
-                                                        }
-                                                        // ComFunctions.launchURL("https://portal.xturbox.com/print_membervise2/${widget.capOrdersList!.first.member}");
-                                                      }),
-                                                ],
-                                              ),
-                                            );
-                                          });
-                                    },
-                                      child: Image.asset('assets/images/pdf.png')),
-                                   )
-                                  : Container(),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              widget.permEmpty == null
-                                  ? widget.hasAction!
-                                  ? FlatButton(
-                                  padding: EdgeInsets.all(0),
-                                  minWidth: screenWidth! * 0.25,
-                                  height: 40,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          12)),
-                                  color: Constants.redColor,
-                                  child: Text(
-                                    'Reserve'.tr(),
-                                    style: TextStyle(
-                                        color: Colors.white),
-                                  ),
-                                  onPressed: () {
-                                    reserveClientBloc!.add(
-                                        ReserveClient(
-                                            id: widget.capOrdersList?[0].member));
-                                  })
-                                  : FlatButton(
-                                  padding: EdgeInsets.all(0),
-                                  minWidth: screenWidth! * 0.1,
-                                  height: 30,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          10)),
-
-                                  child: Image.asset('assets/images/recycle_bin.png', height: 30,
-                                    // color: Constants.capOrange,
-                                  ),
-                                  onPressed: () {
-                                    bool confirmed = false ;
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return StatefulBuilder(
-                                            builder:
-                                                (context, setState2) {
-                                              return AlertDialog(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.all(Radius.circular(32.0))),
-                                                titlePadding: EdgeInsets.all(0),
-                                                title: Container(
-                                                    height: 60.00,
-                                                    width: 300.00,
-                                                    decoration: BoxDecoration(
-                                                      color: Constants.blueColor,
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text('Cancel'.tr(),
-                                                          style: TextStyle(color: Colors.white)),
-                                                    )
-                                                ),
-                                                content: Container(
-                                                  width: 300.0,
-                                                  height: 200,
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Row(
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: [
-                                                            Expanded(
-                                                              child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '$dateDays/$dateMonth/$dateYear',
+                                      style: TextStyle(fontSize: 11),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text('$timeH:$timeM $AMPM',
+                                        style: TextStyle(fontSize: 11)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    widget.print!
+                                        ? isAsync
+                                            ? Container(
+                                                width: 30,
+                                                height: 30,
+                                                child: Center(
+                                                    child: CustomLoading()),
+                                              )
+                                            : Container(
+                                                height: 30,
+                                                padding: EdgeInsets.all(0),
+                                                child: GestureDetector(
+                                                    onTap: () {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return AlertDialog(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15)),
+                                                              title: Column(
                                                                 children: [
                                                                   Text(
-                                                                    "Can not pickup from "
+                                                                    "Print"
                                                                         .tr(),
                                                                     style: TextStyle(
                                                                         fontSize:
-                                                                        14),
-                                                                  ),
-                                                                  Flexible(
-                                                                      child:
-                                                                      Text(
-                                                                        widget.capOrdersList?.first.senderName.toString() ?? "",
-                                                                        style: TextStyle(
-                                                                            fontSize:
                                                                             14),
-                                                                      )),
+                                                                  ),
+                                                                  CustomButton(
+                                                                      height:
+                                                                          40,
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              0),
+                                                                      shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                              10)),
+                                                                      color: Constants
+                                                                          .capPurple,
+                                                                      child:
+                                                                          Text(
+                                                                        '4*4'
+                                                                            .tr(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontSize: 11),
+                                                                      ),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.pop(
+                                                                            context);
+
+                                                                        if (Platform
+                                                                            .isAndroid) {
+                                                                          Downloader.downloadPDFAndroid2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "${EventsAPIs.url}files/${widget.capOrdersList?.first.member}/member",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        } else {
+                                                                          Downloader.downloadPDFIOS2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "${EventsAPIs.url}files/${widget.capOrdersList?.first.member}/member",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        }
+                                                                      }),
+                                                                  SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  CustomButton(
+                                                                      height:
+                                                                          40,
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              0),
+                                                                      shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                              10)),
+                                                                      color: Constants
+                                                                          .capDarkPink,
+                                                                      child:
+                                                                          Text(
+                                                                        "4*6 / pcs"
+                                                                            .tr(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontSize: 11),
+                                                                      ),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(
+                                                                            context);
+                                                                        if (Platform
+                                                                            .isAndroid) {
+                                                                          Downloader.downloadPDFAndroid2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "https://portal.Fulgox.com/print_membervise/${widget.capOrdersList?.first.member}",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        } else {
+                                                                          Downloader.downloadPDFIOS2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "https://portal.Fulgox.com/print_membervise/${widget.capOrdersList?.first.member}",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        }
+
+                                                                        // ComFunctions.launchURL("https://portal.Fulgox.com/print_membervise/${widget.capOrdersList!.first.member}");
+                                                                      }),
+                                                                  SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  CustomButton(
+                                                                      height:
+                                                                          40,
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              0),
+                                                                      shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(
+                                                                              10)),
+                                                                      color: Colors
+                                                                          .blueAccent,
+                                                                      child:
+                                                                          Text(
+                                                                        "4*6"
+                                                                            .tr(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontSize: 11),
+                                                                      ),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(
+                                                                            context);
+                                                                        if (Platform
+                                                                            .isAndroid) {
+                                                                          Downloader.downloadPDFAndroid2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "https://portal.Fulgox.com/print_membervise2/${widget.capOrdersList?.first.member}",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        } else {
+                                                                          Downloader.downloadPDFIOS2(
+                                                                              widget.ordersDataModel?.taskId,
+                                                                              "https://portal.Fulgox.com/print_membervise2/${widget.capOrdersList?.first.member}",
+                                                                              widget.capOrdersList?.first.senderName ?? "");
+                                                                        }
+                                                                        // ComFunctions.launchURL("https://portal.Fulgox.com/print_membervise2/${widget.capOrdersList!.first.member}");
+                                                                      }),
                                                                 ],
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                            DropdownButtonHideUnderline(
-                                                              child:
-                                                              DropdownButton<Cancellation>(
-                                                                items:
-                                                                widget.resourcesData?.postpone?.map((Cancellation dropDownStringItem) {
-                                                                  return DropdownMenuItem<Cancellation>(
-                                                                    value: dropDownStringItem,
-                                                                    child: Text(
-                                                                      dropDownStringItem.name ?? "",
-                                                                      style: TextStyle(color: Colors.black, fontSize: 15),
-                                                                    ),
-                                                                  );
-                                                                }).toList(),
-                                                                onChanged:
-                                                                    (Cancellation? newValue) {
-                                                                  setState2(() {
-                                                                    cancelIdSelected = newValue;
-                                                                  });
-                                                                },
-                                                                value:
-                                                                cancelIdSelected,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      confirmed ? Padding(
-                                                        padding: const EdgeInsets.all(18.0),
-                                                        child: Text("Are you sure ?".tr() , style: TextStyle(fontSize: 22),),
-                                                      ) : Container(),
-                                                      Row(
-
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          confirmed ? Container() :
-
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(20),
-                                                            child: Container(
-                                                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(15),
-                                                                  color: Constants.redColor
-                                                              ),
-                                                              child: GestureDetector(
-                                                                onTap: (){
-                                                                  setState2(() {
-                                                                    confirmed = true ;
-                                                                  });
-                                                                },
-                                                                child: Text('Submit'.tr(), style: TextStyle(color: Colors.white),),
-                                                              ),
-                                                            ),
-                                                          ),
-
-                                                          confirmed ?
-                                                          Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                                                            child: Container(
-                                                              // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(15),
-                                                                  color: Constants.redColor
-                                                              ),
-                                                              child: TextButton(
-
-                                                                child: Text(
-                                                                  'Cancel'.tr() , style: TextStyle(color: Colors.white),),
-                                                                onPressed: () {
-                                                                  Navigator.pop(context);
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ): Container(),
-
-                                                          confirmed ?
-                                                          Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                                                            child: Container(
-                                                              // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(15),
-                                                                  color: Constants.blueColor
-                                                              ),
-                                                              child: TextButton(
-                                                                child: Text(
-                                                                  'Yes'.tr(), style: TextStyle(color: Colors.white),),
-                                                                onPressed: () {
-                                                                  reserveClientBloc!.add(RecordPickupIssue(
-                                                                      orderList:
-                                                                      widget.capOrdersList,
-                                                                      reasonId: cancelIdSelected?.id));
-                                                                  Navigator.pop(context);
-
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ): Container(),
-
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        });
-
-
-                                  })
-                                  : Container(),
-                            ],
-                          ),
-                          widget.reserved!
-                              ? Row(
-                            children: [
-                              ButtonTheme(
-                                height: 40,
-                                minWidth: screenWidth! * 0.25,
-                                child: RaisedButton(
-                                    padding: EdgeInsets.all(0),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            15)),
-                                    color: Constants.blueColor,
-                                    child: Text(
-                                      'Pickup'.tr(),
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16, fontWeight: FontWeight.bold),
+                                                            );
+                                                          });
+                                                    },
+                                                    child: Image.asset(
+                                                        'assets/images/pdf.png')),
+                                              )
+                                        : Container(),
+                                    SizedBox(
+                                      width: 5,
                                     ),
-                                    onPressed: () {
-                                      PickupDialog.showPickupDialog(context: context ,capOrderList: widget.capOrdersList ?? [],);
-                                    }),
-                              ),
-                              // FlatButton(
-                              //     height: 40,
-                              //     minWidth: screenWidth! * 0.38,
-                              //     padding: EdgeInsets.all(0),
-                              //     shape: RoundedRectangleBorder(
-                              //         borderRadius:
-                              //         BorderRadius.circular(
-                              //             10)),
-                              //     color: Constants.capLightGreen,
-                              //     child: Text(
-                              //       'Bulk Pickup'.tr(),
-                              //       style: TextStyle(
-                              //           color: Colors.white,
-                              //           fontSize: 12),
-                              //     ),
-                              //     onPressed: () {
-                              //       Navigator.push(
-                              //           context,
-                              //           MaterialPageRoute(
-                              //               builder: (context) =>
-                              //                   BulkPickUpScreen(
-                              //                     resourcesData: widget
-                              //                         .resourcesData,
-                              //                     acceptedOrder: widget
-                              //                         .capOrdersList,
-                              //                   )));
-                              //     }),
-                            ],
-                          )
-                              : Container()
-                        ],
-                      ),
+                                    widget.permEmpty == null
+                                        ? widget.hasAction!
+                                            ? CustomButton(
+                                                onPressed: () {
+                                                   _reserveClientController.reserveClient(widget.capOrdersList?[0].member);
+                                                },
+                                                padding: EdgeInsets.all(0),
+                                                minWidth: screenWidth! * 0.25,
+                                                height: 40,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                                color: Constants.redColor,
+                                                child: Text(
+                                                  'Reserve'.tr(),
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ))
+                                            : CustomButton(
+                                                padding: EdgeInsets.all(0),
+                                                minWidth: screenWidth! * 0.1,
+                                                height: 30,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Image.asset(
+                                                  'assets/images/recycle_bin.png',
+                                                  height: 30,
+                                                  // color: Constants.capOrange,
+                                                ),
+                                                onPressed: () {
+                                                  bool confirmed = false;
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return StatefulBuilder(
+                                                          builder: (context,
+                                                              setState2) {
+                                                            return AlertDialog(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              32.0))),
+                                                              titlePadding:
+                                                                  EdgeInsets
+                                                                      .all(0),
+                                                              title: Container(
+                                                                  height: 60.00,
+                                                                  width: 300.00,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Constants
+                                                                        .blueColor,
+                                                                    borderRadius: BorderRadius.only(
+                                                                        topLeft:
+                                                                            Radius.circular(
+                                                                                32),
+                                                                        topRight:
+                                                                            Radius.circular(32)),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                        'Cancel'
+                                                                            .tr(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white)),
+                                                                  )),
+                                                              content:
+                                                                  Container(
+                                                                width: 300.0,
+                                                                height: 200,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child:
+                                                                          Row(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.center,
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  "Can not pickup from ".tr(),
+                                                                                  style: TextStyle(fontSize: 14),
+                                                                                ),
+                                                                                Flexible(
+                                                                                    child: Text(
+                                                                                  widget.capOrdersList?.first.senderName.toString() ?? "",
+                                                                                  style: TextStyle(fontSize: 14),
+                                                                                )),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child:
+                                                                              DropdownButtonHideUnderline(
+                                                                            child:
+                                                                                DropdownButton<Cancellation>(
+                                                                              items: widget.resourcesData?.postpone?.map((Cancellation dropDownStringItem) {
+                                                                                return DropdownMenuItem<Cancellation>(
+                                                                                  value: dropDownStringItem,
+                                                                                  child: Text(
+                                                                                    dropDownStringItem.name ?? "",
+                                                                                    style: TextStyle(color: Colors.black, fontSize: 15),
+                                                                                  ),
+                                                                                );
+                                                                              }).toList(),
+                                                                              onChanged: (Cancellation? newValue) {
+                                                                                setState2(() {
+                                                                                  cancelIdSelected = newValue;
+                                                                                });
+                                                                              },
+                                                                              value: cancelIdSelected,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    confirmed
+                                                                        ? Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(18.0),
+                                                                            child:
+                                                                                Text(
+                                                                              "Are you sure ?".tr(),
+                                                                              style: TextStyle(fontSize: 22),
+                                                                            ),
+                                                                          )
+                                                                        : Container(),
+                                                                    Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        confirmed
+                                                                            ? Container()
+                                                                            : Padding(
+                                                                                padding: const EdgeInsets.all(20),
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Constants.redColor),
+                                                                                  child: GestureDetector(
+                                                                                    onTap: () {
+                                                                                      setState2(() {
+                                                                                        confirmed = true;
+                                                                                      });
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'Submit'.tr(),
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                        confirmed
+                                                                            ? Padding(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                                                child: Container(
+                                                                                  // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Constants.redColor),
+                                                                                  child: CustomButton(
+                                                                                    onPressed: () {
+                                                                                      Navigator.pop(context);
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'Cancel'.tr(),
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                  ),
+                                                                                ))
+                                                                            : Container(),
+                                                                        confirmed
+                                                                            ? Padding(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                                                child: Container(
+                                                                                  // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Constants.blueColor),
+                                                                                  child: CustomButton(
+                                                                                    onPressed: () {
+                                                                                      _reserveClientController.recordPickupIssue(widget.capOrdersList ?? [], cancelIdSelected?.id);
+                                                                                      Navigator.pop(context);
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'Yes'.tr(),
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                  ),
+                                                                                ))
+                                                                            : Container(),
+                                                                      ],
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      });
+                                                })
+                                        : Container(),
+                                  ],
+                                ),
+                                widget.reserved!
+                                    ? Row(
+                                        children: [
+                                          ButtonTheme(
+                                            height: 40,
+                                            minWidth: screenWidth! * 0.25,
+                                            child: CustomButton(
+                                                padding: EdgeInsets.all(0),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                                color: Constants.blueColor,
+                                                child: Text(
+                                                  'Pickup'.tr(),
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                onPressed: () {
+                                                  PickupDialog.showPickupDialog(
+                                                    context: context,
+                                                    capOrderList:
+                                                        widget.capOrdersList ??
+                                                            [],
+                                                  );
+                                                }),
+                                          ),
+                                          // CustomButton(
+                                          //     height: 40,
+                                          //     minWidth: screenWidth! * 0.38,
+                                          //     padding: EdgeInsets.all(0),
+                                          //     shape: RoundedRectangleBorder(
+                                          //         borderRadius:
+                                          //         BorderRadius.circular(
+                                          //             10)),
+                                          //     color: Constants.capLightGreen,
+                                          //     child: Text(
+                                          //       'Bulk Pickup'.tr(),
+                                          //       style: TextStyle(
+                                          //           color: Colors.white,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //     onPressed: () {
+                                          //       Navigator.push(
+                                          //           context,
+                                          //           MaterialPageRoute(
+                                          //               builder: (context) =>
+                                          //                   BulkPickUpScreen(
+                                          //                     resourcesData: widget
+                                          //                         .resourcesData,
+                                          //                     acceptedOrder: widget
+                                          //                         .capOrdersList,
+                                          //                   )));
+                                          //     }),
+                                        ],
+                                      )
+                                    : Container()
+                              ],
+                            ),
                     ],
                   ),
                 ],

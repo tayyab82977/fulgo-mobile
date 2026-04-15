@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 
 class CustomLoading extends StatelessWidget {
   @override

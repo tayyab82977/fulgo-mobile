@@ -1,21 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:timeline_tile/timeline_tile.dart';
-import 'package:xturbox/blocs/bloc/newTracking_bloc.dart';
-import 'package:xturbox/blocs/bloc/tracking_bloc.dart';
-import 'package:xturbox/blocs/events/newTracking_events.dart';
-import 'package:xturbox/blocs/states/newTracking_states.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/trackingDataModel.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:Fulgox/controllers/new_tracking_controller.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/trackingDataModel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/custom%20widgets/NetworkErrorView.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/ui/custom%20widgets/NetworkErrorView.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 
 import '../custom widgets/custom_loading.dart';
 import '../custom widgets/myAppBar.dart';
@@ -36,7 +32,7 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
   final idController = TextEditingController();
   FocusNode trackingFocus = FocusNode();
   double screenWidth = 0, screenHeight = 0;
-  NewTrackingBloc trackingBloc = NewTrackingBloc();
+  final NewTrackingController _trackingController = Get.put(NewTrackingController());
 
   @override
   void dispose() {
@@ -46,11 +42,11 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.shipmentId != null && widget.shipmentId != '') {
       idController.text = widget.shipmentId!;
-      trackingBloc.add(GetNewTracking(id: widget.shipmentId));
+      _trackingController.getNewTracking(id: widget.shipmentId!);
     }
-    super.initState();
   }
 
   @override
@@ -60,9 +56,7 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
     height = size.height;
     screenWidth = size.width;
     screenHeight = size.height;
-    return BlocProvider(
-      create: (context) => NewTrackingBloc(),
-      child: Scaffold(
+    return Scaffold(
         key: _drawerKey,
         body: Form(
           key: _formKey,
@@ -90,12 +84,7 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
                               key: const ValueKey('closeTracking'),
                               minWidth: 0,
                               height: 0,
-                              child: FlatButton(
-                                padding: EdgeInsets.all(1),
-                                minWidth: 0,
-                                height: 0,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                              child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
@@ -136,8 +125,7 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
                                     widget.shipmentId != null ? false : true,
                                 onFieldSubmitted: (v) {
                                   if (_formKey.currentState!.validate()) {
-                                    trackingBloc.add(
-                                        GetNewTracking(id: idController.text));
+                                    _trackingController.getNewTracking(id: idController.text);
                                   }
                                 },
                                 validator: (String? value) {
@@ -159,9 +147,7 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
                                           if (_formKey.currentState!
                                               .validate()) {
                                             FocusScope.of(context).unfocus();
-
-                                            trackingBloc.add(GetNewTracking(
-                                                id: idController.text));
+                                            _trackingController.getNewTracking(id: idController.text);
                                           }
                                         })),
                               ),
@@ -169,22 +155,12 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
                           ],
                         ),
                         Expanded(
-                          child:
-                              BlocConsumer<NewTrackingBloc, NewTrackingStates>(
-                            bloc: trackingBloc,
-                            builder: (context, state) {
-                              if (state is NewTrackingLoading) {
-                                return Center(
-                                    child: CustomLoading());
-                              }
-                              if (state is NewTrackingLoaded) {
-                                return CreateTrackingScreen(state);
-                              }
-                              return Container();
-                            },
-                            listener: (context, state) {
-                              if (state is NewTrackingError) {
-                                if (state.error == "TIMEOUT") {
+                          child: Obx(() {
+                            // Handle errors
+                            if (_trackingController.errorMessage.value.isNotEmpty) {
+                              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                String error = _trackingController.errorMessage.value;
+                                if (error == "TIMEOUT") {
                                   showDialog(
                                       context: context,
                                       barrierDismissible: false,
@@ -193,22 +169,38 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
                                       });
                                   Future.delayed(Duration(seconds: 2), () {
                                     Navigator.pop(context);
+                                    _trackingController.errorMessage.value = '';
                                   });
-                                } else if (state.error == 'inValidShipment') {
+                                } else if (error == 'inValidShipment') {
                                   ComFunctions.showToastEditable(
                                     color: Colors.red,
                                     text: 'This shipment does not exist'.tr(),
                                     toastGravity: ToastGravity.CENTER,
                                     length: Toast.LENGTH_SHORT,
                                   );
-                                } else if (state.error == 'needUpdate') {
+                                  _trackingController.errorMessage.value = '';
+                                } else if (error == 'needUpdate') {
                                   GeneralHandler.handleNeedUpdateState(context);
-                                } else if (state.error == "general") {
+                                  _trackingController.errorMessage.value = '';
+                                } else if (error == "general") {
                                   GeneralHandler.handleGeneralError(context);
+                                  _trackingController.errorMessage.value = '';
                                 }
-                              }
-                            },
-                          ),
+                              });
+                            }
+
+                            // Show loading
+                            if (_trackingController.isLoading.value) {
+                              return Center(child: CustomLoading());
+                            }
+
+                            // Show tracking data
+                            if (_trackingController.trackingList.value != null) {
+                              return CreateTrackingScreen(_trackingController.trackingList.value);
+                            }
+
+                            return Container();
+                          }),
                         )
                       ],
                     ),
@@ -218,27 +210,31 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
-  Widget CreateTrackingScreen(NewTrackingLoaded state) {
+  Widget CreateTrackingScreen(dynamic trackingData) {
+    List<TrackingDataModel> trackingList = [];
+    if (trackingData is List) {
+      trackingList = trackingData.map((e) => TrackingDataModel.fromJson(e)).toList();
+    }
+
     List<TrackingDataModel> newOrder = [];
     List<TrackingDataModel> processing = [];
     List<TrackingDataModel> lost = [];
     List<TrackingDataModel> done = [];
 
     newOrder =
-        state.trackingList!.where((element) => element.type == '9').toList();
+        trackingList.where((element) => element.type == '9').toList();
 
-    lost = state.trackingList!
+    lost = trackingList
         .where((element) => element.type == '10' || element.type == '14')
         .toList();
-    done = state.trackingList!
+    done = trackingList
         .where((element) =>
             element.type == '5' || element.type == '10' || element.type == '14')
         .toList();
-    processing = state.trackingList!
+    processing = trackingList
         .where((element) =>
             element.type == '1' ||
             element.type == '2' ||
@@ -275,195 +271,199 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
         Expanded(
           child: ListView(
             children: [
-              Padding(
-                padding: EdgeInsets.only(right: width! * 0.04),
-                child: TimelineTile(
-                  alignment: TimelineAlign.start,
-                  indicatorStyle: IndicatorStyle(
-                    width: screenWidth * 0.1,
-                    color: isActive(newOrder) ? Colors.green : Colors.grey,
-                    padding: const EdgeInsets.all(8),
-                    iconStyle: IconStyle(
-                      color: Colors.white,
-                      iconData: Icons.check_circle_outline,
-                    ),
-                  ),
-                  beforeLineStyle: LineStyle(color: Colors.transparent),
-                  afterLineStyle: LineStyle(
-                    color: isActive(processing) ? Colors.green : Colors.grey,
-                  ),
-                  endChild: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          // minHeight: 120,
-                          ),
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Order Placed'.tr(),
-                            style: TextStyle(
-                                color: isActive(newOrder)
-                                    ? Colors.black
-                                    : Colors.grey,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 19),
-                          ),
-                          Container(
-                            width: screenWidth * 0.75,
-                            height: newOrder.length * 50.0,
-                            child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: newOrder.length,
-                                itemBuilder: (context, i) {
-                                  return NewTrackingCard(
-                                    // resourcesData: widget.resourcesData,
-                                    trackingDataModel: newOrder[i],
-                                    trackingBloc: trackingBloc,
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: width! * 0.04),
-                child: TimelineTile(
-                  alignment: TimelineAlign.start,
-                  indicatorStyle: IndicatorStyle(
-                    width: screenWidth * 0.1,
-                    color: isActive(processing) ? Colors.green : Colors.grey,
-                    padding: const EdgeInsets.all(8),
-                    iconStyle: IconStyle(
-                      color: Colors.white,
-                      iconData: Icons.check_circle_outline,
-                    ),
-                  ),
-                  beforeLineStyle: LineStyle(
-                    color: isActive(processing) ? Colors.green : Colors.grey,
-                  ),
-                  afterLineStyle: LineStyle(
-                    color: isActive(done) ? Colors.green : Colors.grey,
-                  ),
-                  endChild: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          // minHeight: 120,
-                          ),
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Processing'.tr(),
-                            style: TextStyle(
-                                color: isActive(processing)
-                                    ? Colors.black
-                                    : Colors.grey,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 19),
-                          ),
-                          Container(
-                            width: screenWidth * 0.75,
-                            height: processing.length * 60.0,
-                            child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: processing.length,
-                                itemBuilder: (context, i) {
-                                  return NewTrackingCard(
-                                    // resourcesData: widget.resourcesData,
-                                    trackingDataModel: processing[i],
-                                    trackingBloc: trackingBloc,
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: width! * 0.04),
-                child: TimelineTile(
-                  alignment: TimelineAlign.start,
-                  indicatorStyle: IndicatorStyle(
-                    width: screenWidth * 0.1,
-                    color: isActive(lost)
-                        ? Colors.red
-                        : isActive(done)
-                            ? Colors.green
-                            : Colors.grey,
-                    padding: const EdgeInsets.all(8),
-                    iconStyle: IconStyle(
-                      color: Colors.white,
-                      iconData: isActive(lost)
-                          ? Icons.cancel
-                          : Icons.check_circle_outline,
-                    ),
-                  ),
-                  beforeLineStyle: LineStyle(
-                    color: isActive(done) ? Colors.green : Colors.grey,
-                  ),
-                  afterLineStyle: LineStyle(color: Colors.transparent),
-                  endChild: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          // minHeight: 120,
-                          ),
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          lost.length > 0
-                              ? Text(
-                                  'Cancelled'.tr(),
-                                  style: TextStyle(
-                                      color: isActive(processing)
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 19),
-                                )
-                              : Text(
-                                  'Delivered'.tr(),
-                                  style: TextStyle(
-                                      color: isActive(done)
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 19),
-                                ),
-                          Container(
-                            width: screenWidth * 0.75,
-                            height: done.length * 80.0,
-                            child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: done.length,
-                                itemBuilder: (context, i) {
-                                  return NewTrackingCard(
-                                    // resourcesData: widget.resourcesData,
-                                    trackingDataModel: done[i],
-                                    trackingBloc: trackingBloc,
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.only(right: width! * 0.04),
+              //   child: TimelineTile(
+              //     alignment: TimelineAlign.start,
+              //     indicatorStyle: IndicatorStyle(
+              //       width: screenWidth * 0.1,
+              //       color: isActive(newOrder) ? Colors.green : Colors.grey,
+              //       padding: const EdgeInsets.all(8),
+              //       iconStyle: IconStyle(
+              //         color: Colors.white,
+              //         iconData: Icons.check_circle_outline,
+              //       ),
+              //     ),
+              //     beforeLineStyle: LineStyle(
+              //       color: Colors.transparent,
+              //     ),
+              //     afterLineStyle: LineStyle(
+              //       color: isActive(processing) ? Colors.green : Colors.grey,
+              //     ),
+              //     endChild: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Container(
+              //         constraints: const BoxConstraints(
+              //             // minHeight: 120,
+              //             ),
+              //         color: Colors.transparent,
+              //         child: Column(
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           children: [
+              //             Text(
+              //               'Order Placed'.tr(),
+              //               style: TextStyle(
+              //                   color: isActive(newOrder)
+              //                       ? Colors.black
+              //                       : Colors.grey,
+              //                   fontWeight: FontWeight.w900,
+              //                   fontSize: 19),
+              //             ),
+              //             Container(
+              //               width: screenWidth * 0.75,
+              //               height: newOrder.length * 50.0,
+              //               child: ListView.builder(
+              //                   physics: NeverScrollableScrollPhysics(),
+              //                   shrinkWrap: true,
+              //                   itemCount: newOrder.length,
+              //                   itemBuilder: (context, i) {
+              //                     return NewTrackingCard(
+              //                       // resourcesData: widget.resourcesData,
+              //                       trackingDataModel: newOrder[i],
+              //                       trackingBloc: trackingBloc,
+              //                     );
+              //                   }),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // // Padding(
+              // //   padding: EdgeInsets.only(right: width! * 0.04),
+              // //   child: TimelineTile(
+              // //     alignment: TimelineAlign.start,
+              // //     indicatorStyle: IndicatorStyle(
+              // //       width: screenWidth * 0.1,
+              // //       color: isActive(processing) ? Colors.green : Colors.grey,
+              // //       padding: const EdgeInsets.all(8),
+              // //       iconStyle: IconStyle(
+              // //         color: Colors.white,
+              // //         iconData: Icons.check_circle_outline,
+              // //       ),
+              // //     ),
+              // //     beforeLineStyle: LineStyle(
+              // //       color: isActive(processing) ? Colors.green : Colors.grey,
+              // //     ),
+              // //     afterLineStyle: LineStyle(
+              // //       color: isActive(done) ? Colors.green : Colors.grey,
+              // //     ),
+              // //     endChild: Padding(
+              // //       padding: const EdgeInsets.all(8.0),
+              // //       child: Container(
+              // //         constraints: const BoxConstraints(
+              // //             // minHeight: 120,
+              // //             ),
+              // //         color: Colors.transparent,
+              // //         child: Column(
+              // //           mainAxisAlignment: MainAxisAlignment.center,
+              // //           children: [
+              // //             Text(
+              // //               'Processing'.tr(),
+              // //               style: TextStyle(
+              // //                   color: isActive(processing)
+              // //                       ? Colors.black
+              // //                       : Colors.grey,
+              // //                   fontWeight: FontWeight.w900,
+              // //                   fontSize: 19),
+              // //             ),
+              // //             Container(
+              // //               width: screenWidth * 0.75,
+              // //               height: processing.length * 60.0,
+              // //               child: ListView.builder(
+              // //                   physics: NeverScrollableScrollPhysics(),
+              // //                   shrinkWrap: true,
+              // //                   itemCount: processing.length,
+              // //                   itemBuilder: (context, i) {
+              // //                     return NewTrackingCard(
+              // //                       // resourcesData: widget.resourcesData,
+              // //                       trackingDataModel: processing[i],
+              // //                       trackingBloc: trackingBloc,
+              // //                     );
+              // //                   }),
+              // //             ),
+              // //           ],
+              // //         ),
+              // //       ),
+              // //     ),
+              // //   ),
+              // // ),
+              // // // Padding(
+              // // //   padding: EdgeInsets.only(right: width! * 0.04),
+              // // //   child: TimelineTile(
+              // // //     alignment: TimelineAlign.start,
+              // // //     indicatorStyle: IndicatorStyle(
+              // // //       width: screenWidth * 0.1,
+              // // //       color: isActive(lost)
+              // // //           ? Colors.red
+              // // //           : isActive(done)
+              // // //               ? Colors.green
+              // // //               : Colors.grey,
+              // // //       padding: const EdgeInsets.all(8),
+              // // //       iconStyle: IconStyle(
+              // // //         color: Colors.white,
+              // // //         iconData: isActive(lost)
+              // // //             ? Icons.cancel
+              // // //             : Icons.check_circle_outline,
+              // // //       ),
+              // // //     ),
+              // // //     beforeLineStyle: LineStyle(
+              // // //       color: isActive(done) ? Colors.green : Colors.grey,
+              // // //     ),
+              // // //     afterLineStyle: LineStyle(
+              // // //       color: Colors.transparent,
+              // // //     ),
+              // // //     endChild: Padding(
+              // // //       padding: const EdgeInsets.all(8.0),
+              // // //       child: Container(
+              // // //         constraints: const BoxConstraints(
+              // // //             // minHeight: 120,
+              // // //             ),
+              // // //         color: Colors.transparent,
+              // // //         child: Column(
+              // // //           mainAxisAlignment: MainAxisAlignment.center,
+              // // //           children: [
+              // // //             lost.length > 0
+              // // //                 ? Text(
+              // // //                     'Cancelled'.tr(),
+              // // //                     style: TextStyle(
+              // // //                         color: isActive(processing)
+              // // //                             ? Colors.black
+              // // //                             : Colors.grey,
+              // // //                         fontWeight: FontWeight.w900,
+              // // //                         fontSize: 19),
+              // // //                   )
+              // // //                 : Text(
+              // // //                     'Delivered'.tr(),
+              // // //                     style: TextStyle(
+              // // //                         color: isActive(done)
+              // // //                             ? Colors.black
+              // // //                             : Colors.grey,
+              // // //                         fontWeight: FontWeight.w900,
+              // // //                         fontSize: 19),
+              // // //                   ),
+              // // //             Container(
+              // // //               width: screenWidth * 0.75,
+              // // //               height: done.length * 80.0,
+              // // //               child: ListView.builder(
+              // // //                   physics: NeverScrollableScrollPhysics(),
+              // // //                   shrinkWrap: true,
+              // // //                   itemCount: done.length,
+              // // //                   itemBuilder: (context, i) {
+              // // //                     return NewTrackingCard(
+              // // //                       // resourcesData: widget.resourcesData,
+              // // //                       trackingDataModel: done[i],
+              // // //                       trackingBloc: trackingBloc,
+              // // //                     );
+              // // //                   }),
+              // // //             ),
+              // // //           ],
+              // // //         ),
+              // // //       ),
+              // // //     ),
+              // // //   ),
+              // // // ),
             ],
           ),
         )
@@ -475,10 +475,9 @@ class _NewTrackingScreenState extends State<NewTrackingScreen> {
 class NewTrackingCard extends StatefulWidget {
   TrackingDataModel? trackingDataModel;
   ResourcesData? resourcesData;
-  NewTrackingBloc? trackingBloc;
 
   NewTrackingCard(
-      {this.trackingDataModel, this.resourcesData, this.trackingBloc});
+      {this.trackingDataModel, this.resourcesData});
 
   @override
   _TrackingCardState createState() => _TrackingCardState();

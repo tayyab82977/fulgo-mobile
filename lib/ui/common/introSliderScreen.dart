@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
+import 'package:intro_slider/intro_slider.dart';
 import 'package:intl/locale.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/ui/common/dashboard.dart';
+import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/common/dashboard.dart';
 
 class IntroSliderScreen extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class IntroSliderScreen extends StatefulWidget {
 }
 
 class _IntroSliderScreenState extends State<IntroSliderScreen> {
-  List<Slide> slides = [];
+  List<ContentConfig> slides = [];
   Function? goToTab;
 
   @override
@@ -23,7 +23,7 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
     super.initState();
 
     slides.add(
-      new Slide(
+      new ContentConfig(
         title: "Safe delivery".tr(),
         styleTitle: TextStyle(
             color: Color(0xff222d66),
@@ -43,7 +43,7 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
       ),
     );
     slides.add(
-      new Slide(
+      new ContentConfig(
         title: "From Door to Door Delivery".tr(),
         styleTitle: TextStyle(
             color: Color(0xff222d66),
@@ -62,7 +62,7 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
       ),
     );
     slides.add(
-      new Slide(
+      new ContentConfig(
         title: "Fast Delivery".tr(),
         styleTitle: TextStyle(
             color: Color(0xff222d66),
@@ -129,7 +129,7 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
   List<Widget> renderListCustomTabs() {
     List<Widget> tabs = [];
     for (int i = 0; i < slides.length; i++) {
-      Slide currentSlide = slides[i];
+      ContentConfig currentSlide = slides[i];
       tabs.add(Container(
         width: double.infinity,
         height: double.infinity,
@@ -179,7 +179,7 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
     return SafeArea(
       child: IntroSlider(
         // List slides
-        slides: this.slides,
+        listContentConfig: this.slides,
         // Skip button
         renderSkipBtn: this.renderSkipBtn(),
         // colorSkipBtn: Color(0xfff2f7ff),
@@ -193,22 +193,16 @@ class _IntroSliderScreenState extends State<IntroSliderScreen> {
         onDonePress: this.onDonePress,
         // colorDoneBtn: Color(0xfff2f7ff),
         // highlightColorDoneBtn: Color(0xFF4C8FF8),
-        colorActiveDot: Colors.white70,
-
-        // Dot indicator
-        colorDot: Colors.grey,
-        sizeDot: 13.0,
+   
         // typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
 
         // Tabs
         listCustomTabs: this.renderListCustomTabs(),
-        backgroundColorAllSlides: Colors.white,
         refFuncGoToTab: (refFunc) {
           this.goToTab = refFunc;
         },
 
         // Show or hide status bar
-        hideStatusBar: true,
 
 
         // On tab change completed

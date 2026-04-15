@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/Client/HomeScreenNew.dart';
-import 'package:xturbox/ui/Client/MyOrders.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/Client/HomeScreenNew.dart';
+import 'package:Fulgox/ui/Client/MyOrders.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../Client/more_screen.dart';

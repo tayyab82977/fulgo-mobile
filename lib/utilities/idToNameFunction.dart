@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
 
 class IdToName {
   static idToName(String type, String id) {

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:xturbox/data_providers/models/userModel.dart';
+import 'package:Fulgox/data_providers/models/userModel.dart';
 
 class ImagesProvider with ChangeNotifier{
   late List<UserModel> _savedAccountsList;

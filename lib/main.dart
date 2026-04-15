@@ -1,4 +1,5 @@
 
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -11,50 +12,50 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart'as Toast;
 import 'package:overlay_support/overlay_support.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/addAcount_bloc.dart';
-import 'package:xturbox/blocs/bloc/checkIn_bloc.dart';
-import 'package:xturbox/blocs/bloc/internetBloc.dart';
-import 'package:xturbox/blocs/bloc/invoices_bloc.dart';
-import 'package:xturbox/blocs/bloc/nationalId_bloc.dart';
-import 'package:xturbox/blocs/bloc/switchAccount_bloc.dart';
-import 'package:xturbox/blocs/bloc/wallet_bloc.dart';
-import 'package:xturbox/blocs/events/invoices_events.dart';
-import 'package:xturbox/blocs/states/internet_state.dart';
-import 'package:xturbox/ui/common/SignUp.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:Fulgox/controllers/auth_controller.dart';
+import 'package:Fulgox/controllers/resources_controller.dart';
+import 'package:Fulgox/controllers/profile_controller.dart';
+import 'package:Fulgox/ui/common/SignUp.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/common/splash.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
 
-import 'package:xturbox/blocs/bloc/resources_bloc.dart';
-import 'package:xturbox/blocs/events/resources_events.dart';
-import 'package:xturbox/ui/common/splash.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-
-import 'blocs/bloc/LoginBloc.dart';
-import 'blocs/bloc/SignUp_Bloc.dart';
-import 'blocs/bloc/addressBloc.dart';
-import 'blocs/bloc/authentication_bloc.dart';
-import 'blocs/bloc/clientPayments_bloc.dart';
-import 'blocs/bloc/odoMeter_bloc.dart';
-import 'blocs/events/address_events.dart';
-import 'blocs/events/clientPayments_events.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp() ;
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  UserRepository userRepository = UserRepository();
+  String? validLocale = await userRepository.getLocale();
+  if(validLocale != null){
+    Constants.currentLocale = validLocale;
+  }
+
   runApp(EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/locale',
       useOnlyLangCode: true,
-      startLocale: Locale('ar') ,
+      startLocale: Locale(Constants.currentLocale),
       // fallbackLocale: Locale(Constants.currentLocale ?? 'ar'),
       child: MyApp()));
 }
@@ -72,7 +73,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  FirebaseAnalytics analytics = FirebaseAnalytics();
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState() {
@@ -87,26 +88,8 @@ class _MyAppState extends State<MyApp> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ResourcesBloc>(
-            create: (context)=>ResourcesBloc()
-        ),
-        BlocProvider<AuthenticationBloc>(
-            create: (context)=>authenticationBloc=AuthenticationBloc()
-        ),
-
-        BlocProvider<CheckInBloc>(create: (context)=>CheckInBloc(),),
-        BlocProvider<ODOMeterBloc>(create: (context)=>ODOMeterBloc()),
-        BlocProvider<NationalIdBloc>(create: (context)=>NationalIdBloc()),
-        BlocProvider<WalletBloc>(create: (context)=>WalletBloc()),
-        BlocProvider<AddAccountBloc>(create: (context)=>AddAccountBloc()),
-        BlocProvider<SwitchAccountBloc>(create: (context)=>SwitchAccountBloc())
-
-    ],
-      //show notification when the app is running
-      child: OverlaySupport(
-        child: MaterialApp(
+    return OverlaySupport(
+        child: GetMaterialApp(
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
@@ -116,10 +99,10 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             primaryColor: Constants.blueColor,
             secondaryHeaderColor: Colors.green,
-            textSelectionColor: Colors.red,
+            // textSelectionColor: Colors.red,
             dividerColor: Colors.transparent,
             bottomSheetTheme: BottomSheetThemeData(
-              // backgroundColor: Colors.transparent,
+              // color: Colors.transparent,
               clipBehavior: Clip.hardEdge,
             ),
             textSelectionTheme: TextSelectionThemeData(
@@ -133,7 +116,6 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           home: SplashScreen(),
         ),
-      ),
-    );
+      );
   }
 }

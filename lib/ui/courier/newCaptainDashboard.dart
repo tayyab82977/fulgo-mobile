@@ -1,21 +1,36 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:version/version.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/dashboard_bloc.dart';
-import 'package:xturbox/blocs/events/dashboard_events.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/courier/bulkPickupScreen.dart';
-import 'package:xturbox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/bulkPickupScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/CaptainAppBar.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/drawerCaptain.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'deliveryOptionsScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'odo_meter.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class GDPData {
   GDPData(this.continent, this.gdp);
@@ -24,15 +39,14 @@ class GDPData {
 }
 
 class ChartApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container();
   }
 }
 
-class NewCaptainDashboard extends StatefulWidget  {
-  ResourcesData? resourcesData ;
+class NewCaptainDashboard extends StatefulWidget {
+  ResourcesData? resourcesData;
   NewCaptainDashboard({this.resourcesData});
 
   @override
@@ -52,7 +66,7 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
 
   versionCheck() {
     latestVersion = Version.parse(widget.resourcesData?.appVersion ?? "1.3.3");
-    savedVersion = Version.parse(Constants.appVersion );
+    savedVersion = Version.parse(Constants.appVersion);
 
     if (latestVersion > savedVersion) {
       newVersion = true;
@@ -61,9 +75,10 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
     }
   }
 
-  Future<bool> _onBackPressed()async {
-    return false ;
+  Future<bool> _onBackPressed() async {
+    return false;
   }
+
   _showDialog() async {
     await Future.delayed(Duration(milliseconds: 200));
     showDialog(
@@ -82,21 +97,22 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
                 maxLines: 2,
               ),
               actions: [
-                TextButton(
+                CustomButton(
                   child: Text('Try it now!'.tr()),
                   onPressed: () async {
                     ComFunctions.launchStore();
                     await userRepository.persistSavedVersion(
                         savedVersion:
-                        widget.resourcesData?.appVersion.toString()?? "4.4.4") ;
+                            widget.resourcesData?.appVersion.toString() ??
+                                "4.4.4");
                     Constants.savedVersion = widget.resourcesData?.appVersion;
                     // Navigator.pop(context);
                   },
                 ),
-                // TextButton(
+                // CustomButton(
                 //   child: Text(
                 //     'Later'.tr(),
-                //     style: TextStyle(color: Colors.red),
+                //     style: TextStyle(color: Colors.red,
                 //   ),
                 //   onPressed: () async {
                 //     await userRepository.persistSavedVersion(
@@ -111,20 +127,19 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
           );
         });
   }
+
   @override
   void initState() {
     _chartData = getChartData();
-    if(SavedData.profileDataModel.meter == null){
+    if (SavedData.profileDataModel.meter == null) {
       ComFunctions.showMeterDialog(context);
-
     }
-    try{
+    try {
       versionCheck();
       if (newVersion) {
         _showDialog();
       }
-
-    }catch(e){}
+    } catch (e) {}
     super.initState();
   }
 
@@ -141,55 +156,89 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CaptainAppBar(drawerKey: _drawerKey, screenName: '',),
-
-            SizedBox(height: mySize.height / 100 * 4,),
+            CaptainAppBar(
+              drawerKey: _drawerKey,
+              screenName: '',
+            ),
+            SizedBox(
+              height: mySize.height / 100 * 4,
+            ),
             Container(
-                padding: EdgeInsets.only(right: mySize.width / 100 * 4, left: mySize.width / 100 * 4),
+                padding: EdgeInsets.only(
+                    right: mySize.width / 100 * 4,
+                    left: mySize.width / 100 * 4),
                 child: Text('Select Move Type'.tr(),
-                    style: TextStyle(color: Colors.black, fontSize: 20,),textAlign: TextAlign.left)),
-            SizedBox(height: mySize.height /100*2,),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.left)),
+            SizedBox(
+              height: mySize.height / 100 * 2,
+            ),
             Expanded(
               flex: 4,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: mySize.width / 100 * 3.5),
+                padding:
+                    EdgeInsets.symmetric(horizontal: mySize.width / 100 * 3.5),
                 child: ListView(
                   children: [
-                    DashboardCard(text: "Pickup".tr(), dIcon: 'assets/images/dashboardPickup.png',navigationFun: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  CaptainDashboard(resourcesData: SavedData.resourcesData))
-                      );
-                    }, description: 'Fresh shipments from the client for reservation & pickup'.tr(),),
-                    DashboardCard(text: "Delivery".tr(),dIcon: 'assets/images/dashboardDelivery.png',
-                    navigationFun: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  DeliveryOptionsScreen(resourcesData: SavedData.resourcesData))
-                      );
-                    }, description: 'Collecting dispatched shipments from warehouse & delivering to customers'.tr()),
-                    DashboardCard(text: "Return".tr(),dIcon: 'assets/images/dashboardReturn.png',
-                    navigationFun: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  BulkPickUpScreen(resourcesData: SavedData.resourcesData,returnToClient: true,))
-                      );
-                    }, description: 'Cancelled shipments from warehouse & return to the clients back'.tr(),),
+                    DashboardCard(
+                      text: "Pickup".tr(),
+                      dIcon: 'assets/images/dashboardPickup.png',
+                      navigationFun: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CaptainDashboard(
+                                    resourcesData: SavedData.resourcesData)));
+                      },
+                      description:
+                          'Fresh shipments from the client for reservation & pickup'
+                              .tr(),
+                    ),
+                    DashboardCard(
+                        text: "Delivery".tr(),
+                        dIcon: 'assets/images/dashboardDelivery.png',
+                        navigationFun: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DeliveryOptionsScreen(
+                                      resourcesData: SavedData.resourcesData)));
+                        },
+                        description:
+                            'Collecting dispatched shipments from warehouse & delivering to customers'
+                                .tr()),
+                    DashboardCard(
+                      text: "Return".tr(),
+                      dIcon: 'assets/images/dashboardReturn.png',
+                      navigationFun: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BulkPickUpScreen(
+                                      resourcesData: SavedData.resourcesData,
+                                      returnToClient: true,
+                                    )));
+                      },
+                      description:
+                          'Cancelled shipments from warehouse & return to the clients back'
+                              .tr(),
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: mySize.height / 100 * 1,),
+            SizedBox(
+              height: mySize.height / 100 * 1,
+            ),
             Expanded(
                 flex: 2,
                 child: Padding(
-                  padding: EdgeInsets.only(right: mySize.width / 100 * 7, left: mySize.width / 100 * 7),
+                  padding: EdgeInsets.only(
+                      right: mySize.width / 100 * 7,
+                      left: mySize.width / 100 * 7),
                   child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(38),
@@ -206,17 +255,18 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
                       child: Row(
                         children: [
                           Expanded(child: ChartApp()),
-
                         ],
-                      )
-                  ),
+                      )),
                 )),
-            SizedBox(height: mySize.height / 100 * 2,)
+            SizedBox(
+              height: mySize.height / 100 * 2,
+            )
           ],
         ),
       ),
     );
   }
+
   List<GDPData> getChartData() {
     final List<GDPData> chartData = [
       GDPData('Pickup', 100),
@@ -225,13 +275,17 @@ class _NewCaptainDashboardState extends State<NewCaptainDashboard> {
     return chartData;
   }
 }
-class DashboardCard extends StatelessWidget {
 
-  String text ;
+class DashboardCard extends StatelessWidget {
+  String text;
   String dIcon;
   String description;
-  VoidCallback navigationFun ;
-  DashboardCard({required this.text, required this.dIcon , required this.navigationFun, required this.description});
+  VoidCallback navigationFun;
+  DashboardCard(
+      {required this.text,
+      required this.dIcon,
+      required this.navigationFun,
+      required this.description});
   Color blueColor = Color(0xFF2f3a92);
   Color redColor = Color(0xFFbe2633);
   Color greyColor = Color(0xFFf4f4f4);
@@ -244,21 +298,20 @@ class DashboardCard extends StatelessWidget {
       children: [
         Container(
             height: mySize.height / 100 * 15,
-            width: mySize.width /100* 33,
+            width: mySize.width / 100 * 33,
             decoration: BoxDecoration(
                 color: Colors.transparent,
-                borderRadius: BorderRadius.circular(38)
-            ),
+                borderRadius: BorderRadius.circular(38)),
             child: Stack(
               children: [
                 Positioned(
                   top: 5,
                   left: 5,
                   child: GestureDetector(
-                    onTap:navigationFun,
+                    onTap: navigationFun,
                     child: Container(
                       height: mySize.height / 100 * 13,
-                      width: mySize.width /100* 30,
+                      width: mySize.width / 100 * 30,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(38),
                           color: greyColor,
@@ -272,7 +325,10 @@ class DashboardCard extends StatelessWidget {
                             )
                           ]),
                       child: Center(
-                        child: Image.asset(dIcon, height: mySize.height / 100 * 11,),
+                        child: Image.asset(
+                          dIcon,
+                          height: mySize.height / 100 * 11,
+                        ),
                       ),
                     ),
                   ),
@@ -293,15 +349,15 @@ class DashboardCard extends StatelessWidget {
                             )
                           ],
                           color: blueColor,
-                          borderRadius: BorderRadius.circular(14)
-                      ),
+                          borderRadius: BorderRadius.circular(14)),
                     ),
                   ),
                 ),
               ],
-            )
+            )),
+        SizedBox(
+          width: 10,
         ),
-        SizedBox(width: 10,),
         Expanded(
           // padding: EdgeInsets.all(10),
           // decoration: BoxDecoration(
@@ -313,9 +369,16 @@ class DashboardCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(text,
-                style: TextStyle( fontSize: 20,),
-                textAlign: EasyLocalization.of(context)?.currentLocale == Locale("en") ? TextAlign.left : TextAlign.right,),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+                textAlign:
+                    EasyLocalization.of(context)?.currentLocale == Locale("en")
+                        ? TextAlign.left
+                        : TextAlign.right,
+              ),
               ConstrainedBox(
                 constraints: BoxConstraints(
                   minWidth: 1,
@@ -326,12 +389,18 @@ class DashboardCard extends StatelessWidget {
                 child: Container(
                   // color: Color(0xfff7f7f7),
                   color: Colors.white,
-                  child: AutoSizeText(description,
+                  child: AutoSizeText(
+                    description,
                     maxLines: 3,
                     maxFontSize: 12,
                     minFontSize: 10,
-                    style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
-                    textAlign:  EasyLocalization.of(context)?.currentLocale == Locale("en") ? TextAlign.left : TextAlign.right,),
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.bold),
+                    textAlign: EasyLocalization.of(context)?.currentLocale ==
+                            Locale("en")
+                        ? TextAlign.left
+                        : TextAlign.right,
+                  ),
                 ),
               )
               //AutoSizeText( widget.screenName,
@@ -346,4 +415,3 @@ class DashboardCard extends StatelessWidget {
     );
   }
 }
-

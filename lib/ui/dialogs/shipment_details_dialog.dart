@@ -3,10 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:xturbox/blocs/bloc/clientCancelOrder_bloc.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/controllers/client_cancel_order_controller.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
 
-import '../../blocs/events/clientCancelOrder_events.dart';
 import '../../data_providers/models/memberBalanceModel.dart';
 import '../../utilities/Constants.dart';
 import '../../utilities/comFunctions.dart';
@@ -14,11 +13,11 @@ import '../../utilities/idToNameFunction.dart';
 import '../Client/paymentMethod_dialog.dart';
 import '../custom widgets/custom_loading.dart';
 
-
 class ShipmentDetailsDialog extends StatefulWidget {
-  OrdersDataModelMix ordersDataModelMix ;
-  ClientCancelOrderBloc cancelOrderBloc ;
-  ShipmentDetailsDialog({required this.ordersDataModelMix , required this.cancelOrderBloc});
+  OrdersDataModelMix ordersDataModelMix;
+  ClientCancelOrderController clientCancelOrderController;
+  ShipmentDetailsDialog(
+      {required this.ordersDataModelMix, required this.clientCancelOrderController});
 
   @override
   State<ShipmentDetailsDialog> createState() => _ShipmentDetailsDialogState();
@@ -28,21 +27,25 @@ class _ShipmentDetailsDialogState extends State<ShipmentDetailsDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 15 , vertical: 20),
-      shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20.0)),
-      child: ShipmentDetailsComponent(ordersDataModelMix: widget.ordersDataModelMix,cancelOrderBloc: widget.cancelOrderBloc,),
+      insetPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: ShipmentDetailsComponent(
+        ordersDataModelMix: widget.ordersDataModelMix,
+        clientCancelOrderController: widget.clientCancelOrderController,
+      ),
     );
   }
 }
 
-
 class ShipmentDetailsComponent extends StatefulWidget {
-  OrdersDataModelMix ordersDataModelMix ;
-  ClientCancelOrderBloc cancelOrderBloc ;
-  ShipmentDetailsComponent({required this.ordersDataModelMix , required this.cancelOrderBloc});
+  OrdersDataModelMix ordersDataModelMix;
+  ClientCancelOrderController clientCancelOrderController;
+  ShipmentDetailsComponent(
+      {required this.ordersDataModelMix, required this.clientCancelOrderController});
 
   @override
-  State<ShipmentDetailsComponent> createState() => _ShipmentDetailsComponentState();
+  State<ShipmentDetailsComponent> createState() =>
+      _ShipmentDetailsComponentState();
 }
 
 class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
@@ -60,8 +63,6 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
 
   String? shipmentStatus;
 
-
-
   String? packagingType;
 
   String? cancelReason;
@@ -69,13 +70,15 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
   double? screenWidth, screenHeight;
 
   bool dataChanged = false;
-  PaymentMethods paymentMethod = PaymentMethods(id: "0" , name: "" , selected: false ) ;
+  PaymentMethods paymentMethod =
+      PaymentMethods(id: "0", name: "", selected: false);
 
   idToNames(OrdersDataModelMix ordersDataModelMix) {
-    pickUpCity = IdToName.idToName('city', ordersDataModelMix.pickupCity.toString());
-    if(pickUpCity == '' || pickUpCity == null){
-      pickUpCity = IdToName.idToName(
-          'cityFromNeighborhood', ordersDataModelMix.pickupNeighborhood.toString());
+    pickUpCity =
+        IdToName.idToName('city', ordersDataModelMix.pickupCity.toString());
+    if (pickUpCity == '' || pickUpCity == null) {
+      pickUpCity = IdToName.idToName('cityFromNeighborhood',
+          ordersDataModelMix.pickupNeighborhood.toString());
     }
 
     pickUpZone = IdToName.idToName(
@@ -84,22 +87,21 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
     deliverCity =
         IdToName.idToName('city', ordersDataModelMix.deliverCity.toString());
 
-    if(deliverCity == '' || deliverCity == null){
-      deliverCity = IdToName.idToName(
-          'cityFromNeighborhood', ordersDataModelMix.deliverNeighborhood.toString());
+    if (deliverCity == '' || deliverCity == null) {
+      deliverCity = IdToName.idToName('cityFromNeighborhood',
+          ordersDataModelMix.deliverNeighborhood.toString());
     }
 
     deliverZone = IdToName.idToName(
         'zone', ordersDataModelMix.deliverNeighborhood.toString());
 
-    pickUpTime = DateTime.tryParse(ordersDataModelMix.pickupTime.toString() );
+    pickUpTime = DateTime.tryParse(ordersDataModelMix.pickupTime.toString());
 
-
-    shipmentStatus = IdToName.idToName(
-        'trackType', ordersDataModelMix.trackType.toString() );
+    shipmentStatus =
+        IdToName.idToName('trackType', ordersDataModelMix.trackType.toString());
 
     paymentMethod.name = IdToName.idToName(
-        'payment_method', ordersDataModelMix.payment_method.toString() );
+        'payment_method', ordersDataModelMix.payment_method.toString());
     packagingType =
         IdToName.idToName('packaging', ordersDataModelMix.packaging.toString());
 
@@ -115,26 +117,28 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
 
   @override
   Widget build(BuildContext context) {
-
-
     Size size = MediaQuery.of(context).size;
     screenWidth = size.width;
     screenHeight = size.height;
-    return  Container(
+    return Container(
       decoration: BoxDecoration(
-          color: Constants.clientBackgroundGrey,
-          // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10) , bottomRight: Radius.circular(10))
+        color: Constants.clientBackgroundGrey,
+        // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10) , bottomRight: Radius.circular(10))
       ),
       child: Column(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10) , bottomRight: Radius.circular(10))
-            ),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10))),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("Reverse shipment".tr() ,style: TextStyle(fontSize: 18),),
+              child: Text(
+                "Reverse shipment".tr(),
+                style: TextStyle(fontSize: 18),
+              ),
             ),
           ),
           Padding(
@@ -156,8 +160,7 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                               width: 20,
                             ),
                             Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -169,14 +172,13 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                                       width: 5,
                                     ),
                                     Text(
-                                      widget.ordersDataModelMix.id ??"" ,
+                                      widget.ordersDataModelMix.id ?? "",
                                       style: TextStyle(fontSize: 16),
                                     )
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
                                       '${widget.ordersDataModelMix.stamp!.substring(0, 11)}',
@@ -231,26 +233,27 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           child: InkWell(
-                            onTap: (){
+                            onTap: () {
                               _paymentMethodDialog(context);
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: Constants.blueColor),
-                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Constants.blueColor,
+                                ),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 8),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Payment method'.tr()),
                                     Flexible(
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Text( paymentMethod.name ?? "" ),
+                                        child: Text(paymentMethod.name ?? ""),
                                       ),
                                     )
                                   ],
@@ -275,8 +278,7 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Packaging'.tr()),
                                 Padding(
@@ -303,8 +305,7 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('no. of pieces'.tr()),
                                 Padding(
@@ -320,49 +321,49 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                       ],
                     ),
                     widget.ordersDataModelMix.comment != null &&
-                        widget.ordersDataModelMix.comment != ""
+                            widget.ordersDataModelMix.comment != ""
                         ? Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('parcel details'.tr()),
-                                SizedBox(
-                                  width: 20,
+                            children: [
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: AutoSizeText(
-                                      widget.ordersDataModelMix.comment ??
-                                          '',
-                                      textAlign:
-                                      EasyLocalization.of(context)!
-                                          .currentLocale ==
-                                          Locale("en")
-                                          ? TextAlign.right
-                                          : TextAlign.left,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('parcel details'.tr()),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: AutoSizeText(
+                                            widget.ordersDataModelMix.comment ??
+                                                '',
+                                            textAlign:
+                                                EasyLocalization.of(context)!
+                                                            .currentLocale ==
+                                                        Locale("en")
+                                                    ? TextAlign.right
+                                                    : TextAlign.left,
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+                                ),
+                              ),
+                            ],
+                          )
                         : Container(),
                     SizedBox(
                       height: 8,
@@ -378,8 +379,7 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 4, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Pickup time'.tr()),
                                 // pickUpTime != null && ordersDataModelMix.pickupTime.toString().length > 1 ?
@@ -393,8 +393,6 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                                 //     ],
                                 //   ),
                                 // ) :  Text(pickUpTime.toString() ),
-
-
                               ],
                             ),
                           ),
@@ -406,371 +404,374 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                     ),
                     widget.ordersDataModelMix.por == '1'
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Shipping on receiver'.tr()),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(Icons.check),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
-                        : Container(),
-                    widget.ordersDataModelMix.fragile == '1'
-                        ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Fragile'.tr()),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(Icons.check),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
-                        : Container(),
-                    widget.ordersDataModelMix.cod != '0' &&
-                        widget.ordersDataModelMix.cod != null &&
-                        widget.ordersDataModelMix.cod != ''
-                        ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text('Cash on delivery'.tr()),
-                                  ],
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
                                   child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                          widget.ordersDataModelMix.cod ?? ''),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      Text(
-                                        'SR'.tr(),
-                                        style: TextStyle(fontSize: 11),
+                                      Text('Shipping on receiver'.tr()),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(Icons.check),
                                       )
                                     ],
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
+                        : Container(),
+                    widget.ordersDataModelMix.fragile == '1'
+                        ? Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Fragile'.tr()),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(Icons.check),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
+                        : Container(),
+                    widget.ordersDataModelMix.cod != '0' &&
+                            widget.ordersDataModelMix.cod != null &&
+                            widget.ordersDataModelMix.cod != ''
+                        ? Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text('Cash on delivery'.tr()),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                                widget.ordersDataModelMix.cod ??
+                                                    ''),
+                                            SizedBox(
+                                              width: 3,
+                                            ),
+                                            Text(
+                                              'SR'.tr(),
+                                              style: TextStyle(fontSize: 11),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     widget.ordersDataModelMix.deductFromCod != "0" &&
-                        widget.ordersDataModelMix.deductFromCod != "" &&
-                        widget.ordersDataModelMix.deductFromCod != ""
+                            widget.ordersDataModelMix.deductFromCod != "" &&
+                            widget.ordersDataModelMix.deductFromCod != ""
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('deductFromCod'.tr()),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(Icons.check),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('deductFromCod'.tr()),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(Icons.check),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     widget.ordersDataModelMix.rc != '0' &&
-                        widget.ordersDataModelMix.rc != '' &&
-                        widget.ordersDataModelMix.rc != null
+                            widget.ordersDataModelMix.rc != '' &&
+                            widget.ordersDataModelMix.rc != null
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text('Shipping on receiver'.tr()),
-                                    // ordersDataModelMix.status == "1" ||
-                                    //         ordersDataModelMix.status ==
-                                    //             "2" ||
-                                    //         ordersDataModelMix.status ==
-                                    //             "3" ||
-                                    //         ordersDataModelMix.status ==
-                                    //             "4"
-                                    //     ? InkWell(
-                                    //         onTap: () {
-                                    //           showDialog(
-                                    //               context: context,
-                                    //               barrierDismissible:
-                                    //                   true,
-                                    //               builder: (context) {
-                                    //                 return AlertDialog(
-                                    //                   title: Column(
-                                    //                     children: [
-                                    //                       Text('Are you sure ?'
-                                    //                           .tr()),
-                                    //                     ],
-                                    //                   ),
-                                    //                   actions: [
-                                    //                     TextButton(
-                                    //                       child: Text(
-                                    //                         'No'.tr(),
-                                    //                         style: TextStyle(
-                                    //                             color: Colors
-                                    //                                 .green),
-                                    //                       ),
-                                    //                       onPressed:
-                                    //                           () {
-                                    //                         Navigator.pop(
-                                    //                             context);
-                                    //                       },
-                                    //                     ),
-                                    //                     TextButton(
-                                    //                       child: Text(
-                                    //                         'Yes'.tr(),
-                                    //                         style: TextStyle(
-                                    //                             color: Colors
-                                    //                                 .red),
-                                    //                       ),
-                                    //                       onPressed:
-                                    //                           () {
-                                    //                         cancelOrderBloc!.add(ZeroRC(
-                                    //                             shipmentId:
-                                    //                                 ordersDataModelMix.id));
-                                    //                         Navigator.pop(
-                                    //                             context);
-                                    //                       },
-                                    //                     ),
-                                    //                   ],
-                                    //                 );
-                                    //               });
-                                    //         },
-                                    //         child: Padding(
-                                    //           padding:
-                                    //               EdgeInsets.symmetric(
-                                    //                   vertical: 8,
-                                    //                   horizontal:
-                                    //                       screenWidth! *
-                                    //                           0.03),
-                                    //           child: Container(
-                                    //             width:
-                                    //                 screenWidth! * 0.12,
-                                    //             height: 30,
-                                    //             decoration:
-                                    //                 BoxDecoration(
-                                    //               color:
-                                    //                   Color(0xFFFA8154),
-                                    //               borderRadius:
-                                    //                   BorderRadius
-                                    //                       .circular(40),
-                                    //             ),
-                                    //             child: Center(
-                                    //                 child: AutoSizeText(
-                                    //               'Cancel'.tr(),
-                                    //               style: TextStyle(
-                                    //                   color:
-                                    //                       Colors.white,
-                                    //                   fontSize: 11,
-                                    //                   fontWeight:
-                                    //                       FontWeight
-                                    //                           .w900),
-                                    //             )),
-                                    //           ),
-                                    //         ),
-                                    //       )
-                                    //     : Container()
-                                  ],
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(Icons.check),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text('Shipping on receiver'.tr()),
+                                          // ordersDataModelMix.status == "1" ||
+                                          //         ordersDataModelMix.status ==
+                                          //             "2" ||
+                                          //         ordersDataModelMix.status ==
+                                          //             "3" ||
+                                          //         ordersDataModelMix.status ==
+                                          //             "4"
+                                          //     ? InkWell(
+                                          //         onTap: () {
+                                          //           showDialog(
+                                          //               context: context,
+                                          //               barrierDismissible:
+                                          //                   true,
+                                          //               builder: (context) {
+                                          //                 return AlertDialog(
+                                          //                   title: Column(
+                                          //                     children: [
+                                          //                       Text('Are you sure ?'
+                                          //                           .tr()),
+                                          //                     ],
+                                          //                   ),
+                                          //                   actions: [
+                                          //                     ElevatedButton(
+                                          //                       child: Text(
+                                          //                         'No'.tr(),
+                                          //                         style: TextStyle(
+                                          //                             color: Colors
+                                          //                                 .green),
+                                          //                       ),
+                                          //                       onPressed:
+                                          //                           () {
+                                          //                         Navigator.pop(
+                                          //                             context);
+                                          //                       },
+                                          //                     ),
+                                          //                     ElevatedButton(
+                                          //                       child: Text(
+                                          //                         'Yes'.tr(),
+                                          //                         style: TextStyle(
+                                          //                             color: Colors
+                                          //                                 .red),
+                                          //                       ),
+                                          //                       onPressed:
+                                          //                           () {
+                                          //                         cancelOrderBloc!.add(ZeroRC(
+                                          //                             shipmentId:
+                                          //                                 ordersDataModelMix.id));
+                                          //                         Navigator.pop(
+                                          //                             context);
+                                          //                       },
+                                          //                     ),
+                                          //                   ],
+                                          //                 );
+                                          //               });
+                                          //         },
+                                          //         child: Padding(
+                                          //           padding:
+                                          //               EdgeInsets.symmetric(
+                                          //                   vertical: 8,
+                                          //                   horizontal:
+                                          //                       screenWidth! *
+                                          //                           0.03),
+                                          //           child: Container(
+                                          //             width:
+                                          //                 screenWidth! * 0.12,
+                                          //             height: 30,
+                                          //             decoration:
+                                          //                 BoxDecoration(
+                                          //               color:
+                                          //                   Color(0xFFFA8154),
+                                          //               borderRadius:
+                                          //                   BorderRadius
+                                          //                       .circular(40),
+                                          //             ),
+                                          //             child: Center(
+                                          //                 child: AutoSizeText(
+                                          //               'Cancel'.tr(),
+                                          //               style: TextStyle(
+                                          //                   color:
+                                          //                       Colors.white,
+                                          //                   fontSize: 11,
+                                          //                   fontWeight:
+                                          //                       FontWeight
+                                          //                           .w900),
+                                          //             )),
+                                          //           ),
+                                          //         ),
+                                          //       )
+                                          //     : Container()
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(Icons.check),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     widget.ordersDataModelMix.extra != "0" &&
-                        widget.ordersDataModelMix.extra != null
+                            widget.ordersDataModelMix.extra != null
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('extra'.tr()),
-                                Row(
-                                  children: [
-                                    Text(
-                                      widget.ordersDataModelMix.extra ?? "",
-                                      style: TextStyle(),
-                                    ),
-                                    SizedBox(
-                                      width: 3,
-                                    ),
-                                    Text(
-                                      "SR".tr(),
-                                      style: TextStyle(fontSize: 11),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('extra'.tr()),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            widget.ordersDataModelMix.extra ??
+                                                "",
+                                            style: TextStyle(),
+                                          ),
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Text(
+                                            "SR".tr(),
+                                            style: TextStyle(fontSize: 11),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     widget.ordersDataModelMix.cancellation != '0'
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Cancellation reason'.tr()),
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(cancelReason ?? ''),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Cancellation reason'.tr()),
+                                      Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(cancelReason ?? ''),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     widget.ordersDataModelMix.reject != null
                         ? Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Rejection reason'.tr()),
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                      widget.ordersDataModelMix.reject ?? ''),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Rejection reason'.tr()),
+                                      Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            widget.ordersDataModelMix.reject ??
+                                                ''),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
                     Row(
                       children: [
@@ -806,7 +807,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                               'Full name'.tr(),
                               style: TextStyle(fontSize: 11),
                             ),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 widget.ordersDataModelMix.receiverName ?? '',
@@ -832,7 +835,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                           children: [
                             Text('Phone number'.tr(),
                                 style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 widget.ordersDataModelMix.receiverPhone ?? '',
@@ -856,7 +861,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text('City'.tr(), style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 deliverCity ?? '',
@@ -881,8 +888,11 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('Neighborhood'.tr(), style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            Text('Neighborhood'.tr(),
+                                style: TextStyle(fontSize: 11)),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 deliverZone ?? '',
@@ -894,99 +904,102 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                         ),
                       ),
                     ),
-                    widget.ordersDataModelMix.deliverAddress != null && widget.ordersDataModelMix.deliverAddress != ''
+                    widget.ordersDataModelMix.deliverAddress != null &&
+                            widget.ordersDataModelMix.deliverAddress != ''
                         ? Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(child: Text('Address'.tr())),
-                                SizedBox(width: 10,),
-                                Flexible(
-                                  flex: 4,
-                                  child: Container(
-                                    child: Text(
-                                      widget.ordersDataModelMix.deliverAddress ?? '',
-                                      maxLines: 3,
-                                    ),
+                            children: [
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Flexible(child: Text('Address'.tr())),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        flex: 4,
+                                        child: Container(
+                                          child: Text(
+                                            widget.ordersDataModelMix
+                                                    .deliverAddress ??
+                                                '',
+                                            maxLines: 3,
+                                          ),
+                                        ),
+                                      )
+                                      // Text(ordersDataModelMix.senderName)
+                                    ],
                                   ),
-                                )
-                                // Text(ordersDataModelMix.senderName)
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+                                ),
+                              ),
+                            ],
+                          )
                         : Container(),
                     SizedBox(
                       height: 8,
                     ),
-                    widget.ordersDataModelMix.deliverMap != '' && widget.ordersDataModelMix.deliverMap != null
+                    widget.ordersDataModelMix.deliverMap != '' &&
+                            widget.ordersDataModelMix.deliverMap != null
                         ? Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            ComFunctions.launchURL(
-                                widget.ordersDataModelMix.deliverMap ?? '');
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xFF56D340), width: 2),
-                                borderRadius:
-                                BorderRadius.circular(12)),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: SvgPicture.asset(
-                                    "assets/images/google-maps.svg",
-                                    placeholderBuilder: (context) =>
-                                        CustomLoading(),
-                                    // height: 18.0,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  ComFunctions.launchURL(
+                                      widget.ordersDataModelMix.deliverMap ??
+                                          '');
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: Color(0xFF56D340), width: 2),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: SvgPicture.asset(
+                                          "assets/images/google-maps.svg",
+                                          placeholderBuilder: (context) =>
+                                              CustomLoading(),
+                                          // height: 18.0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          'Position on Google Maps'.tr(),
+                                          style: TextStyle(
+                                            color: Color(0xFF56D340),
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    'Position on Google Maps'.tr(),
-                                    style: TextStyle(
-                                      color: Color(0xFF56D340),
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
                         : Container(),
-
-
-
-
-
                     Row(
                       children: [
                         Text(
@@ -1021,7 +1034,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                               'Full name'.tr(),
                               style: TextStyle(fontSize: 11),
                             ),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 widget.ordersDataModelMix.senderName ?? '',
@@ -1047,7 +1062,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                           children: [
                             Text('Phone number'.tr(),
                                 style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 widget.ordersDataModelMix.senderPhone ?? '',
@@ -1073,7 +1090,9 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text('City'.tr(), style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 pickUpCity ?? '',
@@ -1099,8 +1118,11 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('Neighborhood'.tr(), style: TextStyle(fontSize: 11)),
-                            SizedBox(width: 10,),
+                            Text('Neighborhood'.tr(),
+                                style: TextStyle(fontSize: 11)),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 pickUpZone ?? '',
@@ -1112,93 +1134,101 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
                         ),
                       ),
                     ),
-                    widget.ordersDataModelMix.pickupAddress != null && widget.ordersDataModelMix.pickupAddress != ''
+                    widget.ordersDataModelMix.pickupAddress != null &&
+                            widget.ordersDataModelMix.pickupAddress != ''
                         ? Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Address'.tr()),
-                                SizedBox(width: 10,),
-                                Flexible(
-                                  flex: 4,
-                                  child: Container(
-                                    child: Text(
-                                      widget.ordersDataModelMix.pickupAddress ?? '',
-                                    ),
+                            children: [
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Address'.tr()),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        flex: 4,
+                                        child: Container(
+                                          child: Text(
+                                            widget.ordersDataModelMix
+                                                    .pickupAddress ??
+                                                '',
+                                          ),
+                                        ),
+                                      )
+                                      // Text(ordersDataModelMix.senderName)
+                                    ],
                                   ),
-                                )
-                                // Text(ordersDataModelMix.senderName)
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+                                ),
+                              ),
+                            ],
+                          )
                         : Container(),
                     SizedBox(
                       height: 8,
                     ),
-                    widget.ordersDataModelMix.pickupMap != '' && widget.ordersDataModelMix.pickupMap != null
-                     ? Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            ComFunctions.launchURL(
-                                widget.ordersDataModelMix.pickupMap ?? '');
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xFF56D340), width: 2),
-                                borderRadius:
-                                BorderRadius.circular(12)),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: SvgPicture.asset(
-                                    "assets/images/google-maps.svg",
-                                    placeholderBuilder: (context) =>
-                                        CustomLoading(),
-                                    // height: 18.0,
+                    widget.ordersDataModelMix.pickupMap != '' &&
+                            widget.ordersDataModelMix.pickupMap != null
+                        ? Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  ComFunctions.launchURL(
+                                      widget.ordersDataModelMix.pickupMap ??
+                                          '');
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: Color(0xFF56D340), width: 2),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: SvgPicture.asset(
+                                          "assets/images/google-maps.svg",
+                                          placeholderBuilder: (context) =>
+                                              CustomLoading(),
+                                          // height: 18.0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          'Position on Google Maps'.tr(),
+                                          style: TextStyle(
+                                            color: Color(0xFF56D340),
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    'Position on Google Maps'.tr(),
-                                    style: TextStyle(
-                                      color: Color(0xFF56D340),
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    )
-                     : Container(),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                            ],
+                          )
+                        : Container(),
                   ],
                 ),
               ),
@@ -1212,28 +1242,26 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Constants.blueColor, // background
-                      onPrimary: Colors.white, // foreground
-                    ),
                     onPressed: () {
-                      widget.cancelOrderBloc.add(ClientReversOrder(shipmentId:widget.ordersDataModelMix.id.toString() ,ordersDataModelMix: widget.ordersDataModelMix));
+                      widget.clientCancelOrderController.reverseMyOrder(
+                          shipmentId: widget.ordersDataModelMix.id.toString(),
+                          ordersDataModelMix: widget.ordersDataModelMix);
                       Navigator.of(context).pop();
                     },
                     child: Text('Confirm'.tr()),
                   ),
                 ),
-                SizedBox(width: 20,),
+                SizedBox(
+                  width: 20,
+                ),
                 Expanded(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Constants.redColor, // background
-                      onPrimary: Colors.white, // foreground
-                    ),
                     onPressed: () async {
-                       Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     },
-                    child: Text('Cancel'.tr(),),
+                    child: Text(
+                      'Cancel'.tr(),
+                    ),
                   ),
                 ),
               ],
@@ -1244,20 +1272,19 @@ class _ShipmentDetailsComponentState extends State<ShipmentDetailsComponent> {
     );
   }
 
-  _paymentMethodDialog(BuildContext context){
+  _paymentMethodDialog(BuildContext context) {
     showDialog(
         context: context,
         // barrierDismissible: false,
         builder: (context) {
-          return PaymentMethodDialog(paymentMethod: (selectedMethod){
-            setState(() {
-              paymentMethod = selectedMethod ;
-              widget.ordersDataModelMix.payment_method = paymentMethod.id ;
-            });
-          },);
+          return PaymentMethodDialog(
+            paymentMethod: (selectedMethod) {
+              setState(() {
+                paymentMethod = selectedMethod;
+                widget.ordersDataModelMix.payment_method = paymentMethod.id;
+              });
+            },
+          );
         });
   }
 }
-
-
-

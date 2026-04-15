@@ -1,11 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import 'package:flutter/material.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/main.dart';
-import 'package:xturbox/ui/common/dashboard.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/main.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/common/dashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class ClientAppBar extends StatelessWidget {
   const ClientAppBar();
@@ -118,7 +125,7 @@ class ClientAppBar extends StatelessWidget {
                   child:Container(
                       // decoration: BoxDecoration(
                       //     color: Colors.white,
-                      //     border: Border.all(color: Constants.blueColor),
+                      //     border: Border.all(color: Constants.blueColor,
                       //     borderRadius: BorderRadius.circular(8)
                       // ),
                       child: Text("Ar" ,  style: TextStyle(color: Constants.blueColor , decoration: TextDecoration.underline)))),
@@ -144,7 +151,7 @@ class ClientAppBar extends StatelessWidget {
                   child:Container(
                       // decoration: BoxDecoration(
                       //   color: Colors.white,
-                      //   border: Border.all(color: Constants.blueColor),
+                      //   border: Border.all(color: Constants.blueColor,
                       //   borderRadius: BorderRadius.circular(8)
                       // ),
                       child: Text("En" , style: TextStyle(color: Constants.blueColor , decoration: TextDecoration.underline),))),
@@ -224,7 +231,7 @@ class _ClientAppBarNoActionState extends State<ClientAppBarNoAction> {
 
             EasyLocalization.of(context)!.currentLocale == Locale('en') ?
 
-            MaterialButton(
+            CustomButton(
                 onPressed: (){
                   setState(() {
                     EasyLocalization.of(context)!.setLocale(Locale('ar'));
@@ -244,7 +251,7 @@ class _ClientAppBarNoActionState extends State<ClientAppBarNoAction> {
                       fontFamily: 'Tajawal'
                   ),
                 )) :
-            MaterialButton(
+            CustomButton(
                 onPressed: (){
 
                   setState(() {
@@ -293,7 +300,7 @@ class MenuButton extends StatelessWidget {
         Container(
           width: 81,
           height: 40,
-          child: FlatButton(
+          child: CustomButton(
             key: const ValueKey('menu'),
             minWidth: 0,
             padding: EdgeInsets.all(6),

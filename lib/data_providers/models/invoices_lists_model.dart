@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/invoices_model.dart';
+import 'package:Fulgox/data_providers/models/invoices_model.dart';
 
 class InvoicesListsModel{
 

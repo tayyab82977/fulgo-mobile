@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
 
 class PostOrderDataModel {
   String? senderName;

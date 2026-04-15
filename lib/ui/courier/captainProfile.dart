@@ -4,16 +4,16 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerCaptain.dart';
-// import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerCaptain.dart';
+// import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerDriver.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerDriver.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
 
 import '../custom widgets/CaptainAppBar.dart';
 

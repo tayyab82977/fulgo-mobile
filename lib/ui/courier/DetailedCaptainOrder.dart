@@ -1,29 +1,49 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/services.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 // import 'package:flutter_launch/flutter_launch.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-// import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/ui/custom%20widgets/packageCard.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+// import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/custom%20widgets/packageCard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 import '../../main.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../Client/MyOrders.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/CaptainAppBar.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/drawerCaptain.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../common/dashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
 class DetailedCapOrder extends StatefulWidget {
   OrdersDataModelMix? ordersDataModel;
@@ -129,7 +149,7 @@ class _DetailedCapOrderState extends State<DetailedCapOrder> {
     super.initState();
   }
 
-  AuthenticationBloc authenticationBloc = AuthenticationBloc();
+
   double? screenWidth, screenHeight;
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
@@ -183,7 +203,7 @@ class _DetailedCapOrderState extends State<DetailedCapOrder> {
                                       ? ButtonTheme(
                                           minWidth: 78,
                                           height: 40,
-                                          child: FlatButton(
+                                          child: CustomButton(
                                             padding: EdgeInsets.all(0),
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
@@ -217,7 +237,7 @@ class _DetailedCapOrderState extends State<DetailedCapOrder> {
                                       : ButtonTheme(
                                           minWidth: 78,
                                           height: 40,
-                                          child: FlatButton(
+                                          child: CustomButton(
                                             padding: EdgeInsets.all(0),
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
@@ -707,7 +727,7 @@ class _DetailedCapOrderState extends State<DetailedCapOrder> {
                                               : Container(),
                                           widget.ordersDataModel?.pickupMap != null &&
                                                   widget.ordersDataModel?.pickupMap != ''
-                                              ? FlatButton(
+                                              ? CustomButton(
                                                   onPressed: () {
                                                     ComFunctions.launchURL(
                                                         widget.ordersDataModel?.pickupMap??""
@@ -1009,7 +1029,7 @@ class _DetailedCapOrderState extends State<DetailedCapOrder> {
                                           widget.ordersDataModel?.deliverMap !=
                                                       null &&
                                                   widget.ordersDataModel?.deliverMap != ''
-                                              ? FlatButton(
+                                              ? CustomButton(
                                                   onPressed: () {
                                                     ComFunctions.launchURL(
                                                         widget.ordersDataModel?.deliverMap??"");

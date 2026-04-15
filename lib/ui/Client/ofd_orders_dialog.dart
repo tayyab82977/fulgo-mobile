@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/ui/custom%20widgets/OrdersCard.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom%20widgets/OrdersCard.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 
 
 class OfdOrdersDialog extends StatefulWidget {
@@ -34,8 +34,8 @@ class _OfdOrdersDialogState extends State<OfdOrdersDialog> {
               decoration: BoxDecoration(
                 color: Constants.blueColor
               ),
-              child: Center(child: Text("Shipments out for delivery",style: TextStyle(color: Colors.white),)),
-            ),
+              child: Center(child: Text("Shipments out for delivery",style: TextStyle(color: Colors.white)),
+            ),),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

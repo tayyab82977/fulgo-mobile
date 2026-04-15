@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class ErrorView extends StatelessWidget {
@@ -36,15 +37,11 @@ class ErrorView extends StatelessWidget {
               width: 250,
               child: ButtonTheme(
                 height: 120,
-                splashColor: Colors.transparent,
-                child: FlatButton(
+                child: CustomButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(70),
                   ),
-                  highlightColor: Colors.grey[200],
-                  focusColor: Colors.transparent,
                   onPressed: retryAction as void Function()?,
-                  splashColor: Colors.transparent,
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                   child: Container(
                     padding: EdgeInsets.all(8),

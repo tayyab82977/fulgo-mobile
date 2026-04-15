@@ -1,17 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/data_providers/models/ErrorViewModel.dart';
-
-
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/data_providers/models/ErrorViewModel.dart';
 
 const kTextFieldDecoration = InputDecoration(
   filled: true,
   fillColor: Colors.white,
   hintText: '',
-  labelStyle: TextStyle(fontSize: 14 , color: Constants.blueColor),
+  labelStyle: TextStyle(fontSize: 14, color: Constants.blueColor),
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(12.0)),
@@ -45,13 +42,12 @@ const kBulkPickupDialogue = InputDecoration(
 const kTextFieldDecoration2 = InputDecoration(
   filled: true,
   fillColor: Colors.white,
-
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
     borderSide: BorderSide(color: Colors.transparent, width: .5),
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
   ),
-  errorBorder:OutlineInputBorder(
+  errorBorder: OutlineInputBorder(
     borderSide: BorderSide(color: Constants.redColor, width: .5),
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
   ),
@@ -74,7 +70,6 @@ const containerShadow = BoxDecoration(
       bottomRight: Radius.circular(10)),
 );
 
-AuthenticationBloc authenticationBloc = AuthenticationBloc();
 UserRepository userRepository = UserRepository();
 
 class Constants {
@@ -93,8 +88,10 @@ class Constants {
 
   static const csWhatsApp = '0580000451';
   static const csPhone = '920022167';
-  static String currentLocale = 'ar';
-  // static const baseUrl = 'https://demo.mrashad.com/xturboapi';
+  static String currentLocale = 'en';
+  // static const baseUrl = 'https://demo.mrashad.com/Fulgoapi';
+  static const baseUrl = 'https://Fulgox.byte-s.com';
+
   static const googleMabiApiKey = "AIzaSyC1-lZ66R1rfXxC3eNKtkNTUXQciEw3YK0";
 
   static const Color clientButtonGray = Color(0xFFe4e4e4);

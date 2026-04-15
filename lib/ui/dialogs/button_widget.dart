@@ -34,18 +34,16 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: Size.fromHeight(40),
-          primary: Colors.white,
-        ),
-        child: FittedBox(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 20, color: Colors.black),
+      onPressed: onClicked,
+      child: FittedBox(
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.black,
           ),
         ),
-        onPressed: onClicked,
-      );
+      ));
 }
 
 class HeaderWidget extends StatelessWidget {

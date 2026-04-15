@@ -6,34 +6,34 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/data_providers/models/MyResponseModel.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/ResponseViewModel.dart';
-import 'package:xturbox/data_providers/models/callLogModel.dart';
-import 'package:xturbox/data_providers/models/captainOrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/clientPaymentsDataModel.dart';
-import 'package:xturbox/data_providers/models/fuel.dart';
-import 'package:xturbox/data_providers/models/geoCodingDataModel.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
-import 'package:xturbox/data_providers/models/newForCaptainOrders.dart';
-import 'package:xturbox/data_providers/models/pickUpDataModel.dart';
-import 'package:xturbox/data_providers/models/pickupReportModel.dart';
-import 'package:xturbox/data_providers/models/postOrderData.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/data_providers/models/trackingDataModel.dart';
-import 'package:xturbox/data_providers/models/tripModel.dart';
-import 'package:xturbox/data_providers/models/violation.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/NetworkUtilities.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/MyResponseModel.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/ResponseViewModel.dart';
+import 'package:Fulgox/data_providers/models/callLogModel.dart';
+import 'package:Fulgox/data_providers/models/captainOrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/clientPaymentsDataModel.dart';
+import 'package:Fulgox/data_providers/models/fuel.dart';
+import 'package:Fulgox/data_providers/models/geoCodingDataModel.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/newForCaptainOrders.dart';
+import 'package:Fulgox/data_providers/models/pickUpDataModel.dart';
+import 'package:Fulgox/data_providers/models/pickupReportModel.dart';
+import 'package:Fulgox/data_providers/models/postOrderData.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/data_providers/models/trackingDataModel.dart';
+import 'package:Fulgox/data_providers/models/tripModel.dart';
+import 'package:Fulgox/data_providers/models/violation.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/NetworkUtilities.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/utilities/URLs.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/endPoints.dart';
+import 'package:Fulgox/utilities/URLs.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/utilities/endPoints.dart';
 
 class EventsApiCaptain {
 
@@ -1843,7 +1843,44 @@ class EventsApiCaptain {
     }
   }
 
+  static Future<MyResponseModel<ClientBalanceModel>> getClientBalance({String? token, String? memberId}) async {
+    UserRepository userRepository = UserRepository();
+    String? locale = await userRepository.getLocale();
 
+    http.Response response = await http.get(
+      Uri.parse(EventsAPIs.url + EndPoints.memberBalance + "/$memberId"),
+      headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: '$token',
+        "compatibility": EventsAPIs.compatibility,
+        "ACCEPT-LANGUAGE": locale ?? Constants.currentLocale,
+        "appVersion": Constants.appVersion
+      },
+    );
+    print(response.request!.url);
+    print('get client balance ${response.statusCode}');
+    print('get client balance ${response.body}');
 
+    MyResponseModel myResponseModel = MyResponseModel<ClientBalanceModel>();
+    ClientBalanceModel clientBalanceModel = ClientBalanceModel();
 
+    if (response.statusCode == 200) {
+      try {
+        var decodedData = json.decode(response.body);
+        clientBalanceModel = ClientBalanceModel.fromJson(decodedData);
+        myResponseModel.statusCode = response.statusCode;
+        myResponseModel.responseData = clientBalanceModel;
+        myResponseModel.errorsList = List<String>.empty(growable: false);
+      } catch (e) {
+        myResponseModel.statusCode = 400;
+        myResponseModel.responseData = clientBalanceModel;
+        myResponseModel.errorsList = List<String>.empty(growable: false);
+      }
+    } else {
+      myResponseModel.statusCode = response.statusCode;
+      myResponseModel.responseData = clientBalanceModel;
+      myResponseModel.errorsList = List<String>.empty(growable: false);
+    }
+    return myResponseModel as FutureOr<MyResponseModel<ClientBalanceModel>>;
+  }
 }

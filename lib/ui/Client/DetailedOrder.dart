@@ -7,39 +7,33 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:xturbox/blocs/bloc/authentication_bloc.dart';
-import 'package:xturbox/blocs/bloc/clientCancelOrder_bloc.dart';
-import 'package:xturbox/blocs/bloc/getOrders_bloc.dart';
-import 'package:xturbox/blocs/events/authentication_events.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/blocs/events/clientCancelOrder_events.dart';
-import 'package:xturbox/blocs/events/gerOrders_events.dart';
-import 'package:xturbox/blocs/states/clientCancelOrder_states.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
-import 'package:xturbox/ui/Client/addOrder.dart';
-import 'package:xturbox/ui/Client/shipmentTracking.dart';
-import 'package:xturbox/data_providers/models/OrdersDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/ui/common/chooseLanguageScreen.dart';
-import 'package:xturbox/ui/custom%20widgets/NetworkErrorView.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerClient.dart';
-import 'package:xturbox/ui/custom%20widgets/myAppBar.dart';
-import 'package:xturbox/ui/custom%20widgets/packageCard.dart';
-import 'package:xturbox/ui/dialogs/shipment_details_dialog.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:Fulgox/controllers/client_cancel_order_controller.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/ui/Client/addOrder.dart';
+import 'package:Fulgox/ui/Client/shipmentTracking.dart';
+import 'package:Fulgox/data_providers/models/OrdersDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/common/chooseLanguageScreen.dart';
+import 'package:Fulgox/ui/custom%20widgets/NetworkErrorView.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerClient.dart';
+import 'package:Fulgox/ui/custom%20widgets/myAppBar.dart';
+import 'package:Fulgox/ui/custom%20widgets/packageCard.dart';
+import 'package:Fulgox/ui/dialogs/shipment_details_dialog.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:xturbox/utilities/GeneralHandling.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
-import 'package:xturbox/utilities/downloader.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/utilities/GeneralHandling.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/utilities/downloader.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 import '../../main.dart';
-import 'ClientEditShipment.dart';
+
 import 'MyOrders.dart';
 import '../custom widgets/custom_loading.dart';
 import '../common/dashboard.dart';
@@ -76,39 +70,40 @@ class _DetailedOrderState extends State<DetailedOrder> {
   OrdersDataModelMix? ordersDataModelMix;
 
   idToNames(OrdersDataModelMix? ordersDataModelMix) {
-    pickUpCity = IdToName.idToName('city', ordersDataModelMix?.pickupCity.toString()??"");
-    if(pickUpCity == '' || pickUpCity == null){
-      pickUpCity = IdToName.idToName(
-          'cityFromNeighborhood', ordersDataModelMix?.pickupNeighborhood.toString()??"");
+    pickUpCity = IdToName.idToName(
+        'city', ordersDataModelMix?.pickupCity.toString() ?? "");
+    if (pickUpCity == '' || pickUpCity == null) {
+      pickUpCity = IdToName.idToName('cityFromNeighborhood',
+          ordersDataModelMix?.pickupNeighborhood.toString() ?? "");
     }
 
     pickUpZone = IdToName.idToName(
-        'zone', ordersDataModelMix?.pickupNeighborhood.toString()??"");
+        'zone', ordersDataModelMix?.pickupNeighborhood.toString() ?? "");
 
-    deliverCity =
-        IdToName.idToName('city', ordersDataModelMix?.deliverCity.toString()??"");
+    deliverCity = IdToName.idToName(
+        'city', ordersDataModelMix?.deliverCity.toString() ?? "");
 
-    if(deliverCity == '' || deliverCity == null){
-      deliverCity = IdToName.idToName(
-          'cityFromNeighborhood', ordersDataModelMix?.deliverNeighborhood.toString()??"");
+    if (deliverCity == '' || deliverCity == null) {
+      deliverCity = IdToName.idToName('cityFromNeighborhood',
+          ordersDataModelMix?.deliverNeighborhood.toString() ?? "");
     }
 
     deliverZone = IdToName.idToName(
-        'zone', ordersDataModelMix?.deliverNeighborhood.toString()??"");
+        'zone', ordersDataModelMix?.deliverNeighborhood.toString() ?? "");
 
-      pickUpTime = DateTime.tryParse(widget.ordersDataModelMix?.pickupTime.toString() ?? "");
-
+    pickUpTime = DateTime.tryParse(
+        widget.ordersDataModelMix?.pickupTime.toString() ?? "");
 
     shipmentStatus = IdToName.idToName(
         'trackType', ordersDataModelMix?.trackType.toString() ?? "");
 
     paymentMethod = IdToName.idToName(
         'payment_method', ordersDataModelMix?.payment_method.toString() ?? "");
-    packagingType =
-        IdToName.idToName('packaging', ordersDataModelMix?.packaging.toString()??"");
+    packagingType = IdToName.idToName(
+        'packaging', ordersDataModelMix?.packaging.toString() ?? "");
 
     cancelReason = IdToName.idToName(
-        'cancellation', ordersDataModelMix?.cancellation.toString()??"");
+        'cancellation', ordersDataModelMix?.cancellation.toString() ?? "");
   }
 
   String? dateDays;
@@ -123,8 +118,10 @@ class _DetailedOrderState extends State<DetailedOrder> {
 
   GlobalKey<RefreshIndicatorState>? refreshKeyHome;
 
-  Future<Null>? onRefreshAll({required ClientCancelOrderBloc cancelOrderBloc}) {
-    cancelOrderBloc.add(GetShipmentDetails(id: widget.ordersDataModelMix?.id));
+  final ClientCancelOrderController _clientCancelOrderController = Get.put(ClientCancelOrderController());
+
+  Future<Null>? onRefreshAll() {
+    _clientCancelOrderController.getShipmentDetails(id: widget.ordersDataModelMix?.id ?? "");
     return null;
   }
 
@@ -157,11 +154,12 @@ class _DetailedOrderState extends State<DetailedOrder> {
       if (widget.ordersDataModelMix?.statusDownload ==
           DownloadTaskStatus.complete) {
         Future.delayed(Duration(seconds: 1), () {
-          FlutterDownloader.open(taskId: widget.ordersDataModelMix?.taskId ?? "");
+          FlutterDownloader.open(
+              taskId: widget.ordersDataModelMix?.taskId ?? "");
         });
 
         _onWidgetDidBuild(context, () {
-          _drawerKey.currentState!.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('File Downloaded'.tr()),
               backgroundColor: Colors.green,
@@ -177,9 +175,9 @@ class _DetailedOrderState extends State<DetailedOrder> {
   }
 
   gettingDate(OrdersDataModelMix? ordersDataModelMix) {
-    timeH = int.parse(ordersDataModelMix?.stamp.toString().substring(11, 13) ?? "");
-    if (timeH.toString().length > 13){
-
+    timeH =
+        int.parse(ordersDataModelMix?.stamp.toString().substring(11, 13) ?? "");
+    if (timeH.toString().length > 13) {
       if (timeH > 12) {
         timeH = timeH - 12;
         AMPM = "PM".tr();
@@ -191,10 +189,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
       } else {
         AMPM = 'AM'.tr();
       }
-
     }
-
-
   }
 
   @override
@@ -208,13 +203,165 @@ class _DetailedOrderState extends State<DetailedOrder> {
     refreshKeyHome = GlobalKey<RefreshIndicatorState>();
     try {
       _bindBackgroundIsolate();
-    } catch (e) {
-    }
+    } catch (e) {}
     FlutterDownloader.registerCallback(Downloader.downloadCallback);
     super.initState();
+    
+    // Listeners for side effects
+    ever(_clientCancelOrderController.cancelSuccess, (bool success) {
+      if (success) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => MyOrdersScreen(
+                    dashboardDataModel: widget.dashboardDataModel,
+                    resourcesData: widget.resourcesData,
+                  )),
+          (route) => false,
+        );
+      }
+    });
+
+    ever(_clientCancelOrderController.reverseSuccess, (bool success) {
+      if (success) {
+         Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => MyOrdersScreen(
+                    dashboardDataModel: widget.dashboardDataModel,
+                    resourcesData: widget.resourcesData,
+                  )),
+          (route) => false,
+        );
+      }
+    });
+
+    ever(_clientCancelOrderController.zeroActionSuccess, (bool success) {
+      if (success) {
+         // Refresh shipment details if zero action succeeds
+         if(widget.ordersDataModelMix?.id != null){
+             _clientCancelOrderController.getShipmentDetails(id: widget.ordersDataModelMix!.id!);
+         }
+      }
+    });
+
+    ever(_clientCancelOrderController.shipmentDetails, (OrdersDataModelMix? data) {
+      if (data != null) {
+          // ShipmentDetailsLoaded
+          // Navigator.pop(context); // This pop was likely for loading dialog? 
+          // Wait, the BlocConsumer popped context on Loaded? 
+          // "Navigator.pop(context);" 
+          // Probably closing a progress dialog.
+          if(Get.isDialogOpen ?? false) Get.back(); 
+          
+          setState(() {
+             dataChanged = true;
+             widget.ordersDataModelMix = data;
+          });
+      }
+    });
+    
+    ever(_clientCancelOrderController.errorMessage, (String error) {
+      if (error != '') {
+             if(Get.isDialogOpen ?? false) Get.back(); // close loading if open
+            if (error == 'TIMEOUT') {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return NetworkErrorView();
+                  });
+              Future.delayed(Duration(seconds: 2), () {
+                Navigator.pop(context);
+              });
+              Future.delayed(Duration(seconds: 2), () {
+                Navigator.pop(context);
+              });
+            } else if (error == "invalidToken") {
+              GeneralHandler.handleInvalidToken(context);
+            } else if (error == 'needUpdate') {
+              GeneralHandler.handleNeedUpdateState(context);
+            } else if (error == "general") {
+              GeneralHandler.handleGeneralError(context);
+            } else {
+               _onWidgetDidBuild(context, () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Container(
+                      width: screenWidth,
+                      height: screenHeight! * 0.1,
+                      child: ListView.builder(
+                        itemCount: _clientCancelOrderController.errorList.length,
+                        itemBuilder: (context, i) {
+                          return Text(_clientCancelOrderController.errorList[i].toString());
+                        },
+                      ),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              });
+            }
+            _clientCancelOrderController.errorMessage.value = ''; // Reset
+      }
+    });
+
+    ever(_clientCancelOrderController.shipmentDetailPop, (bool pop) {
+        if(pop) {
+             Navigator.pop(context);
+             _clientCancelOrderController.shipmentDetailPop.value = false;
+        }
+    });
+    
+    ever(_clientCancelOrderController.isLoading, (bool loading) {
+        if(loading) {
+            ComFunctions.ProgressDialog(context);
+        } 
+        // else {
+        //    if(Get.isDialogOpen ?? false) Get.back();
+        // }
+        // Note: The BlocConsumer logic popped manually on Loaded/Error/Success. 
+        // So I'll stick to that pattern or just rely on the other listeners to pop.
+        // Actually, explicit pop in other listeners is safer if we want to match legacy behavior strictly.
+    });
+
+    ever(_clientCancelOrderController.cancelSuccess, (bool success) {
+        if(success) {
+             if(Get.isDialogOpen ?? false) Get.back();
+             ComFunctions.showToastEditable(text: 'Cancelled successfully'.tr(), color: Colors.green);
+             Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MyOrdersScreen()), (route) => false);
+             _clientCancelOrderController.cancelSuccess.value = false;
+        }
+    });
+
+    ever(_clientCancelOrderController.reverseSuccess, (bool success) {
+        if(success) {
+             if(Get.isDialogOpen ?? false) Get.back();
+             ComFunctions.showToastEditable(text: 'Reversed successfully'.tr(), color: Colors.green);
+             Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MyOrdersScreen()), (route) => false);
+             _clientCancelOrderController.reverseSuccess.value = false;
+        }
+    });
+
+    ever(_clientCancelOrderController.zeroActionSuccess, (bool success) {
+        if(success) {
+             if(Get.isDialogOpen ?? false) Get.back();
+             ComFunctions.showToastEditable(text: 'Success'.tr(), color: Colors.green);
+             _clientCancelOrderController.getShipmentDetails(id: widget.ordersDataModelMix?.id ?? "");
+             _clientCancelOrderController.zeroActionSuccess.value = false;
+        }
+    });
+
+    ever(_clientCancelOrderController.editSuccess, (bool success) {
+        if(success) {
+             if(Get.isDialogOpen ?? false) Get.back();
+             ComFunctions.showToastEditable(text: 'Edited successfully'.tr(), color: Colors.green);
+             _clientCancelOrderController.getShipmentDetails(id: widget.ordersDataModelMix?.id ?? "");
+             _clientCancelOrderController.editSuccess.value = false;
+        }
+    });
   }
 
-  AuthenticationBloc authenticationBloc = AuthenticationBloc();
   Future<bool> _onBackPressed() async {
     if (dataChanged) {
       Navigator.push(
@@ -245,123 +392,22 @@ class _DetailedOrderState extends State<DetailedOrder> {
     Size size = MediaQuery.of(context).size;
     screenWidth = size.width;
     screenHeight = size.height;
-    return BlocProvider(
-      create: (context) => ClientCancelOrderBloc(),
-      child: BlocConsumer<ClientCancelOrderBloc, ClientCancelOrderStates>(
-        builder: (context, state) {
-          if (state is ClientCancelOrderLoading) {
-            return CreateDetailedOrderScreen(
-                cancelOrderBloc:
-                    BlocProvider.of<ClientCancelOrderBloc>(context),
-                ordersDataModelMix: widget.ordersDataModelMix);
-          }
-
-          if (state is ShipmentDetailsLoaded) {
-            return CreateDetailedOrderScreen(
-                cancelOrderBloc:
-                    BlocProvider.of<ClientCancelOrderBloc>(context),
-                ordersDataModelMix: state.ordersDataModel);
-          } else if (state is ShipmentDetailsError) {
-            return CreateDetailedOrderScreen(
-                cancelOrderBloc:
-                    BlocProvider.of<ClientCancelOrderBloc>(context),
-                ordersDataModelMix: widget.ordersDataModelMix);
-          }
-          return CreateDetailedOrderScreen(
-              cancelOrderBloc: BlocProvider.of<ClientCancelOrderBloc>(context),
-              ordersDataModelMix: widget.ordersDataModelMix);
-        },
-        listener: (context, state) {
-          if (state is ClientCancelOrderSuccess) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => MyOrdersScreen(
-                        dashboardDataModel: widget.dashboardDataModel,
-                        resourcesData: widget.resourcesData,
-                      )),
-              (route) => false,
-            );
-          } else if (state is ClientCancelOrderFailure) {
-            Navigator.pop(context);
-            if (state.error == 'TIMEOUT') {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return NetworkErrorView();
-                  });
-              Future.delayed(Duration(seconds: 2), () {
-                Navigator.pop(context);
-              });
-              Future.delayed(Duration(seconds: 2), () {
-                Navigator.pop(context);
-              });
-            } else if (state.error == "invalidToken") {
-              GeneralHandler.handleInvalidToken(context);
-            } else if (state.error == 'needUpdate') {
-              GeneralHandler.handleNeedUpdateState(context);
-            } else if (state.error == "general") {
-              GeneralHandler.handleGeneralError(context);
-            } else {
-              _onWidgetDidBuild(context, () {
-                _drawerKey.currentState!.showSnackBar(
-                  SnackBar(
-                    content: Container(
-                      width: screenWidth,
-                      height: screenHeight! * 0.1,
-                      child: ListView.builder(
-                        itemCount: state.errors!.length,
-                        itemBuilder: (context, i) {
-                          return Text(state.errors![i]!);
-                        },
-                      ),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              });
-            }
-          } else if (state is ShipmentDetailsLoaded) {
-            Navigator.pop(context);
-            dataChanged = true;
-            widget.ordersDataModelMix = state.ordersDataModel;
-          } else if (state is ShipmentDetailPop) {
-            Navigator.pop(context);
-          } else if (state is ShipmentDetailsLoading) {
-            ComFunctions.ProgressDialog(context);
-          } else if (state is ClientCancelOrderLoading) {
-            ComFunctions.ProgressDialog(context);
-          } else if (state is ShipmentDetailsError) {
-            _onWidgetDidBuild(context, () {
-              _drawerKey.currentState!.showSnackBar(
-                SnackBar(
-                  content: Container(
-                    width: screenWidth,
-                    height: screenHeight! * 0.1,
-                    child: ListView.builder(
-                      itemCount: state.errorList!.length,
-                      itemBuilder: (context, i) {
-                        return Text(state.errorList![i]!);
-                      },
-                    ),
-                  ),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            });
-          } else if (state is ShipmentZeroActionSuccess) {
-            Navigator.pop(context);
-            BlocProvider.of<ClientCancelOrderBloc>(context)
-                .add(GetShipmentDetails(id: widget.ordersDataModelMix?.id));
-          }
-        },
-      ),
-    );
+    return Obx(() {
+        // We use Obx just to trigger rebuilds if needed, though most logic is in listeners now or effectively static until data changes.
+        // Actually Obx is needed if CreateDetailedOrderScreen depends on reactive data directly.
+        // But CreateDetailedOrderScreen takes `ordersDataModelMix` which we update in `setState`.
+        // So we might not strictly need Obx here if `widget.ordersDataModelMix` is updated.
+        // But let's wrap it to be safe and responsive.
+        return CreateDetailedOrderScreen(
+            clientCancelOrderController: _clientCancelOrderController,
+            ordersDataModelMix: widget.ordersDataModelMix);
+    });
   }
 
-  Widget CreateDetailedOrderScreen({bool? loading, ClientCancelOrderBloc? cancelOrderBloc, required OrdersDataModelMix? ordersDataModelMix}) {
-
+  Widget CreateDetailedOrderScreen(
+      {bool? loading,
+      ClientCancelOrderController? clientCancelOrderController,
+      required OrdersDataModelMix? ordersDataModelMix}) {
     try {
       gettingDate(ordersDataModelMix);
       idToNames(ordersDataModelMix);
@@ -446,8 +492,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                                 ),
                                                 Text(
                                                   AMPM ?? ''.tr(),
-                                                  style:
-                                                      TextStyle(fontSize: 9),
+                                                  style: TextStyle(fontSize: 9),
                                                 ),
                                               ],
                                             )
@@ -463,12 +508,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                               key: const ValueKey('closeDtOrder'),
                               minWidth: 0,
                               height: 0,
-                              child: FlatButton(
-                                padding: EdgeInsets.all(1),
-                                minWidth: 0,
-                                height: 0,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                              child: ElevatedButton(
                                 onPressed: _onBackPressed,
                                 child: Container(
                                   width: 35,
@@ -480,8 +520,8 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                         color: Colors.grey.withOpacity(0.2),
                                         spreadRadius: 1,
                                         blurRadius: 2,
-                                        offset: Offset(0,
-                                            3), // changes position of shadow
+                                        offset: Offset(
+                                            0, 3), // changes position of shadow
                                       ),
                                     ],
                                   ),
@@ -499,7 +539,9 @@ class _DetailedOrderState extends State<DetailedOrder> {
                     SizedBox(
                       height: 20,
                     ),
-                    ordersDataModelMix?.trackType == '9' ||  ordersDataModelMix?.trackType == '1' ||  ordersDataModelMix?.trackType == '18'
+                    ordersDataModelMix?.trackType == '9' ||
+                            ordersDataModelMix?.trackType == '1' ||
+                            ordersDataModelMix?.trackType == '18'
                         ? Column(
                             children: [
                               Row(
@@ -532,8 +574,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                               color: Colors.white,
                                               shape: BoxShape.circle),
                                           child: IconButton(
-                                            key: const ValueKey(
-                                                'editShipment'),
+                                            key: const ValueKey('editShipment'),
                                             padding: EdgeInsets.all(2),
                                             onPressed: () {
                                               Navigator.push(
@@ -589,7 +630,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                                         ],
                                                       ),
                                                       actions: [
-                                                        TextButton(
+                                                        ElevatedButton(
                                                           child: Text(
                                                             'No'.tr(),
                                                             style: TextStyle(
@@ -601,18 +642,19 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                                                 context);
                                                           },
                                                         ),
-                                                        TextButton(
+                                                        ElevatedButton(
                                                           key: const ValueKey(
                                                               'yesCancel'),
                                                           child: Text(
                                                             'Yes'.tr(),
                                                             style: TextStyle(
-                                                                color: Colors
-                                                                    .red),
+                                                                color:
+                                                                    Colors.red),
                                                           ),
                                                           onPressed: () {
-                                                            cancelOrderBloc!.add(CancelMyOrder(
-                                                                    id: ordersDataModelMix?.id));
+                                                            clientCancelOrderController!.cancelMyOrder(
+                                                                id: ordersDataModelMix
+                                                                        ?.id ?? "");
                                                             Navigator.pop(
                                                                 context);
                                                           },
@@ -632,8 +674,8 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                       ),
                                       Text(
                                         'Cancel shipment'.tr(),
-                                        style: TextStyle(
-                                            color: Color(0xFFFA8154)),
+                                        style:
+                                            TextStyle(color: Color(0xFFFA8154)),
                                       )
                                     ],
                                   ),
@@ -644,58 +686,70 @@ class _DetailedOrderState extends State<DetailedOrder> {
                               ),
                             ],
                           )
-                   : ordersDataModelMix?.trackType == '5' && ((ordersDataModelMix?.followup?.isEmpty ?? true)|| ordersDataModelMix?.followup == "0")
-                        ? Row(
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: true,
-                                        builder: (context) {
-                                          return ShipmentDetailsDialog(ordersDataModelMix: widget.ordersDataModelMix!,cancelOrderBloc: cancelOrderBloc!);
-                                        });
-                                  },
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(10)
-                                          ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              Icons.refresh,
-                                              size: 30,
-                                                color:Colors.black
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              'Reverse shipment'.tr(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  color:Colors.black),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                ),
-                                SizedBox(height: 10,),
-
-                              ],
-                            ),
-                          ],
-                        )
-                        : SizedBox(),
+                        : ordersDataModelMix?.trackType == '5' &&
+                                ((ordersDataModelMix?.followup?.isEmpty ??
+                                        true) ||
+                                    ordersDataModelMix?.followup == "0")
+                            ? Row(
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: true,
+                                              builder: (context) {
+                                                return ShipmentDetailsDialog(
+                                                    ordersDataModelMix: widget
+                                                        .ordersDataModelMix!,
+                                                    clientCancelOrderController:
+                                                        clientCancelOrderController!);
+                                              });
+                                        },
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 5),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Icon(Icons.refresh,
+                                                      size: 30,
+                                                      color: Colors.black),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    'Reverse shipment'.tr(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: Colors.black),
+                                                  )
+                                                ],
+                                              ),
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : SizedBox(),
                     Row(
                       children: [
                         Text(
@@ -752,13 +806,16 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 11,
-                                                  fontWeight:
-                                                      FontWeight.w900),
+                                                  fontWeight: FontWeight.w900),
                                             ),
                                           ),
                                         ),
                                       )
-                                    : ordersDataModelMix?.trackType == '14' || ordersDataModelMix?.trackType == '20' || ordersDataModelMix?.trackType == '21'
+                                    : ordersDataModelMix?.trackType == '14' ||
+                                            ordersDataModelMix?.trackType ==
+                                                '20' ||
+                                            ordersDataModelMix?.trackType ==
+                                                '21'
                                         ? Padding(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 8, horizontal: 8),
@@ -768,11 +825,9 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                               decoration: BoxDecoration(
                                                   color: Color(0xFFFF8A7B),
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          40),
+                                                      BorderRadius.circular(40),
                                                   border: Border.all(
-                                                      color:
-                                                      Color(0xFFFF8A7B),
+                                                      color: Color(0xFFFF8A7B),
                                                       width: 1)),
                                               child: Align(
                                                 alignment: Alignment.center,
@@ -796,11 +851,10 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                               decoration: BoxDecoration(
                                                   color: Constants.blueColor,
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          40),
+                                                      BorderRadius.circular(40),
                                                   border: Border.all(
                                                       color:
-                                                         Constants.blueColor,
+                                                          Constants.blueColor,
                                                       width: 1)),
                                               child: Align(
                                                 alignment: Alignment.center,
@@ -824,45 +878,49 @@ class _DetailedOrderState extends State<DetailedOrder> {
                     SizedBox(
                       height: 8,
                     ),
-
-                  ordersDataModelMix?.trackType == "11"  && ordersDataModelMix?.barcode != null ?
-                   InkWell(
-                    onTap: (){
-                      ComFunctions.launchURL("https://sdm.smsaexpress.com/track.aspx");
-                    },
-                    child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Constants.blueColor),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Track from the partner'.tr()),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(ordersDataModelMix?.barcode ?? ""),
+                    ordersDataModelMix?.trackType == "11" &&
+                            ordersDataModelMix?.barcode != null
+                        ? InkWell(
+                            onTap: () {
+                              ComFunctions.launchURL(
+                                  "https://sdm.smsaexpress.com/track.aspx");
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Constants.blueColor,
                                     ),
-                                  )
-                                ],
-                              ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Track from the partner'.tr()),
+                                        Flexible(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                                ordersDataModelMix?.barcode ??
+                                                    ""),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                        ],
-                      ),
-                  ) : SizedBox(),
-
+                          )
+                        : SizedBox(),
                     Column(
                       children: [
                         Container(
@@ -874,14 +932,13 @@ class _DetailedOrderState extends State<DetailedOrder> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Payment method'.tr()),
                                 Flexible(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text( paymentMethod??''),
+                                    child: Text(paymentMethod ?? ''),
                                   ),
                                 )
                               ],
@@ -904,8 +961,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Packaging'.tr()),
                                 Padding(
@@ -932,8 +988,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('no. of pieces'.tr()),
                                 Padding(
@@ -975,7 +1030,8 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: AutoSizeText(
-                                            widget.ordersDataModelMix?.comment ??
+                                            widget.ordersDataModelMix
+                                                    ?.comment ??
                                                 '',
                                             textAlign:
                                                 EasyLocalization.of(context)!
@@ -1007,8 +1063,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 4, horizontal: 8),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Pickup time'.tr()),
                                 // pickUpTime != null && ordersDataModelMix.pickupTime.toString().length > 1 ?
@@ -1023,22 +1078,56 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                 //   ),
                                 // ) :  Text(pickUpTime.toString() ),
 
-                                (ordersDataModelMix?.pickupTime.toString().length  ?? 0) > 12  ?
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text("Date".tr(),style: TextStyle(fontSize: 12)),
-                                    SizedBox(width: screenWidth!*0.015,),
-                                    Text(pickUpTime.day.toString() + " - " + pickUpTime.month.toString() + " - " + pickUpTime.year.toString() ,style: TextStyle(fontSize: 12), ),
-                                    SizedBox(width: screenWidth!*0.03,),
-                                    Text("Time".tr(),style: TextStyle(fontSize: 14)),
-                                    SizedBox(width: screenWidth!*0.015,),
-                                    EasyLocalization.of(context)!.locale == Locale('en') ?
-                                    Text(pickUpTime.hour.toString() + " : " + pickUpTime.minute.toString(),style: TextStyle(fontSize: 12) ) :
-                                    Text( pickUpTime.minute.toString() + " : "  + pickUpTime.hour.toString(),style: TextStyle(fontSize: 12))
-                                  ],
-                                ) : Container()
-
+                                (ordersDataModelMix?.pickupTime
+                                                .toString()
+                                                .length ??
+                                            0) >
+                                        12
+                                    ? Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text("Date".tr(),
+                                              style: TextStyle(fontSize: 12)),
+                                          SizedBox(
+                                            width: screenWidth! * 0.015,
+                                          ),
+                                          Text(
+                                            pickUpTime.day.toString() +
+                                                " - " +
+                                                pickUpTime.month.toString() +
+                                                " - " +
+                                                pickUpTime.year.toString(),
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                          SizedBox(
+                                            width: screenWidth! * 0.03,
+                                          ),
+                                          Text("Time".tr(),
+                                              style: TextStyle(fontSize: 14)),
+                                          SizedBox(
+                                            width: screenWidth! * 0.015,
+                                          ),
+                                          EasyLocalization.of(context)!
+                                                      .locale ==
+                                                  Locale('en')
+                                              ? Text(
+                                                  pickUpTime.hour.toString() +
+                                                      " : " +
+                                                      pickUpTime.minute
+                                                          .toString(),
+                                                  style:
+                                                      TextStyle(fontSize: 12))
+                                              : Text(
+                                                  pickUpTime.minute.toString() +
+                                                      " : " +
+                                                      pickUpTime.hour
+                                                          .toString(),
+                                                  style:
+                                                      TextStyle(fontSize: 12))
+                                        ],
+                                      )
+                                    : Container()
                               ],
                             ),
                           ),
@@ -1134,8 +1223,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                         padding: EdgeInsets.all(8),
                                         child: Row(
                                           children: [
-                                            Text(
-                                                ordersDataModelMix?.cod ?? ''),
+                                            Text(ordersDataModelMix?.cod ?? ''),
                                             SizedBox(
                                               width: 3,
                                             ),
@@ -1230,7 +1318,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                           //                     ],
                                           //                   ),
                                           //                   actions: [
-                                          //                     TextButton(
+                                          //                     ElevatedButton(
                                           //                       child: Text(
                                           //                         'No'.tr(),
                                           //                         style: TextStyle(
@@ -1243,7 +1331,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                           //                             context);
                                           //                       },
                                           //                     ),
-                                          //                     TextButton(
+                                          //                     ElevatedButton(
                                           //                       child: Text(
                                           //                         'Yes'.tr(),
                                           //                         style: TextStyle(
@@ -1333,7 +1421,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                       Row(
                                         children: [
                                           Text(
-                                            ordersDataModelMix?.extra ??"",
+                                            ordersDataModelMix?.extra ?? "",
                                             style: TextStyle(),
                                           ),
                                           SizedBox(
@@ -1664,8 +1752,7 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                       color: Colors.white,
                                       border: Border.all(
                                           color: Color(0xFF56D340), width: 2),
-                                      borderRadius:
-                                          BorderRadius.circular(12)),
+                                      borderRadius: BorderRadius.circular(12)),
                                   child: Row(
                                     children: [
                                       Padding(
@@ -1772,15 +1859,16 @@ class _DetailedOrderState extends State<DetailedOrder> {
                         ? InkWell(
                             onTap: () {
                               FlutterDownloader.open(
-                                  taskId: widget.ordersDataModelMix?.taskId ?? "");
+                                  taskId:
+                                      widget.ordersDataModelMix?.taskId ?? "");
                             },
                             child: Container(
                               width: screenWidth! * 0.7,
                               height: 35,
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border.all(
-                                      color: Colors.green, width: 2),
+                                  border:
+                                      Border.all(color: Colors.green, width: 2),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1813,113 +1901,103 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                     return AlertDialog(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                              15)),
+                                              BorderRadius.circular(15)),
                                       title: Column(
                                         children: [
                                           Text(
                                             "Print".tr(),
-                                            style: TextStyle(
-                                                fontSize:
-                                                14),
+                                            style: TextStyle(fontSize: 14),
                                           ),
-                                          FlatButton(
-                                              height:
-                                              40,
-                                              padding:
-                                              EdgeInsets.all(
-                                                  0),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(
-                                                      10)),
-                                              color: Constants.capPurple,
-                                              child:
-                                              Text(
+                                          ElevatedButton(
+                                              child: Text(
                                                 '4*4'.tr(),
                                                 style: TextStyle(
-                                                    color:
-                                                    Colors.white,
+                                                    color: Colors.white,
                                                     fontSize: 11),
                                               ),
-                                              onPressed:
-                                                  () {
+                                              onPressed: () {
                                                 Navigator.pop(context);
 
                                                 if (Platform.isAndroid) {
-                                                  Downloader.downloadPDFAndroid2( widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoice/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFAndroid2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoice/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 } else {
-                                                  Downloader.downloadPDFIOS2(widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoice/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFIOS2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoice/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 }
-
                                               }),
                                           SizedBox(
                                             width: 8,
                                           ),
-                                          FlatButton(
-                                              height:
-                                              40,
-                                              padding:
-                                              EdgeInsets.all(
-                                                  0),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(
-                                                      10)),
-                                              color: Constants
-                                                  .capDarkPink,
-                                              child:
-                                              Text(
-                                                "4*6 / pcs"
-                                                    .tr(),
+                                          ElevatedButton(
+                                              child: Text(
+                                                "4*6 / pcs".tr(),
                                                 style: TextStyle(
-                                                    color:
-                                                    Colors.white,
+                                                    color: Colors.white,
                                                     fontSize: 11),
                                               ),
-                                              onPressed:
-                                                  () {
+                                              onPressed: () {
                                                 Navigator.of(context);
                                                 if (Platform.isAndroid) {
-                                                  Downloader.downloadPDFAndroid2( widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoices/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFAndroid2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoices/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 } else {
-                                                  Downloader.downloadPDFIOS2(widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoices/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFIOS2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoices/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 }
 
-                                                // ComFunctions.launchURL("https://portal.xturbox.com/print_membervise/${widget.capOrdersList!.first.member}");
+                                                // ComFunctions.launchURL("https://portal.Fulgox.com/print_membervise/${widget.capOrdersList!.first.member}");
                                               }),
                                           SizedBox(
                                             width: 8,
                                           ),
-                                          FlatButton(
-                                              height:
-                                              40,
-                                              padding:
-                                              EdgeInsets.all(
-                                                  0),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(
-                                                      10)),
-                                              color: Colors
-                                                  .blueAccent,
-                                              child:
-                                              Text(
-                                                "4*6"
-                                                    .tr(),
+                                          ElevatedButton(
+                                              child: Text(
+                                                "4*6".tr(),
                                                 style: TextStyle(
-                                                    color:
-                                                    Colors.white,
+                                                    color: Colors.white,
                                                     fontSize: 11),
                                               ),
-                                              onPressed:
-                                                  () {
-                                                Navigator.of(
-                                                    context);
+                                              onPressed: () {
+                                                Navigator.of(context);
                                                 if (Platform.isAndroid) {
-                                                  Downloader.downloadPDFAndroid2( widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoices2/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFAndroid2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoices2/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 } else {
-                                                  Downloader.downloadPDFIOS2(widget.ordersDataModelMix?.taskId , "https://portal.xturbox.com/print_invoices2/${widget.ordersDataModelMix?.id}", widget.ordersDataModelMix?.id?? "");
+                                                  Downloader.downloadPDFIOS2(
+                                                      widget.ordersDataModelMix
+                                                          ?.taskId,
+                                                      "https://portal.Fulgox.com/print_invoices2/${widget.ordersDataModelMix?.id}",
+                                                      widget.ordersDataModelMix
+                                                              ?.id ??
+                                                          "");
                                                 }
-                                                // ComFunctions.launchURL("https://portal.xturbox.com/print_membervise2/${widget.capOrdersList!.first.member}");
+                                                // ComFunctions.launchURL("https://portal.Fulgox.com/print_membervise2/${widget.capOrdersList!.first.member}");
                                               }),
                                         ],
                                       ),
@@ -1938,8 +2016,8 @@ class _DetailedOrderState extends State<DetailedOrder> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10),
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 10),
                                       child: Icon(
                                         Icons.print,
                                         color: Constants.redColor,
@@ -1965,8 +2043,10 @@ class _DetailedOrderState extends State<DetailedOrder> {
                         ? Container(
                             width: screenWidth,
                             child: LinearProgressIndicator(
-                              backgroundColor: Colors.grey,
-                              value: (widget.ordersDataModelMix?.progress ?? 100) / 100,
+                              color: Colors.grey,
+                              value:
+                                  (widget.ordersDataModelMix?.progress ?? 100) /
+                                      100,
                             ),
                           )
                         : Container(),

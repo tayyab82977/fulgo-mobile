@@ -4,10 +4,10 @@ import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as geo;
 
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/apis/EventsApi.dart';
-import 'package:xturbox/data_providers/apis/EventsApiCaptian.dart';
-import 'package:xturbox/utilities/Constants.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/data_providers/apis/EventsApi.dart';
+import 'package:Fulgox/data_providers/apis/EventsApiCaptian.dart';
+import 'package:Fulgox/utilities/Constants.dart';
 
 class LocationServices {
 

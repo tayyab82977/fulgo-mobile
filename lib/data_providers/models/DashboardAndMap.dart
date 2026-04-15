@@ -1,4 +1,4 @@
-import 'package:xturbox/data_providers/models/ProfileDataModel.dart';
+import 'package:Fulgox/data_providers/models/ProfileDataModel.dart';
 
 class DashboardAndMap {
 

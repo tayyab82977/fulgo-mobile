@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:xturbox/ui/common/introSliderScreen.dart';
+import 'package:Fulgox/ui/common/introSliderScreen.dart';
 
 class SuccessRegistration extends StatelessWidget {
   @override
@@ -62,12 +62,7 @@ class SuccessRegistration extends StatelessWidget {
                     style: TextStyle(fontSize: screenWidth*0.05),
                   ),
                   SizedBox(height: screenHeight*0.08,),
-                  FlatButton(
-                      padding: EdgeInsets.all(0),
-                      minWidth:screenWidth*0.6 ,
-                      height: screenHeight*0.1,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      color:  Color(0xFF42B566),
+                  ElevatedButton(
                       child: Text('Start'.tr(),
                         style: TextStyle(
                             color: Colors.white,

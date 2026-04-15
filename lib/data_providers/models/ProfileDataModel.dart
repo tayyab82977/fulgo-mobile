@@ -1,6 +1,6 @@
   import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:xturbox/data_providers/models/memberBalanceModel.dart';
+import 'package:Fulgox/data_providers/models/memberBalanceModel.dart';
 
 class ProfileDataModel {
   String? id;
@@ -248,6 +248,7 @@ class ProfileDataModel {
   }
 
   class Addresses  {
+  String? id;
   String? title;
   String? description;
   String? city;
@@ -256,9 +257,10 @@ class ProfileDataModel {
   Icon? icon ;
   String? key ;
 
-  Addresses({this.title, this.description, this.city, this.map, this.comment , this.icon,this.key});
+  Addresses({this.id, this.title, this.description, this.city, this.map, this.comment , this.icon,this.key});
 
   Addresses.fromJson(Map<String, dynamic> json) {
+  id = json['id'];
   title = json['title'];
   description = json['description'];
   city = json['neighborhood'];
@@ -268,6 +270,7 @@ class ProfileDataModel {
 
   Map<String, dynamic> toJson() {
   final Map<String, dynamic> data = new Map<String, dynamic>();
+  data['id'] = this.id;
   data['title'] = this.title;
   data['description'] = this.description;
   data['neighborhood'] = this.city;

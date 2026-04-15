@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/courier/captainMyReserves.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/courier/captainMyReserves.dart';
 
 import 'captainMyPickup.dart';
 import '../custom widgets/CaptainAppBar.dart';

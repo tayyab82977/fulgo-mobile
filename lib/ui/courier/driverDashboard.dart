@@ -1,31 +1,46 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:version/version.dart';
-import 'package:xturbox/UserRepo.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
-import 'package:xturbox/data_providers/models/savedData.dart';
-import 'package:xturbox/ui/courier/bulkPickupScreen.dart';
-import 'package:xturbox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/UserRepo.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/data_providers/models/savedData.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/bulkPickupScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/captainDashboard.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/ui/courier/trips_management.dart';
-import 'package:xturbox/ui/custom%20widgets/drawerDriver.dart';
-import 'package:xturbox/utilities/Constants.dart';
-import 'package:xturbox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/courier/trips_management.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/ui/custom%20widgets/drawerDriver.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/Constants.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
+import 'package:Fulgox/utilities/comFunctions.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/CaptainAppBar.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import '../custom widgets/drawerCaptain.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 import 'deliveryOptionsScreen.dart';
+import 'package:Fulgox/ui/custom widgets/custom_button.dart';
 
-
-
-class DriverDashboard extends StatefulWidget  {
-  ResourcesData? resourcesData ;
+class DriverDashboard extends StatefulWidget {
+  ResourcesData? resourcesData;
   DriverDashboard({this.resourcesData});
 
   @override
   _DriverDashboardState createState() => _DriverDashboardState();
 }
 
-class _DriverDashboardState extends State<DriverDashboard> with TickerProviderStateMixin {
+class _DriverDashboardState extends State<DriverDashboard>
+    with TickerProviderStateMixin {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   Color blueColor = Color(0xFF2f3a92);
   Color greyColor = Color(0xFFf4f4f4);
@@ -34,13 +49,12 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
   late Version latestVersion;
   late Version savedVersion;
   UserRepository userRepository = UserRepository();
- late AnimationController controller;
+  late AnimationController controller;
   late Animation<Offset> offset;
-
 
   versionCheck() {
     latestVersion = Version.parse(widget.resourcesData?.appVersion ?? "1.3.3");
-    savedVersion = Version.parse(Constants.appVersion );
+    savedVersion = Version.parse(Constants.appVersion);
 
     if (latestVersion > savedVersion) {
       newVersion = true;
@@ -49,9 +63,10 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
     }
   }
 
-  Future<bool> _onBackPressed()async {
-    return false ;
+  Future<bool> _onBackPressed() async {
+    return false;
   }
+
   _showDialog() async {
     await Future.delayed(Duration(milliseconds: 200));
     showDialog(
@@ -70,21 +85,22 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
                 maxLines: 2,
               ),
               actions: [
-                TextButton(
+                CustomButton(
                   child: Text('Try it now!'.tr()),
                   onPressed: () async {
                     ComFunctions.launchStore();
                     await userRepository.persistSavedVersion(
                         savedVersion:
-                        widget.resourcesData?.appVersion.toString()?? "4.4.4") ;
+                            widget.resourcesData?.appVersion.toString() ??
+                                "4.4.4");
                     Constants.savedVersion = widget.resourcesData?.appVersion;
                     // Navigator.pop(context);
                   },
                 ),
-                // TextButton(
+                // CustomButton(
                 //   child: Text(
                 //     'Later'.tr(),
-                //     style: TextStyle(color: Colors.red),
+                //     style: TextStyle(color: Colors.red,
                 //   ),
                 //   onPressed: () async {
                 //     await userRepository.persistSavedVersion(
@@ -99,18 +115,18 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
           );
         });
   }
+
   @override
   void initState() {
-    try{
+    try {
       versionCheck();
       if (newVersion) {
         _showDialog();
       }
-
-    }catch(e){}
+    } catch (e) {}
     controller = new AnimationController(
         vsync: this, duration: new Duration(seconds: 3));
-    offset = Tween<Offset>(begin:  Offset.zero, end: Offset(2.0, 0.0))
+    offset = Tween<Offset>(begin: Offset.zero, end: Offset(2.0, 0.0))
         .animate(controller);
 
     controller.forward();
@@ -131,30 +147,45 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CaptainAppBar(drawerKey: _drawerKey, screenName: '',),
-
-            SizedBox(height: mySize.height / 100 * 4,),
-            SizedBox(height: mySize.height /100*2,),
+            CaptainAppBar(
+              drawerKey: _drawerKey,
+              screenName: '',
+            ),
+            SizedBox(
+              height: mySize.height / 100 * 4,
+            ),
+            SizedBox(
+              height: mySize.height / 100 * 2,
+            ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: mySize.width / 100 * 3.5),
-              child: DashboardCard(text: "Shipping between cities".tr(),dIcon: 'assets/images/dashboardDelivery.png',
-                  navigationFun: (){
+              padding:
+                  EdgeInsets.symmetric(horizontal: mySize.width / 100 * 3.5),
+              child: DashboardCard(
+                  text: "Shipping between cities".tr(),
+                  dIcon: 'assets/images/dashboardDelivery.png',
+                  navigationFun: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                TripsManagementScreen(resourcesData: SavedData.resourcesData))
-                    );
-                  }, description: ''),
+                            builder: (context) => TripsManagementScreen(
+                                resourcesData: SavedData.resourcesData)));
+                  },
+                  description: ''),
             ),
-            SizedBox(height: mySize.height / 100 * 1,),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: mySize.height / 100 * 1,
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Expanded(
                 flex: 1,
                 child: Padding(
-                  padding: EdgeInsets.only(right: mySize.width / 100 * 7, left: mySize.width / 100 * 7),
+                  padding: EdgeInsets.only(
+                      right: mySize.width / 100 * 7,
+                      left: mySize.width / 100 * 7),
                   child: Container(
-                    width: mySize.width,
+                      width: mySize.width,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(38),
                           color: greyColor,
@@ -175,64 +206,111 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
                             Container(
                                 width: mySize.width,
                                 decoration: BoxDecoration(
-                                  color: Constants.blueColor,
-                                  borderRadius: BorderRadius.circular(10)
-                                ),
+                                    color: Constants.blueColor,
+                                    borderRadius: BorderRadius.circular(10)),
                                 child: Padding(
                                   padding: const EdgeInsets.all(15.0),
                                   child: Column(
                                     children: [
-                                      Text("Violations".tr() , style: TextStyle(color: Colors.white,fontSize: 20),),
+                                      Text(
+                                        "Violations".tr(),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
                                       Row(
                                         children: [
                                           Expanded(
                                             child: Container(
-                                              decoration:BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(4)
-                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4)),
                                               child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Column(
                                                   children: [
-                                                    Text("Paid".tr() , style: TextStyle(color: Colors.green,fontSize: 15),),
-                                                    Text(SavedData.profileDataModel.paidViolations.toString() , style: TextStyle(color: Colors.green,fontSize: 15),),
+                                                    Text(
+                                                      "Paid".tr(),
+                                                      style: TextStyle(
+                                                          color: Colors.green,
+                                                          fontSize: 15),
+                                                    ),
+                                                    Text(
+                                                      SavedData.profileDataModel
+                                                          .paidViolations
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.green,
+                                                          fontSize: 15),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
                                           Expanded(
                                             child: Container(
-                                              decoration:BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(4)
-                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4)),
                                               child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Column(
                                                   children: [
-                                                    Text("Unpaid".tr() , style: TextStyle(color: Colors.red,fontSize: 15),maxLines: 1,),
-                                                    Text(SavedData.profileDataModel.unPaidViolations.toString() , style: TextStyle(color: Colors.red,fontSize: 15),),
+                                                    Text(
+                                                      "Unpaid".tr(),
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 15),
+                                                      maxLines: 1,
+                                                    ),
+                                                    Text(
+                                                      SavedData.profileDataModel
+                                                          .unPaidViolations
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 15),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
                                           Expanded(
                                             child: Container(
-                                              decoration:BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(4)
-                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4)),
                                               child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Column(
                                                   children: [
-                                                    Text("Dismiss".tr() , style: TextStyle(color: Colors.grey,fontSize: 15),),
-                                                    Text(SavedData.profileDataModel.dismissViolations.toString() , style: TextStyle(color: Colors.grey,fontSize: 15),),
+                                                    Text(
+                                                      "Dismiss".tr(),
+                                                      style: TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 15),
+                                                    ),
+                                                    Text(
+                                                      SavedData.profileDataModel
+                                                          .dismissViolations
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 15),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -243,85 +321,131 @@ class _DriverDashboardState extends State<DriverDashboard> with TickerProviderSt
                                     ],
                                   ),
                                 )),
-                            SizedBox(height: 10,),
-
+                            SizedBox(
+                              height: 10,
+                            ),
                             Container(
                                 width: mySize.width,
                                 decoration: BoxDecoration(
-                                  color: Constants.blueColor,
-                                  borderRadius: BorderRadius.circular(10)
-                                ),
+                                    color: Constants.blueColor,
+                                    borderRadius: BorderRadius.circular(10)),
                                 child: Padding(
                                   padding: const EdgeInsets.all(15.0),
                                   child: Column(
                                     children: [
-                                      Text("Total Trips".tr() , style: TextStyle(color: Colors.white,fontSize: 20),),
-                                      Text(SavedData.profileDataModel.trips.toString(), style: TextStyle(color: Colors.white,fontSize: 30),),
+                                      Text(
+                                        "Total Trips".tr(),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                      Text(
+                                        SavedData.profileDataModel.trips
+                                            .toString(),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 30),
+                                      ),
                                     ],
                                   ),
                                 )),
-                            SizedBox(height: 10,),
-
-                            SavedData.profileDataModel.activeTrip.toString() != '0' ?
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            TripsManagementScreen(resourcesData: SavedData.resourcesData))
-                                );
-                              },
-                              child: Container(
-                                width: mySize.width,
-                                  decoration: BoxDecoration(
-                                    color: Constants.blueColor,
-                                    borderRadius: BorderRadius.circular(10)
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: EasyLocalization.of(context)?.currentLocale == Locale('en') ?
-                                    Row(
-                                      crossAxisAlignment: EasyLocalization.of(context)?.currentLocale == Locale('en') ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                                      children: [
-                                        Text("Active Trip".tr() , style: TextStyle(color: Colors.white,fontSize: 20,height: 2),),
-                                        SlideTransition(
-                                            position: offset,
-                                            child: Image.asset('assets/images/truck.png' , width: 60,)
-                                        ),
-                                      ],
-                                    ) : Column(
-                                      crossAxisAlignment:CrossAxisAlignment.end,
-                                      children: [
-                                        Center(child: Text("Active Trip".tr() , style: TextStyle(color: Colors.white,fontSize: 20,height: 2),)),
-                                        SlideTransition(
-                                            position: offset,
-                                            child: Image.asset('assets/images/truck.png' , width: 60,)
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                            ) : SizedBox(),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            SavedData.profileDataModel.activeTrip.toString() !=
+                                    '0'
+                                ? GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TripsManagementScreen(
+                                                      resourcesData: SavedData
+                                                          .resourcesData)));
+                                    },
+                                    child: Container(
+                                        width: mySize.width,
+                                        decoration: BoxDecoration(
+                                            color: Constants.blueColor,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: EasyLocalization.of(context)
+                                                      ?.currentLocale ==
+                                                  Locale('en')
+                                              ? Row(
+                                                  crossAxisAlignment:
+                                                      EasyLocalization.of(
+                                                                      context)
+                                                                  ?.currentLocale ==
+                                                              Locale('en')
+                                                          ? CrossAxisAlignment
+                                                              .start
+                                                          : CrossAxisAlignment
+                                                              .end,
+                                                  children: [
+                                                    Text(
+                                                      "Active Trip".tr(),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20,
+                                                          height: 2),
+                                                    ),
+                                                    SlideTransition(
+                                                        position: offset,
+                                                        child: Image.asset(
+                                                          'assets/images/truck.png',
+                                                          width: 60,
+                                                        )),
+                                                  ],
+                                                )
+                                              : Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Center(
+                                                        child: Text(
+                                                      "Active Trip".tr(),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20,
+                                                          height: 2),
+                                                    )),
+                                                    SlideTransition(
+                                                        position: offset,
+                                                        child: Image.asset(
+                                                          'assets/images/truck.png',
+                                                          width: 60,
+                                                        )),
+                                                  ],
+                                                ),
+                                        )),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
-                      )
-                  ),
+                      )),
                 )),
-            SizedBox(height: mySize.height / 100 * 2,)
+            SizedBox(
+              height: mySize.height / 100 * 2,
+            )
           ],
         ),
       ),
     );
   }
-
 }
-class DashboardCard extends StatelessWidget {
 
-  String text ;
+class DashboardCard extends StatelessWidget {
+  String text;
   String dIcon;
   String description;
-  VoidCallback navigationFun ;
-  DashboardCard({required this.text, required this.dIcon , required this.navigationFun, required this.description});
+  VoidCallback navigationFun;
+  DashboardCard(
+      {required this.text,
+      required this.dIcon,
+      required this.navigationFun,
+      required this.description});
   Color blueColor = Color(0xFF2f3a92);
   Color redColor = Color(0xFFbe2633);
   Color greyColor = Color(0xFFf4f4f4);
@@ -334,21 +458,20 @@ class DashboardCard extends StatelessWidget {
       children: [
         Container(
             height: mySize.height / 100 * 15,
-            width: mySize.width /100* 33,
+            width: mySize.width / 100 * 33,
             decoration: BoxDecoration(
                 color: Colors.transparent,
-                borderRadius: BorderRadius.circular(38)
-            ),
+                borderRadius: BorderRadius.circular(38)),
             child: Stack(
               children: [
                 Positioned(
                   top: 5,
                   left: 5,
                   child: GestureDetector(
-                    onTap:navigationFun,
+                    onTap: navigationFun,
                     child: Container(
                       height: mySize.height / 100 * 13,
-                      width: mySize.width /100* 30,
+                      width: mySize.width / 100 * 30,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(38),
                           color: greyColor,
@@ -362,7 +485,10 @@ class DashboardCard extends StatelessWidget {
                             )
                           ]),
                       child: Center(
-                        child: Image.asset(dIcon, height: mySize.height / 100 * 11,),
+                        child: Image.asset(
+                          dIcon,
+                          height: mySize.height / 100 * 11,
+                        ),
                       ),
                     ),
                   ),
@@ -383,15 +509,15 @@ class DashboardCard extends StatelessWidget {
                             )
                           ],
                           color: blueColor,
-                          borderRadius: BorderRadius.circular(14)
-                      ),
+                          borderRadius: BorderRadius.circular(14)),
                     ),
                   ),
                 ),
               ],
-            )
+            )),
+        SizedBox(
+          width: 10,
         ),
-        SizedBox(width: 10,),
         Expanded(
           // padding: EdgeInsets.all(10),
           // decoration: BoxDecoration(
@@ -403,9 +529,16 @@ class DashboardCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(text,
-                style: TextStyle( fontSize: 20,),
-                textAlign: EasyLocalization.of(context)?.currentLocale == Locale("en") ? TextAlign.left : TextAlign.right,),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+                textAlign:
+                    EasyLocalization.of(context)?.currentLocale == Locale("en")
+                        ? TextAlign.left
+                        : TextAlign.right,
+              ),
               ConstrainedBox(
                 constraints: BoxConstraints(
                   minWidth: 1,
@@ -416,12 +549,18 @@ class DashboardCard extends StatelessWidget {
                 child: Container(
                   // color: Color(0xfff7f7f7),
                   color: Colors.white,
-                  child: AutoSizeText(description,
+                  child: AutoSizeText(
+                    description,
                     maxLines: 3,
                     maxFontSize: 12,
                     minFontSize: 10,
-                    style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
-                    textAlign:  EasyLocalization.of(context)?.currentLocale == Locale("en") ? TextAlign.left : TextAlign.right,),
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.bold),
+                    textAlign: EasyLocalization.of(context)?.currentLocale ==
+                            Locale("en")
+                        ? TextAlign.left
+                        : TextAlign.right,
+                  ),
                 ),
               )
               //AutoSizeText( widget.screenName,
@@ -436,4 +575,3 @@ class DashboardCard extends StatelessWidget {
     );
   }
 }
-

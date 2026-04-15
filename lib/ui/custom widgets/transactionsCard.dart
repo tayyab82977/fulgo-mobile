@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:xturbox/data_providers/models/clientPaymentsDataModel.dart';
-import 'package:xturbox/data_providers/models/resourcstDataModel.dart';
+import 'package:Fulgox/data_providers/models/clientPaymentsDataModel.dart';
+import 'package:Fulgox/data_providers/models/resourcstDataModel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:xturbox/utilities/idToNameFunction.dart';
+import 'package:Fulgox/utilities/idToNameFunction.dart';
 
 class TransactionsCard extends StatefulWidget {
   ClientPaymentsDataModel? clientPaymentsDataModel ;
